@@ -1,0 +1,7 @@
+{
+  "name": "rao-vs-aneeq-sprint",
+  "private": true,
+  "type": "module",
+  "description": "30-day backend interview sprint with a two-player scoreboard",
+  "engines": { "node": ">=18" }
+}

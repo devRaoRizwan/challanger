@@ -1,0 +1,452 @@
+(function(){
+const { DAYS, TRACKS, WEEKS, V } = window.PLAN;
+
+const PLAYERS = [
+  { id: "rao",   name: "Rao Rizwan", short: "Rao",   ch: "R", cls: "r" },
+  { id: "aneeq", name: "Aneeq",      short: "Aneeq", ch: "A", cls: "a" },
+];
+const byId = Object.fromEntries(PLAYERS.map(p => [p.id, p]));
+const rival = id => PLAYERS.find(p => p.id !== id);
+const POLL_MS = 15000;
+const STREAK_MIN = 5; // ticks per day to keep a streak alive
+
+// ---------- plan index ----------
+const ITEMS = {}; // key -> { it, day, track }
+DAYS.forEach(d => {
+  if (d.rev) d.items.forEach(it => { ITEMS[it.key] = { it, day: d, track: "rev" }; });
+  else TRACKS.forEach(tr => (d[tr.id] || []).forEach(it => { ITEMS[it.key] = { it, day: d, track: tr.id }; }));
+});
+const dayItems = d => d.rev ? d.items : TRACKS.flatMap(tr => d[tr.id] || []);
+const RACE = [...TRACKS, { id: "rev", name: "Sunday revision", c: "var(--rev)" }];
+const TOTALS = {};
+Object.values(ITEMS).forEach(m => { TOTALS[m.track] = (TOTALS[m.track] || 0) + 1; });
+
+// ---------- dates & points ----------
+const dayStr = d => `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+const localDay = ts => dayStr(new Date(ts));
+const fmtD = d => d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+function todayIdx(){ const t = new Date(); t.setHours(0, 0, 0, 0); return Math.round((t - DAYS[0].date) / 864e5); }
+
+function basePts(key){
+  const m = ITEMS[key]; if (!m) return 0;
+  if (m.track === "rev") return 6;
+  if (m.it.k === "p") return m.track === "dsa" ? 10 : 8;
+  if (m.track === "job") return 3;
+  return m.it.k === "l" ? 4 : 5;
+}
+const onTime = (key, ts) => !!ITEMS[key] && localDay(ts) === dayStr(ITEMS[key].day.date);
+const pts = (key, ts) => onTime(key, ts) ? Math.round(basePts(key) * 1.5) : basePts(key);
+
+// ---------- state ----------
+let state = { rao: {}, aneeq: {} };
+let events = [];
+let serverOffset = 0;
+let loaded = false;
+let pending = 0;
+let lastLeader = null;
+let unseen = 0;
+const seen = new Set();
+let me = null;
+try { me = JSON.parse(localStorage.getItem("arena-me") || "null"); } catch (e) { me = null; }
+if (me && !byId[me.player]) me = null;
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const $ = id => document.getElementById(id);
+
+// ---------- stats ----------
+function stats(pid){
+  const done = state[pid];
+  let score = 0, problems = 0, sqlp = 0, count = 0, lastTs = 0;
+  const perDay = {};
+  const hours = [];
+  for (const [key, ts] of Object.entries(done)) {
+    const m = ITEMS[key]; if (!m) continue;
+    count++;
+    score += pts(key, ts);
+    if (m.it.k === "p") { if (m.track === "dsa") problems++; else sqlp++; }
+    const ld = localDay(ts); perDay[ld] = (perDay[ld] || 0) + 1;
+    hours.push(new Date(ts).getHours());
+    if (ts > lastTs) lastTs = ts;
+  }
+  // current streak: today counts once it hits STREAK_MIN, otherwise count back from yesterday
+  const d = new Date(); d.setHours(0, 0, 0, 0);
+  const todayCount = perDay[dayStr(d)] || 0;
+  if (todayCount < STREAK_MIN) d.setDate(d.getDate() - 1);
+  let streak = 0;
+  while ((perDay[dayStr(d)] || 0) >= STREAK_MIN) { streak++; d.setDate(d.getDate() - 1); }
+  // best streak across the sprint (from a week before start, to allow early birds)
+  let best = 0, run = 0;
+  const c = new Date(DAYS[0].date); c.setDate(c.getDate() - 7);
+  const end = new Date(); end.setHours(0, 0, 0, 0);
+  while (c <= end) { run = (perDay[dayStr(c)] || 0) >= STREAK_MIN ? run + 1 : 0; best = Math.max(best, run); c.setDate(c.getDate() + 1); }
+  return { score, problems, sqlp, count, lastTs, perDay, hours, streak, best, todayCount };
+}
+function duelPts(pid, d){
+  let s = 0, n = 0;
+  const items = dayItems(d);
+  items.forEach(it => { const ts = state[pid][it.key]; if (ts) { n++; if (onTime(it.key, ts)) s += pts(it.key, ts); } });
+  return { s, n, total: items.length };
+}
+function duelWinner(d){
+  const a = duelPts("rao", d).s, b = duelPts("aneeq", d).s;
+  if (a === 0 && b === 0) return null;
+  return a > b ? "rao" : b > a ? "aneeq" : "tie";
+}
+function daysWon(){
+  const w = { rao: 0, aneeq: 0 };
+  const t = Math.min(todayIdx(), DAYS.length);
+  for (let i = 0; i < t; i++) { const r = duelWinner(DAYS[i]); if (r === "rao" || r === "aneeq") w[r]++; }
+  return w;
+}
+function maxPerDay(pid, filter){
+  const per = {};
+  for (const [key, ts] of Object.entries(state[pid])) { const m = ITEMS[key]; if (m && filter(m)) { const ld = localDay(ts); per[ld] = (per[ld] || 0) + 1; } }
+  return Math.max(0, ...Object.values(per));
+}
+function firstTicker(){
+  let best = null;
+  PLAYERS.forEach(p => Object.values(state[p.id]).forEach(ts => { if (!best || ts < best.ts) best = { pid: p.id, ts }; }));
+  return best && best.pid;
+}
+
+const BADGES = [
+  { name: "First Blood",   d: "First tick of the sprint",           test: (pid)    => firstTicker() === pid },
+  { name: "Hat-trick",     d: "3 DSA problems in one day",          test: (pid)    => maxPerDay(pid, m => m.track === "dsa" && m.it.k === "p") >= 3 },
+  { name: "Clean Sweep",   d: "Finish a whole day on its date",     test: (pid)    => DAYS.some(d => dayItems(d).every(it => state[pid][it.key] && onTime(it.key, state[pid][it.key]))) },
+  { name: "On Fire",       d: "5-day streak",                       test: (pid, S) => S.best >= 5 },
+  { name: "Unstoppable",   d: "10-day streak",                      test: (pid, S) => S.best >= 10 },
+  { name: "SQL Slayer",    d: "25 SQL problems",                    test: (pid, S) => S.sqlp >= 25 },
+  { name: "Pattern Hunter",d: "40 DSA problems",                    test: (pid, S) => S.problems >= 40 },
+  { name: "Centurion",     d: "100 items done",                     test: (pid, S) => S.count >= 100 },
+  { name: "Early Bird",    d: "Tick something between 4 and 7 am",  test: (pid, S) => S.hours.some(h => h >= 4 && h < 7) },
+  { name: "Night Owl",     d: "Tick something between midnight and 4 am", test: (pid, S) => S.hours.some(h => h < 4) },
+];
+
+// ---------- taunts ----------
+function hoursSince(ts){ return ts ? (Date.now() + serverOffset - ts) / 36e5 : Infinity; }
+function taunt(S){
+  const ra = S.rao.score, an = S.aneeq.score;
+  if (ra === 0 && an === 0) return { main: "0 – 0. Whoever ticks first takes First Blood.", sub: "" };
+  const diff = Math.abs(ra - an);
+  if (diff === 0) return { main: `Dead even at ${ra}. The next tick takes the lead.`, sub: "" };
+  const L = ra > an ? byId.rao : byId.aneeq, T = rival(L.id);
+  let lines;
+  if (me && me.player === L.id) {
+    lines = diff < 20 ? [`You lead by ${diff}. That's one problem — ${T.short} can flip it tonight.`, `Up ${diff}. Barely. Keep going.`]
+      : diff < 80 ? [`You're up ${diff}. Don't get comfortable.`, `+${diff}. ${T.short} is refreshing this page too.`]
+      : [`+${diff}. ${T.short} is getting cooked.`, `${diff} ahead. Make it embarrassing.`];
+  } else if (me && me.player === T.id) {
+    lines = diff < 20 ? [`${L.short} leads by ${diff}. One DSA problem puts you back on top.`, `Down ${diff}. That's nothing — go take it back.`]
+      : diff < 80 ? [`You're ${diff} behind ${L.short}. Open LeetCode.`, `${L.short} +${diff}. Are you really letting that happen?`]
+      : [`${diff} behind. ${L.short} is running away with it.`, `${L.short} +${diff}. This is getting embarrassing.`];
+  } else {
+    lines = diff < 20 ? [`${L.short} edges it by ${diff}.`] : diff < 80 ? [`${L.short} pulls away, +${diff}.`] : [`${L.short} is cooking ${T.short}: +${diff}.`];
+  }
+  const idle = hoursSince(S[T.id].lastTs);
+  const sub = S[T.id].count && idle >= 12 ? `${T.short} hasn't ticked anything in ${Math.floor(idle)} h.` : "";
+  return { main: lines[diff % lines.length], sub };
+}
+
+// ---------- build plan (once) ----------
+function itemHTML(it, trackId){
+  let label;
+  if (it.k === "p") {
+    label = `<span class="num">#${it.n}</span><a href="${it.u}" target="_blank" rel="noopener">${esc(it.t)}</a>` +
+      (trackId === "dsa" ? `<a class="aux" href="${V(it.t)}" target="_blank" rel="noopener">video ↗</a>` : "");
+  } else if (it.u) label = `<a href="${it.u}" target="_blank" rel="noopener">${esc(it.t)}</a>`;
+  else label = esc(it.t);
+  const b = basePts(it.key);
+  return `<li class="item" data-key="${it.key}">
+    <input type="checkbox" id="${it.key}" data-key="${it.key}">
+    <label for="${it.key}">${label}<span class="pv">${b} pts</span></label>
+    <span class="chips">${PLAYERS.map(p => `<span class="chip ${p.cls}" title="${p.name}">${p.ch}</span>`).join("")}</span>
+  </li>`;
+}
+function buildPlan(){
+  const t = todayIdx();
+  $("weeknav").innerHTML = WEEKS.map(w => `<a href="#week${w.n}">Week ${w.n} · ${fmtD(DAYS[w.from].date)} – ${fmtD(DAYS[w.to].date)}</a>`).join("");
+  $("plan").innerHTML = WEEKS.map(w => `
+    <section class="week" id="week${w.n}">
+      <div class="weekhead"><h2>Week ${w.n} · ${esc(w.t)}</h2><span class="eyebrow">Days ${w.from + 1}–${w.to + 1}</span></div>
+      ${DAYS.slice(w.from, w.to + 1).map(d => dayHTML(d, t)).join("")}
+    </section>`).join("");
+}
+function dayHTML(d, t){
+  const isToday = d.idx === t;
+  const body = d.rev
+    ? `<div class="tracks"><div class="track wide" style="--c:var(--rev)"><h4>Revision &amp; career <span>~5 h</span></h4><ul class="items">${d.items.map(it => itemHTML(it, "rev")).join("")}</ul></div></div>`
+    : `<div class="tracks">${TRACKS.map(tr => `<div class="track${tr.id === "job" ? " wide" : ""}" style="--c:${tr.c}"><h4>${tr.name} <span>${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}</div>`;
+  return `<details class="day${d.rev ? " is-rev" : ""}${isToday ? " is-today" : ""}" id="day${d.idx + 1}"${isToday ? " open" : ""}>
+    <summary>
+      <div class="when"><strong>Day ${d.idx + 1}</strong>${fmtD(d.date)}</div>
+      <div class="focus">${esc(d.f)} ${isToday ? '<span class="tag">Today</span>' : ""}<small>${d.rev ? "Sunday · " : ""}${esc(d.s)}</small></div>
+      <div class="dayprog" aria-hidden="true">
+        <div class="bar r"><i></i></div><div class="bar a"><i></i></div>
+        <div class="nums"><span class="nr"></span><span class="na"></span></div>
+      </div>
+    </summary>${body}</details>`;
+}
+
+// ---------- render live parts ----------
+function renderWho(){
+  $("who").innerHTML = me
+    ? `<span>Playing as <strong style="color:var(--${me.player})">${esc(byId[me.player].name)}</strong></span><button class="btn ghost" type="button" id="switch">Switch</button>`
+    : `<span>Watching</span><button class="btn" type="button" id="switch">Log in to tick</button>`;
+  $("switch").addEventListener("click", openLogin);
+  document.body.style.setProperty("--me", me ? `var(--${me.player})` : "var(--done)");
+}
+
+function updateAll(){
+  const S = { rao: stats("rao"), aneeq: stats("aneeq") };
+  const won = daysWon();
+  const leader = S.rao.score === S.aneeq.score ? null : (S.rao.score > S.aneeq.score ? "rao" : "aneeq");
+
+  // fighters
+  PLAYERS.forEach(p => {
+    const s = S[p.id];
+    const el = $("f-" + p.id);
+    el.classList.toggle("leading", leader === p.id);
+    el.innerHTML = `
+      <div class="name"><span class="crown"${leader === p.id ? "" : " hidden"} title="Leader">♛</span>${esc(p.name)}${me && me.player === p.id ? '<span class="you">you</span>' : ""}</div>
+      <div class="score">${s.score}<small>pts</small></div>
+      <div class="fstats">
+        <span>🔥 <b>${s.streak}</b>-day streak</span>
+        <span><b>${won[p.id]}</b> days won</span>
+        <span><b>${s.problems}</b> DSA · <b>${s.sqlp}</b> SQL</span>
+      </div>`;
+  });
+  const total = S.rao.score + S.aneeq.score;
+  const rShare = total ? S.rao.score / total * 100 : 50;
+  $("tug-r").style.width = rShare + "%";
+  $("tug-a").style.width = (100 - rShare) + "%";
+  const tt = taunt(S);
+  $("taunt").innerHTML = esc(tt.main) + (tt.sub ? `<br><small style="font-size:14px;color:var(--muted);font-weight:500">${esc(tt.sub)}</small>` : "");
+
+  if (loaded && lastLeader && leader && leader !== lastLeader) toast(`♛ ${byId[leader].name} just took the lead!`, leader);
+  if (leader) lastLeader = leader;
+
+  // today's duel
+  const t = todayIdx();
+  const di = Math.max(0, Math.min(t, DAYS.length - 1));
+  const d = DAYS[di];
+  const live = t >= 0 && t < DAYS.length;
+  $("duel-title").innerHTML = `${live ? "Today's duel" : t < 0 ? "First duel" : "Final duel"} <span>Day ${di + 1} · ${fmtD(d.date)}</span>`;
+  const dp = { rao: duelPts("rao", d), aneeq: duelPts("aneeq", d) };
+  const dw = dp.rao.s === dp.aneeq.s ? null : (dp.rao.s > dp.aneeq.s ? "rao" : "aneeq");
+  $("duel").innerHTML = PLAYERS.map(p => `
+    <div class="duelside${dw === p.id ? " win" : ""}" data-p="${p.id}">
+      <span class="n">${esc(p.short)}${dw === p.id ? " · winning" : ""}</span>
+      <span class="big">${dp[p.id].s}<small> on-time pts</small></span>
+      <span class="eyebrow">${dp[p.id].n}/${dp[p.id].total} items</span>
+    </div>`).join("");
+  let note;
+  if (t < 0) note = `Starts ${fmtD(DAYS[0].date)}. Ticks made before then earn base points only.`;
+  else if (!live) note = "The sprint is over. Check the record below.";
+  else if (!dw) note = dp.rao.s === 0 ? "Nobody has scored today yet. First tick leads the duel." : "Tied today. Break it.";
+  else {
+    const gap = Math.abs(dp.rao.s - dp.aneeq.s);
+    note = me && me.player !== dw ? `You're ${gap} on-time points behind today. Midnight is the deadline.` : `${byId[dw].short} leads today by ${gap}. Midnight is the deadline.`;
+  }
+  $("duel-note").textContent = note;
+  $("record").innerHTML = DAYS.map((dd, i) => {
+    const w = i <= t ? duelWinner(dd) : null;
+    const cls = w === "rao" ? "r" : w === "aneeq" ? "a" : w === "tie" ? "t" : "";
+    const who = w === "rao" || w === "aneeq" ? byId[w].short + " won" : w === "tie" ? "Tie" : i <= t ? "No score" : "Upcoming";
+    return `<i class="${cls}${i === t ? " now" : ""}" title="Day ${i + 1} (${fmtD(dd.date)}): ${who}">${i + 1}</i>`;
+  }).join("");
+
+  // track race
+  $("race").innerHTML = RACE.map(tr => {
+    const c = { rao: 0, aneeq: 0 };
+    PLAYERS.forEach(p => Object.keys(state[p.id]).forEach(k => { if (ITEMS[k] && ITEMS[k].track === tr.id) c[p.id]++; }));
+    const tot = TOTALS[tr.id] || 1;
+    return `<div class="row" style="--c:${tr.c}"><span class="lbl">${esc(tr.name)}</span>
+      <div class="bars"><div class="bar r"><i style="width:${c.rao / tot * 100}%"></i></div><div class="bar a"><i style="width:${c.aneeq / tot * 100}%"></i></div>
+      <div class="nums"><span>Rao ${c.rao}</span><span>${tot} total</span><span>Aneeq ${c.aneeq}</span></div></div></div>`;
+  }).join("");
+
+  // feed: only ticks that still stand
+  const feed = events.filter(e => byId[e.player] && ITEMS[e.key] && state[e.player][e.key] === e.ts).slice(0, 25);
+  $("feed").innerHTML = feed.length ? feed.map(e => {
+    const m = ITEMS[e.key];
+    const verb = m.it.k === "p" ? "solved" : "finished";
+    const title = m.it.k === "p" ? `#${m.it.n} ${m.it.t}` : m.it.t;
+    return `<li data-p="${e.player}"><span><strong>${esc(byId[e.player].short)}</strong> ${verb} ${esc(title)} <span class="pts">+${pts(e.key, e.ts)}</span></span><span class="t">${relTime(e.ts)}</span></li>`;
+  }).join("") : `<li style="display:block"><p class="empty">No ticks yet. The first one gets First Blood.</p></li>`;
+
+  // badges
+  $("badges").innerHTML = BADGES.map(b => {
+    const holders = PLAYERS.filter(p => b.test(p.id, S[p.id]));
+    return `<div class="badge"><b>${esc(b.name)}</b><span class="d">${esc(b.d)}</span><span class="holders">${PLAYERS.map(p => `<span class="${holders.includes(p) ? p.cls : ""}">${p.short}</span>`).join("")}</span></div>`;
+  }).join("");
+
+  // plan: checkboxes, chips, day bars
+  document.querySelectorAll("li.item").forEach(li => {
+    const key = li.dataset.key;
+    const mine = !!(me && state[me.player][key]);
+    const inp = li.querySelector("input");
+    inp.checked = mine;
+    inp.disabled = !me;
+    inp.title = me ? "" : "Log in to tick";
+    li.classList.toggle("mine", mine);
+    const chips = li.querySelectorAll(".chip");
+    PLAYERS.forEach((p, i) => chips[i].classList.toggle("on", !!state[p.id][key]));
+  });
+  DAYS.forEach(dd => {
+    const el = $("day" + (dd.idx + 1)); if (!el) return;
+    const items = dayItems(dd);
+    const n = { rao: 0, aneeq: 0 };
+    items.forEach(it => PLAYERS.forEach(p => { if (state[p.id][it.key]) n[p.id]++; }));
+    el.querySelector(".bar.r i").style.width = n.rao / items.length * 100 + "%";
+    el.querySelector(".bar.a i").style.width = n.aneeq / items.length * 100 + "%";
+    el.querySelector(".nr").textContent = `R ${n.rao}/${items.length}`;
+    el.querySelector(".na").textContent = `A ${n.aneeq}/${items.length}`;
+  });
+}
+
+function relTime(ts){
+  const s = Math.max(0, (Date.now() + serverOffset - ts) / 1000);
+  if (s < 60) return "just now";
+  if (s < 3600) return Math.floor(s / 60) + "m ago";
+  if (s < 86400) return Math.floor(s / 3600) + "h ago";
+  return Math.floor(s / 86400) + "d ago";
+}
+
+// ---------- toasts ----------
+function toast(msg, pid, isErr){
+  const el = document.createElement("div");
+  el.className = "toast" + (isErr ? " err" : "");
+  if (pid) el.dataset.p = pid;
+  el.textContent = msg;
+  $("toasts").appendChild(el);
+  setTimeout(() => el.remove(), 5000);
+}
+
+// ---------- network ----------
+async function api(path, body){
+  const r = await fetch(path, body
+    ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
+    : { cache: "no-store" });
+  let data = {};
+  try { data = await r.json(); } catch (e) {}
+  if (!r.ok) { const err = new Error(data.error || `Request failed (${r.status})`); err.status = r.status; throw err; }
+  return data;
+}
+
+async function poll(){
+  try {
+    const data = await api("/api/state");
+    if (pending > 0) return; // don't overwrite an in-flight tick
+    serverOffset = data.now - Date.now();
+    state = { rao: data.players.rao || {}, aneeq: data.players.aneeq || {} };
+    events = data.events || [];
+    const fresh = events.filter(e => !seen.has(e.player + e.key + e.ts));
+    events.forEach(e => seen.add(e.player + e.key + e.ts));
+    if (loaded) {
+      fresh.filter(e => !me || e.player !== me.player).slice(0, 3).reverse().forEach(e => {
+        const m = ITEMS[e.key]; if (!m) return;
+        const what = m.it.k === "p" ? `solved #${m.it.n} ${m.it.t}` : `finished "${m.it.t}"`;
+        toast(`${byId[e.player].short} just ${what} (+${pts(e.key, e.ts)}). Your move.`, e.player);
+        if (document.hidden) { unseen++; document.title = `(${unseen}) ${byId[e.player].short} is scoring…`; }
+      });
+    }
+    loaded = true;
+    $("status").textContent = "Live · updates every 15 s";
+    $("status").classList.remove("err");
+    updateAll();
+  } catch (e) {
+    $("status").textContent = location.protocol === "file:"
+      ? "Offline: open the Vercel URL (or run `vercel dev`) to see the live scoreboard."
+      : `Can't reach the scoreboard: ${e.message}`;
+    $("status").classList.add("err");
+  }
+}
+
+document.addEventListener("change", async e => {
+  const inp = e.target.closest("input[data-key]");
+  if (!inp || !me) return;
+  const key = inp.dataset.key, on = inp.checked, pid = me.player;
+  const prev = state[pid][key];
+  const S0 = stats(pid);
+  if (on) state[pid][key] = Date.now() + serverOffset; else delete state[pid][key];
+  updateAll();
+  pending++;
+  try {
+    const r = await api("/api/tick", { player: pid, pin: me.pin, key, done: on });
+    if (on && r.ts) state[pid][key] = r.ts;
+    if (on) {
+      const got = pts(key, state[pid][key]);
+      const S1 = stats(pid);
+      const rv = stats(rival(pid).id);
+      let msg = `+${got}${onTime(key, state[pid][key]) ? " (on-time bonus)" : ""}`;
+      if (S0.score <= rv.score && S1.score > rv.score) msg += `. You just passed ${rival(pid).short}!`;
+      else if (S1.score > rv.score) msg += `. Lead: +${S1.score - rv.score}`;
+      else msg += `. ${rv.score - S1.score} behind ${rival(pid).short}`;
+      if (S0.todayCount === STREAK_MIN - 1 && S1.todayCount === STREAK_MIN) msg += " · streak secured for today 🔥";
+      toast(msg, pid);
+    }
+  } catch (err) {
+    if (prev) state[pid][key] = prev; else delete state[pid][key];
+    toast(err.status === 401 ? "Your PIN was rejected. Log in again." : `Not saved: ${err.message}`, null, true);
+    if (err.status === 401) { me = null; saveMe(); renderWho(); openLogin(); }
+  } finally {
+    pending--;
+    updateAll();
+  }
+});
+
+// ---------- login ----------
+function saveMe(){ try { me ? localStorage.setItem("arena-me", JSON.stringify(me)) : localStorage.removeItem("arena-me"); } catch (e) {} }
+let picked = null;
+function openLogin(){
+  picked = me ? me.player : null;
+  document.querySelectorAll("#pick button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.p === picked)));
+  $("pin").value = "";
+  $("login-err").textContent = "";
+  $("login").hidden = false;
+  $("pin").focus();
+}
+document.querySelectorAll("#pick button").forEach(b => b.addEventListener("click", () => {
+  picked = b.dataset.p;
+  document.querySelectorAll("#pick button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  $("pin").focus();
+}));
+$("login-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!picked) { $("login-err").textContent = "Pick your name first."; return; }
+  const pin = $("pin").value.trim();
+  $("enter").disabled = true;
+  try {
+    await api("/api/tick", { player: picked, pin, check: true });
+    me = { player: picked, pin };
+    saveMe();
+    try { localStorage.removeItem("arena-watch"); } catch (e2) {}
+    $("login").hidden = true;
+    renderWho(); updateAll();
+    toast(`Welcome, ${byId[picked].short}. ${rival(picked).short} is waiting.`, picked);
+  } catch (err) {
+    $("login-err").textContent = err.status === 401 ? "Wrong PIN. Try again."
+      : err.status === 429 ? err.message
+      : `Couldn't check your PIN: ${err.message}`;
+  } finally { $("enter").disabled = false; }
+});
+$("watch").addEventListener("click", () => {
+  $("login").hidden = true;
+  try { localStorage.setItem("arena-watch", "1"); } catch (e) {}
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("login").hidden) $("login").hidden = true; });
+
+// ---------- boot ----------
+buildPlan();
+renderWho();
+updateAll();
+let watching = false;
+try { watching = localStorage.getItem("arena-watch") === "1"; } catch (e) {}
+if (!me && !watching && location.protocol !== "file:") openLogin();
+poll();
+setInterval(poll, POLL_MS); // keeps running in background tabs so the title can flash
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) { unseen = 0; document.title = "Rao vs Aneeq Sprint"; poll(); }
+});
+setInterval(updateAll, 60000); // refresh relative times, day rollover
+})();

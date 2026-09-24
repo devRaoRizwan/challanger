@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rao vs Aneeq Sprint</title>
+<meta name="description" content="30-day backend interview sprint. Two players, one scoreboard.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <span class="eyebrow">Backend interview sprint · 25 Sep → 24 Oct 2026</span>
+      <h1>Rao vs Aneeq</h1>
+    </div>
+    <div class="who" id="who"></div>
+  </div>
+  <div class="status" id="status" aria-live="polite">Connecting to the scoreboard…</div>
+
+  <section class="arena" aria-label="Scoreboard">
+    <div class="fighter" data-p="rao" id="f-rao"></div>
+    <div class="vs" aria-hidden="true">vs</div>
+    <div class="fighter" data-p="aneeq" id="f-aneeq"></div>
+    <div class="tug" aria-hidden="true"><i class="r" id="tug-r" style="width:50%"></i><i class="a" id="tug-a" style="width:50%"></i></div>
+    <p class="taunt" id="taunt"></p>
+  </section>
+
+  <section class="dash">
+    <div>
+      <div class="panel">
+        <h2 id="duel-title">Today's duel <span></span></h2>
+        <div class="duel" id="duel"></div>
+        <p class="duelnote" id="duel-note"></p>
+        <div class="record" id="record" aria-label="Daily duel record"></div>
+      </div>
+      <div class="panel">
+        <h2>Track race <span>items done</span></h2>
+        <div class="race" id="race"></div>
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <h2>Live feed <span>updates every 15 s</span></h2>
+        <ul class="feed" id="feed"></ul>
+      </div>
+      <div class="panel">
+        <h2>Badges</h2>
+        <div class="badges" id="badges"></div>
+      </div>
+      <details class="panel">
+        <summary><strong>Scoring rules</strong></summary>
+        <ul class="rules">
+          <li>DSA problem 10 · SQL problem 8 · task 5 · read/watch 4 · revision item 6 · job applications 3</li>
+          <li><strong>On-time bonus ×1.5</strong> when you tick an item on its scheduled day. Catching up later gets base points only.</li>
+          <li><strong>Daily duel:</strong> whoever earns more on-time points on that day's plan wins the day.</li>
+          <li><strong>Streak:</strong> consecutive days with 5+ ticks. Miss a day and it resets to 0.</li>
+          <li>Each item's first tick time is kept, so unticking and re-ticking gains nothing. It's on your honor: only tick what you really did.</li>
+        </ul>
+      </details>
+    </div>
+  </section>
+
+  <details class="method">
+    <summary>How to run each block</summary>
+    <div class="inner">
+      <div><h3>DSA · 2 h</h3><ul>
+        <li>Try each problem for 25 minutes. If stuck, watch the NeetCode video, then close it and write the code yourself.</li>
+        <li>Write the pattern and complexity in your notes. Start each day by re-solving yesterday's hardest problem.</li></ul></div>
+      <div><h3>SQL / DB · 1.5 h</h3><ul>
+        <li>Solve on LeetCode, then run the query again in local Postgres. On theory days, answer the question aloud.</li></ul></div>
+      <div><h3>Python / frameworks · 1 h</h3><ul>
+        <li>Read, code the exercise in <code>py_daily/dayNN.py</code>, then answer the question aloud in under 90 seconds.</li></ul></div>
+      <div><h3>System design · 1 h</h3><ul>
+        <li>For full designs, try it alone on <a href="https://excalidraw.com" target="_blank" rel="noopener">Excalidraw</a> for 30 minutes before watching the solution.</li></ul></div>
+      <div><h3>Duel each other</h3><ul>
+        <li>On Sundays, run mock interviews on each other: one of you asks, the other solves aloud.</li></ul></div>
+      <div><h3>Core references</h3><ul>
+        <li><a href="https://neetcode.io/roadmap" target="_blank" rel="noopener">NeetCode</a> · <a href="https://sqlbolt.com/" target="_blank" rel="noopener">SQLBolt</a> · <a href="https://leetcode.com/studyplan/top-sql-50/" target="_blank" rel="noopener">SQL 50</a> · <a href="https://use-the-index-luke.com/" target="_blank" rel="noopener">Use The Index, Luke</a></li>
+        <li><a href="https://github.com/donnemartin/system-design-primer" target="_blank" rel="noopener">System Design Primer</a> · <a href="https://www.youtube.com/@ByteByteGo" target="_blank" rel="noopener">ByteByteGo</a> · <em>Fluent Python</em></li></ul></div>
+    </div>
+  </details>
+
+  <nav class="weeknav" id="weeknav" aria-label="Weeks"></nav>
+  <main id="plan"></main>
+  <footer>Losing is optional. Ticking what you didn't do is cheating yourself, not Aneeq (or Rao).</footer>
+</div>
+
+<div class="overlay" id="login" hidden>
+  <form class="modal" id="login-form" autocomplete="off">
+    <h2>Who's playing?</h2>
+    <p>Pick your name and enter your PIN. Your PIN only lets you tick your own boxes.</p>
+    <div class="pick" id="pick">
+      <button type="button" data-p="rao" aria-pressed="false">Rao Rizwan</button>
+      <button type="button" data-p="aneeq" aria-pressed="false">Aneeq</button>
+    </div>
+    <label class="field" for="pin">PIN<input id="pin" type="password" inputmode="numeric" required></label>
+    <div class="formerr" id="login-err" aria-live="polite"></div>
+    <div class="actions">
+      <button type="button" class="btn ghost" id="watch">Just watch</button>
+      <button type="submit" class="btn" id="enter">Enter the arena</button>
+    </div>
+  </form>
+</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="plan.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
