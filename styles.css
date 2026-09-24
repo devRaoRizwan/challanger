@@ -416,3 +416,8 @@ body{
   .daylist{position:sticky;top:0;left:auto;bottom:auto;width:auto;margin:0 -16px 16px;flex-direction:row;overflow-x:auto;overflow-y:hidden;border-right:0;border-bottom:1px solid #e0e3f5;padding:10px 12px}
   .daylist::before{display:none}
 }
+
+/* Track cards: white body, colour only on the top edge, icon chip and time badge */
+.track,
+.track.concept, .track.quick, .track.practice,
+.day.is-rev .track{background:#fff;border:1px solid var(--line);border-top:4px solid var(--c)}
