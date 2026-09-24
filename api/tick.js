@@ -6,7 +6,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { redis, PLAYERS } from "./_redis.js";
 
-const KEY_RE = /^d\d{1,2}-(dsa|sql|py|sd|job|rev|qz)-\d{1,2}$/;
+const KEY_RE = /^d\d{1,2}-(dsa|sql|py|sd|job|rev|qz|cn)-\d{1,2}$/;
 const MAX_FAILS = 10; // wrong PINs allowed per player per 15 minutes
 
 function pinMatches(player, pin) {

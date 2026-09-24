@@ -16,9 +16,10 @@ DAYS.forEach(d => {
   if (d.rev) d.items.forEach(it => { ITEMS[it.key] = { it, day: d, track: "rev" }; });
   else TRACKS.forEach(tr => (d[tr.id] || []).forEach(it => { ITEMS[it.key] = { it, day: d, track: tr.id }; }));
   d.qz.forEach(it => { ITEMS[it.key] = { it, day: d, track: "qz" }; });
+  d.cnItems.forEach(it => { ITEMS[it.key] = { it, day: d, track: "cn" }; });
 });
-const dayItems = d => (d.rev ? d.items : TRACKS.flatMap(tr => d[tr.id] || [])).concat(d.qz);
-const RACE = [...TRACKS, { id: "qz", name: "Extra practice", c: "var(--qz)" }, { id: "rev", name: "Sunday revision", c: "var(--rev)" }];
+const dayItems = d => d.cnItems.concat(d.rev ? d.items : TRACKS.flatMap(tr => d[tr.id] || []), d.qz);
+const RACE = [{ id: "cn", name: "Concepts", c: "var(--cn)" }, ...TRACKS, { id: "qz", name: "Extra practice", c: "var(--qz)" }, { id: "rev", name: "Sunday revision", c: "var(--rev)" }];
 const DIFF_PTS = { Easy: 5, Medium: 8, Hard: 12 };
 const TOTALS = {};
 Object.values(ITEMS).forEach(m => { TOTALS[m.track] = (TOTALS[m.track] || 0) + 1; });
@@ -33,6 +34,7 @@ function basePts(key){
   const m = ITEMS[key]; if (!m) return 0;
   if (m.track === "rev") return 6;
   if (m.track === "qz") return DIFF_PTS[m.it.d] || 5;
+  if (m.track === "cn") return 5;
   if (m.it.k === "p") return m.track === "dsa" ? 10 : 8;
   if (m.track === "job") return 3;
   return m.it.k === "l" ? 4 : 5;
@@ -133,6 +135,7 @@ const BADGES = [
   { name: "SQL Slayer",    d: "25 SQL problems",                    test: (pid, S) => S.sqlp >= 25 },
   { name: "Pattern Hunter",d: "40 DSA problems",                    test: (pid, S) => S.problems >= 40 },
   { name: "Grinder",       d: "30 extra practice problems",         test: (pid, S) => S.extra >= 30 },
+  { name: "Concept Master", d: "Finish 20 concepts of the day",      test: (pid)    => DAYS.filter(d => d.cnItems.length && d.cnItems.every(it => state[pid][it.key])).length >= 20 },
   { name: "Centurion",     d: "100 items done",                     test: (pid, S) => S.count >= 100 },
   { name: "Early Bird",    d: "Tick something between 4 and 7 am",  test: (pid, S) => S.hours.some(h => h >= 4 && h < 7) },
   { name: "Night Owl",     d: "Tick something between midnight and 4 am", test: (pid, S) => S.hours.some(h => h < 4) },
@@ -193,16 +196,25 @@ function buildPlan(){
 }
 function dayHTML(d, t){
   const isToday = d.idx === t;
+  const c = d.cn;
+  const concept = c ? `<div class="track wide concept" style="--c:var(--cn)">
+      <h4><span class="tn">Concept of the day · ${esc(c.t)}</span><span class="h">30 min</span></h4>
+      <p class="cwhat">${esc(c.what)}</p>
+      <div class="cbox"><span class="clbl">Interview question</span>${esc(c.ask)}</div>
+      <div class="cbox try"><span class="clbl">Try it</span>${esc(c.try)}</div>
+      <div class="cres">${c.docs.map(x => `<a class="doc" href="${x.u}" target="_blank" rel="noopener">${esc(x.t)} ↗</a>`).join("")}<a class="vid" href="${c.video.u}" target="_blank" rel="noopener" title="${esc(c.video.title)} — ${esc(c.video.ch)}">${PLAY}${esc(c.video.len)} · ${esc(c.video.ch)}</a></div>
+      <ul class="items">${d.cnItems.map(it => itemHTML(it, "cn")).join("")}</ul>
+    </div>` : "";
   const practice = d.qz.length
     ? `<div class="track wide practice" style="--c:var(--qz)"><h4><span class="tn">Extra practice · solve on the platform</span><span class="h">bonus</span></h4><ul class="items">${d.qz.map(it => itemHTML(it, "qz")).join("")}</ul></div>`
     : "";
   const body = d.rev
-    ? `<div class="tracks"><div class="track wide" style="--c:var(--rev)"><h4><span class="tn">Revision &amp; career</span><span class="h">~5 h</span></h4><ul class="items">${d.items.map(it => itemHTML(it, "rev")).join("")}</ul></div>${practice}</div>`
-    : `<div class="tracks">${TRACKS.map(tr => `<div class="track${tr.id === "job" ? " wide" : ""}" style="--c:${tr.c}"><h4><span class="tn">${tr.name}</span><span class="h">${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}${practice}</div>`;
+    ? `<div class="tracks"><div class="track wide" style="--c:var(--rev)"><h4><span class="tn">Revision &amp; career</span><span class="h">~5 h</span></h4><ul class="items">${d.items.map(it => itemHTML(it, "rev")).join("")}</ul></div>${concept}${practice}</div>`
+    : `<div class="tracks">${concept}${TRACKS.map(tr => `<div class="track${tr.id === "job" ? " wide" : ""}" style="--c:${tr.c}"><h4><span class="tn">${tr.name}</span><span class="h">${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}${practice}</div>`;
   return `<details class="day${d.rev ? " is-rev" : ""}${isToday ? " is-today" : ""}" id="day${d.idx + 1}"${isToday ? " open" : ""}>
     <summary>
       <div class="when"><strong>Day ${d.idx + 1}</strong>${fmtD(d.date)}</div>
-      <div class="focus">${esc(d.f)} ${isToday ? '<span class="tag">Today</span>' : ""}<small>${d.rev ? "Sunday · " : ""}${esc(d.s)}</small></div>
+      <div class="focus">${esc(d.f)} ${isToday ? '<span class="tag">Today</span>' : ""}<small>${d.rev ? "Sunday · " : ""}${esc(d.s)}${d.cn ? ` · <span class="cn-tag">Concept: ${esc(d.cn.t)}</span>` : ""}</small></div>
       <div class="dayprog" aria-hidden="true">
         <div class="bar r"><i></i></div><div class="bar a"><i></i></div>
         <div class="nums"><span class="nr"></span><span class="na"></span></div>
