@@ -14,7 +14,37 @@ const T = (t, u) => ({k:"t", t, u});
 const V = t => yt("neetcode " + t); // NeetCode solution video for a DSA problem
 const RP = "https://realpython.com/";
 const PGT = "https://www.postgresqltutorial.com/";
-const JOB = [T("Apply to 5 jobs + send 1 follow-up / recruiter message")];
+const TIH = "https://www.techinterviewhandbook.org/";
+const MOCK = "https://www.tryexponent.com/practice";
+// Interview prep: one task per study day, to turn applications into offers.
+const IV = {
+  1:  [L("Write and record your 60–90 s \"Tell me about yourself\": present → past → why this role", TIH + "self-introduction/")],
+  2:  [T("Project inventory: for your top 3 projects, note the problem, your role, the stack, one hard bug and a measurable result")],
+  4:  [L("STAR story #1: a production bug you tracked down and fixed (Situation, Task, Action, Result)", TIH + "behavioral-interview/")],
+  5:  [L("Draw your last project's architecture on one page (you'll be asked to), then explain it in 3 minutes", "https://excalidraw.com/")],
+  6:  [T("STAR story #2: a disagreement with a teammate or PM, and how you resolved it")],
+  7:  [T("Prepare a short, honest, positive answer to \"Why are you looking?\" / \"Why did you leave?\"")],
+  8:  [T("Rao vs Aneeq mock, 20 min each: ask each other 5 Python questions from this week, answered aloud. Give one piece of feedback each.")],
+  9:  [T("STAR story #3: shipping under a tight deadline, and the trade-off you made")],
+  11: [L("Prepare 5 smart questions to ask your interviewers (team, code review, on-call, first 90 days)", TIH + "final-questions/")],
+  12: [L("Mock each other: one LeetCode easy on a shared screen, 30 min, thinking aloud the whole time", TIH + "coding-interview-techniques/")],
+  13: [T("STAR story #4: a mistake you made and what you changed afterwards")],
+  14: [T("Company research sheet for every interview you have scheduled: product, stack, recent news, why you fit, and 2 tailored questions")],
+  15: [T("Take-home practice (part 1): build a small CRUD API (FastAPI or DRF) with tests in 2 hours, strictly timeboxed")],
+  16: [T("Take-home practice (part 2): add a README, a Dockerfile, input validation and one design note; push it to GitHub")],
+  18: [L("Mock each other: 30-min system design (URL shortener), then swap roles", TIH + "system-design/")],
+  19: [L("Salary research: find the range for your role and city, then decide your target number and walk-away number", TIH + "understanding-compensation/")],
+  20: [T("STAR story #5: ownership. Something you improved without being asked")],
+  21: [T("Explain one technical idea (caching, or a queue) to a non-technical person in 60 seconds, and record it")],
+  22: [L("Resume grill: for every bullet, prepare 2 deep follow-up answers. If you can't defend a bullet, cut it.", TIH + "resume/")],
+  23: [T("Mock each other: 3 SQL problems from this week, 30 min, explaining your query plan aloud")],
+  25: [T("Mock each other: a full 45-min technical round (DSA + Python/Django questions), with written feedback")],
+  26: [L("Prepare answers to: biggest weakness, why should we hire you, where do you see yourself in 3 years", TIH + "behavioral-interview-questions/")],
+  27: [L("Negotiation role-play: one plays the recruiter making an offer; practise asking for time and countering", TIH + "negotiation/")],
+  28: [L("Behavioral mock: ask each other 5 STAR questions; score clarity, ownership and measurable impact", MOCK)],
+  29: [T("Build your 1-page interview cheat sheet: 5 STAR stories, project numbers, questions to ask, salary range")],
+  30: [T("Final full mock loop with each other, then a retro: your 3 weakest areas become month 2's focus")],
+};
 
 const DAYS = [
  {f:"Big-O + Arrays & Hashing", s:"Set up Postgres, first SELECTs", dsa:[
@@ -129,7 +159,7 @@ const DAYS = [
    T("SQL self-test on dvdrental, 45 min: top 5 customers by spend · films never rented · revenue per month · category with most rentals · sales per staff member"),
    T("Record yourself: explain caching, load balancers, SQL vs NoSQL — 2 minutes each"),
    T("Python: write a decorator, a generator and a closure from scratch, no notes"),
-   T("Apply to 10 jobs; follow up on last week's applications")]},
+   T("Mock each other: 3 Python and SQL questions each, 30 min, then swap and give feedback")]},
 
  {f:"Monotonic stack", s:"CTEs (WITH)", dsa:[
    P(739,"Daily Temperatures"), P(496,"Next Greater Element I"), P(232,"Implement Queue using Stacks")],
@@ -208,7 +238,7 @@ const DAYS = [
    T("SQL: redo 185 and 180 without looking; explain window functions aloud"),
    L("First peer mock interview (DSA) — Exponent peer mocks or a friend", "https://www.tryexponent.com/practice"),
    T("Record a 3-minute 'tell me about your last project': architecture, your role, one hard bug, impact"),
-   T("Apply to 10 jobs")]},
+   T("Interview log: for every interview this week, write down what went well and badly; rewrite your weakest answer")]},
 
  {f:"Trees — DFS basics", s:"Normalization", dsa:[
    L("Watch: Binary tree traversals (DFS / BFS)", yt("neetcode binary tree traversal")),
@@ -292,7 +322,7 @@ const DAYS = [
    T("Redo from memory: Validate BST, Level Order Traversal, Kth Largest Element, Top K Frequent"),
    L("Peer mock #2 — system design", "https://www.tryexponent.com/practice"),
    T("Prepare answers: why you left, salary expectation, a conflict you handled"),
-   T("Apply to 10 jobs")]},
+   T("Cut every STAR story to under 2 minutes and rehearse each one aloud")]},
 
  {f:"Graphs on grids", s:"MongoDB modeling (your strength)", dsa:[
    L("Watch: Graph BFS / DFS on a grid", yt("neetcode number of islands graph")),
@@ -361,7 +391,7 @@ const TRACKS = [
   {id:"sql", name:"SQL / Databases", hrs:"1.5 h", c:"var(--sql)"},
   {id:"py",  name:"Python / Frameworks", hrs:"1 h", c:"var(--py)"},
   {id:"sd",  name:"System Design", hrs:"1 h", c:"var(--sd)"},
-  {id:"job", name:"Job search", hrs:"45 min", c:"var(--job)"}
+  {id:"iv", name:"Interview prep", hrs:"45 min", c:"var(--iv)"}
 ];
 const WEEKS = [
   {n:1, t:"Foundations", from:0, to:9},
@@ -384,7 +414,7 @@ DAYS.forEach(d => {
   ] : [];
   d.qz = (PRACTICE[d.idx + 1] || []).map((x, j) => ({ ...x, k: "x", key: `d${d.idx+1}-qz-${j}` }));
   if (d.rev) { d.items.forEach((it, j) => it.key = `d${d.idx+1}-rev-${j}`); return; }
-  d.job = JOB.map(x => ({...x}));
+  d.iv = (IV[d.idx + 1] || []).map(x => ({...x}));
   TRACKS.forEach(tr => (d[tr.id] || []).forEach((it, j) => it.key = `d${d.idx+1}-${tr.id}-${j}`));
 });
 

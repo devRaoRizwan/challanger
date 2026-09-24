@@ -29,7 +29,7 @@ Opening `index.html` directly from disk shows the plan, but not the live scorebo
 
 ## Scoring
 
-- DSA problem 10, SQL problem 8, task 5, read/watch 4, revision 6, job applications 3.
+- DSA problem 10, SQL problem 8, task 5, read/watch 4, revision 6, interview prep 5, extra practice 5/8/12 (Easy/Medium/Hard), concept steps 5.
 - ×1.5 if ticked on the item's scheduled day.
 - Daily duel: more on-time points on that day's plan wins the day.
 - Streak: consecutive days with 5+ ticks.

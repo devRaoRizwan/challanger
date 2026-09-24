@@ -36,7 +36,7 @@ function basePts(key){
   if (m.track === "qz") return DIFF_PTS[m.it.d] || 5;
   if (m.track === "cn") return 5;
   if (m.it.k === "p") return m.track === "dsa" ? 10 : 8;
-  if (m.track === "job") return 3;
+  if (m.track === "iv") return 5;
   return m.it.k === "l" ? 4 : 5;
 }
 const onTime = (key, ts) => !!ITEMS[key] && localDay(ts) === dayStr(ITEMS[key].day.date);
@@ -210,7 +210,7 @@ function dayHTML(d, t){
     : "";
   const body = d.rev
     ? `<div class="tracks"><div class="track wide" style="--c:var(--rev)"><h4><span class="tn">Revision &amp; career</span><span class="h">~5 h</span></h4><ul class="items">${d.items.map(it => itemHTML(it, "rev")).join("")}</ul></div>${concept}${practice}</div>`
-    : `<div class="tracks">${concept}${TRACKS.map(tr => `<div class="track${tr.id === "job" ? " wide" : ""}" style="--c:${tr.c}"><h4><span class="tn">${tr.name}</span><span class="h">${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}${practice}</div>`;
+    : `<div class="tracks">${concept}${TRACKS.map(tr => `<div class="track${tr.id === "iv" ? " wide" : ""}" style="--c:${tr.c}"><h4><span class="tn">${tr.name}</span><span class="h">${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}${practice}</div>`;
   return `<details class="day${d.rev ? " is-rev" : ""}${isToday ? " is-today" : ""}" id="day${d.idx + 1}"${isToday ? " open" : ""}>
     <summary>
       <div class="when"><strong>Day ${d.idx + 1}</strong>${fmtD(d.date)}</div>
