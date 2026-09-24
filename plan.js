@@ -405,6 +405,7 @@ const START = new Date(2026, 8, 25);
 DAYS.forEach((d, i) => { d.date = new Date(START.getFullYear(), START.getMonth(), START.getDate() + i); d.idx = i; });
 const PRACTICE = window.PRACTICE || {};
 const CONCEPTS = window.CONCEPTS || {};
+const QUICK = window.QUICK_PICKS || {};
 DAYS.forEach(d => {
   const n = d.idx + 1;
   d.cn = CONCEPTS[n] || null;
@@ -412,6 +413,7 @@ DAYS.forEach(d => {
     { k: "t", t: `Watch + read: ${d.cn.t}`, key: `d${n}-cn-0` },
     { k: "t", t: "Explain it aloud in 2 minutes and do the try-it", key: `d${n}-cn-1` },
   ] : [];
+  d.qp = (QUICK[d.idx + 1] || []).map((x, j) => ({ ...x, cat: "Warm-up", k: "x", key: `d${d.idx+1}-qp-${j}` }));
   d.qz = (PRACTICE[d.idx + 1] || []).map((x, j) => ({ ...x, k: "x", key: `d${d.idx+1}-qz-${j}` }));
   if (d.rev) { d.items.forEach((it, j) => it.key = `d${d.idx+1}-rev-${j}`); return; }
   d.iv = (IV[d.idx + 1] || []).map(x => ({...x}));

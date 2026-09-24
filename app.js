@@ -17,9 +17,10 @@ DAYS.forEach(d => {
   else TRACKS.forEach(tr => (d[tr.id] || []).forEach(it => { ITEMS[it.key] = { it, day: d, track: tr.id }; }));
   d.qz.forEach(it => { ITEMS[it.key] = { it, day: d, track: "qz" }; });
   d.cnItems.forEach(it => { ITEMS[it.key] = { it, day: d, track: "cn" }; });
+  d.qp.forEach(it => { ITEMS[it.key] = { it, day: d, track: "qp" }; });
 });
-const dayItems = d => d.cnItems.concat(d.rev ? d.items : TRACKS.flatMap(tr => d[tr.id] || []), d.qz);
-const RACE = [{ id: "cn", name: "Concepts", c: "var(--cn)" }, ...TRACKS, { id: "qz", name: "Extra practice", c: "var(--qz)" }, { id: "rev", name: "Sunday revision", c: "var(--rev)" }];
+const dayItems = d => d.qp.concat(d.cnItems, d.rev ? d.items : TRACKS.flatMap(tr => d[tr.id] || []), d.qz);
+const RACE = [{ id: "qp", name: "Quick picks", c: "var(--qp)" }, { id: "cn", name: "Concepts", c: "var(--cn)" }, ...TRACKS, { id: "qz", name: "Extra practice", c: "var(--qz)" }, { id: "rev", name: "Sunday revision", c: "var(--rev)" }];
 const DIFF_PTS = { Easy: 5, Medium: 8, Hard: 12 };
 const TOTALS = {};
 Object.values(ITEMS).forEach(m => { TOTALS[m.track] = (TOTALS[m.track] || 0) + 1; });
@@ -35,6 +36,7 @@ function basePts(key){
   if (m.track === "rev") return 6;
   if (m.track === "qz") return DIFF_PTS[m.it.d] || 5;
   if (m.track === "cn") return 5;
+  if (m.track === "qp") return 3;
   if (m.it.k === "p") return m.track === "dsa" ? 10 : 8;
   if (m.track === "iv") return 5;
   return m.it.k === "l" ? 4 : 5;
@@ -66,6 +68,7 @@ function vidPill(url, prefix){
   return `<a class="vid" href="${url}" target="_blank" rel="noopener" title="${esc(v.title)} — ${esc(v.ch)}">${PLAY}${prefix ? prefix + " · " : ""}${esc(v.len)} · ${esc(v.ch)}</a>`;
 }
 
+const md = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>"); // inline `code`
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const $ = id => document.getElementById(id);
 
@@ -136,10 +139,77 @@ const BADGES = [
   { name: "Pattern Hunter",d: "40 DSA problems",                    test: (pid, S) => S.problems >= 40 },
   { name: "Grinder",       d: "30 extra practice problems",         test: (pid, S) => S.extra >= 30 },
   { name: "Concept Master", d: "Finish 20 concepts of the day",      test: (pid)    => DAYS.filter(d => d.cnItems.length && d.cnItems.every(it => state[pid][it.key])).length >= 20 },
+  { name: "Speed Demon",   d: "30 quick picks solved",              test: (pid)    => Object.keys(state[pid]).filter(k => ITEMS[k] && ITEMS[k].track === "qp").length >= 30 },
   { name: "Centurion",     d: "100 items done",                     test: (pid, S) => S.count >= 100 },
   { name: "Early Bird",    d: "Tick something between 4 and 7 am",  test: (pid, S) => S.hours.some(h => h >= 4 && h < 7) },
   { name: "Night Owl",     d: "Tick something between midnight and 4 am", test: (pid, S) => S.hours.some(h => h < 4) },
 ];
+
+// ---------- reality checks (brutal motivation) ----------
+// {r} = rival's short name, {me} = your short name. Picked by situation, rotated every 20 s.
+const QUOTES = {
+  general: [
+    "Nobody is coming to save your career. Open LeetCode.",
+    "The job market doesn't care that you're tired.",
+    "You didn't lose your job to be comfortable. You lost it to get better.",
+    "Two years of experience and still scared of a JOIN? Fix it today.",
+    "Every hour you scroll, someone with less talent is getting your offer.",
+    "Motivation is for amateurs. Show up anyway.",
+    "Your bank balance is doing cardio. Are you?",
+    "Recruiters don't hire 'I'll start Monday'.",
+    "You're not stuck. You're just not doing the work.",
+    "The interviewer won't grade your excuses.",
+    "If you can't explain the GIL, you're not senior. You're just older.",
+    "Comfort is the most expensive thing you own right now.",
+    "Nobody remembers who almost studied.",
+    "Discipline now, or 'sorry, we went with another candidate' later.",
+    "The pain of studying is temporary. The pain of another rejection email isn't.",
+  ],
+  behind: [
+    "{r} is ahead of you right now. Sit with that for a second. Then go fix it.",
+    "{r} is solving problems while you read this sentence.",
+    "Losing to {r} is a choice. You're making it right now.",
+    "{r} will get the offer you're daydreaming about.",
+    "Imagine {r} screenshotting this scoreboard. Because they might.",
+    "Second place is just the first loser. {r} knows it.",
+    "{r} isn't smarter than you. {r} just shows up.",
+    "Every point {r} scores is a question you'll fumble in an interview.",
+  ],
+  ahead: [
+    "You're ahead of {r}. That's the most dangerous place to get lazy.",
+    "Leading is not winning. {r} is one good night away.",
+    "Don't celebrate. The interviewer doesn't care about this scoreboard.",
+    "A lead you stop defending is just a head start for {r}.",
+    "Being better than {r} is the minimum. Be better than yesterday.",
+  ],
+  idle: [
+    "Zero ticks today. Zero. Say it out loud and feel it.",
+    "The day is burning and your score isn't moving.",
+    "You opened this page. That's not work. Tick something.",
+    "An empty day is a vote for staying unemployed.",
+  ],
+  risk: [
+    "Your streak dies at midnight. Don't be the one who let it.",
+    "Fewer than 5 ticks today. Your streak is on life support.",
+    "Breaking the streak takes zero effort. That's exactly why losers do it.",
+  ],
+};
+function realityCheck(S){
+  const now = new Date();
+  const slot = Math.floor(Date.now() / 20000); // rotates every 20 s
+  const meId = me ? me.player : null;
+  let pool = "general", label = "Reality check";
+  if (meId) {
+    const mine = S[meId], rv = S[rival(meId).id];
+    if (mine.todayCount === 0 && now.getHours() >= 10) { pool = "idle"; label = "You, today"; }
+    else if (mine.todayCount < STREAK_MIN && mine.streak > 0 && now.getHours() >= 18) { pool = "risk"; label = "Streak alert"; }
+    else if (mine.score < rv.score) { pool = slot % 3 === 2 ? "general" : "behind"; label = pool === "behind" ? "You're losing" : label; }
+    else if (mine.score > rv.score) { pool = slot % 2 ? "general" : "ahead"; label = pool === "ahead" ? "Don't get comfy" : label; }
+  }
+  const list = QUOTES[pool];
+  const r = meId ? rival(meId).short : "your rival";
+  return { label, text: list[slot % list.length].replaceAll("{r}", r).replaceAll("{me}", meId ? byId[meId].short : "you") };
+}
 
 // ---------- taunts ----------
 function hoursSince(ts){ return ts ? (Date.now() + serverOffset - ts) / 36e5 : Infinity; }
@@ -199,18 +269,21 @@ function dayHTML(d, t){
   const c = d.cn;
   const concept = c ? `<div class="track wide concept" style="--c:var(--cn)">
       <h4><span class="tn">Concept of the day · ${esc(c.t)}</span><span class="h">30 min</span></h4>
-      <p class="cwhat">${esc(c.what)}</p>
-      <div class="cbox"><span class="clbl">Interview question</span>${esc(c.ask)}</div>
-      <div class="cbox try"><span class="clbl">Try it</span>${esc(c.try)}</div>
+      <p class="cwhat">${md(c.what)}</p>
+      <div class="cbox"><span class="clbl">Interview question</span>${md(c.ask)}</div>
+      <div class="cbox try"><span class="clbl">Try it</span>${md(c.try)}</div>
       <div class="cres">${c.docs.map(x => `<a class="doc" href="${x.u}" target="_blank" rel="noopener">${esc(x.t)} ↗</a>`).join("")}<a class="vid" href="${c.video.u}" target="_blank" rel="noopener" title="${esc(c.video.title)} — ${esc(c.video.ch)}">${PLAY}${esc(c.video.len)} · ${esc(c.video.ch)}</a></div>
       <ul class="items">${d.cnItems.map(it => itemHTML(it, "cn")).join("")}</ul>
     </div>` : "";
+  const quick = d.qp.length
+    ? `<div class="track wide quick" style="--c:var(--qp)"><h4><span class="tn">Quick picks · warm up before DSA</span><span class="h">10 min</span></h4><ul class="items">${d.qp.map(it => itemHTML(it, "qp")).join("")}</ul></div>`
+    : "";
   const practice = d.qz.length
     ? `<div class="track wide practice" style="--c:var(--qz)"><h4><span class="tn">Extra practice · solve on the platform</span><span class="h">bonus</span></h4><ul class="items">${d.qz.map(it => itemHTML(it, "qz")).join("")}</ul></div>`
     : "";
   const body = d.rev
-    ? `<div class="tracks"><div class="track wide" style="--c:var(--rev)"><h4><span class="tn">Revision &amp; career</span><span class="h">~5 h</span></h4><ul class="items">${d.items.map(it => itemHTML(it, "rev")).join("")}</ul></div>${concept}${practice}</div>`
-    : `<div class="tracks">${concept}${TRACKS.map(tr => `<div class="track${tr.id === "iv" ? " wide" : ""}" style="--c:${tr.c}"><h4><span class="tn">${tr.name}</span><span class="h">${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}${practice}</div>`;
+    ? `<div class="tracks"><div class="track wide" style="--c:var(--rev)"><h4><span class="tn">Revision &amp; career</span><span class="h">~5 h</span></h4><ul class="items">${d.items.map(it => itemHTML(it, "rev")).join("")}</ul></div>${quick}${concept}${practice}</div>`
+    : `<div class="tracks">${quick}${concept}${TRACKS.map(tr => `<div class="track${tr.id === "iv" ? " wide" : ""}" style="--c:${tr.c}"><h4><span class="tn">${tr.name}</span><span class="h">${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}${practice}</div>`;
   return `<details class="day${d.rev ? " is-rev" : ""}${isToday ? " is-today" : ""}" id="day${d.idx + 1}"${isToday ? " open" : ""}>
     <summary>
       <div class="when"><strong>Day ${d.idx + 1}</strong>${fmtD(d.date)}</div>
@@ -256,6 +329,9 @@ function updateAll(){
   $("tug-a").style.width = (100 - rShare) + "%";
   const tt = taunt(S);
   $("taunt").innerHTML = esc(tt.main) + (tt.sub ? `<small>${esc(tt.sub)}</small>` : "");
+  const rc = realityCheck(S);
+  $("reality-label").textContent = rc.label;
+  $("reality-text").textContent = rc.text;
 
   if (loaded && lastLeader && leader && leader !== lastLeader) toast(`♛ ${byId[leader].name} just took the lead!`, leader);
   if (leader) lastLeader = leader;
@@ -483,5 +559,5 @@ setInterval(poll, POLL_MS); // keeps running in background tabs so the title can
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) { unseen = 0; document.title = "Rao vs Aneeq Sprint"; poll(); }
 });
-setInterval(updateAll, 60000); // refresh relative times, day rollover
+setInterval(updateAll, 20000); // rotate reality checks, refresh relative times, day rollover
 })();

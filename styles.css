@@ -4,7 +4,7 @@
   --bg:#ffffff; --surface:#ffffff; --tint:#f7f8fb; --sunk:#eef1f6; --ink:#101828; --ink2:#344054; --muted:#667085; --line:#e4e7ec;
   --link:#2945c7; --gold:#b7860b; --gold-soft:#fdf6e3;
   --rao:#2563eb; --rao-soft:#eef4ff; --aneeq:#e4572e; --aneeq-soft:#fff3ee;
-  --cn:#4e36c9; --qz:#0e7490; --dsa:#6941c6; --sql:#067a6f; --py:#4f7a0a; --sd:#c11574; --iv:#b54708; --rev:#101828;
+  --qp:#c4320a; --cn:#4e36c9; --qz:#0e7490; --dsa:#6941c6; --sql:#067a6f; --py:#4f7a0a; --sd:#c11574; --iv:#b54708; --rev:#101828;
   --done:#12805c; --bad:#d92d20; --yt:#cc1a1a; --yt-soft:#fff1f1;
   --shadow:0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.06);
   --shadow-lg:0 12px 32px rgba(16,24,40,.10);
@@ -75,6 +75,11 @@ button{font:inherit;cursor:pointer}
   .fighter{padding:18px 14px}
   .fighter .name{font-size:16px}
 }
+
+.reality{grid-column:1 / -1;margin:0;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;background:var(--ink);color:#fff;border-radius:16px;padding:18px 22px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
+.reality::before{content:"";position:absolute;inset:0 auto 0 0;width:6px;background:linear-gradient(var(--aneeq),var(--bad))}
+.reality .rl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#ff9b7a}
+.reality .rq{font-family:var(--display);font-weight:700;font-size:clamp(18px,2.8vw,26px);line-height:1.25;text-wrap:balance;max-width:44ch;animation:pop .35s ease-out}
 
 /* dashboard */
 .dash{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:20px}
@@ -218,6 +223,11 @@ ul.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;g
 .doc{font-size:12.5px;font-weight:500;background:#fff;border:1px solid var(--line);border-radius:999px;padding:2px 10px;color:var(--link)}
 .doc:hover{text-decoration:none;border-color:var(--link)}
 .cn-tag{color:var(--cn);font-weight:500}
+
+.track.quick{background:#fff6ed;border-color:#fed7aa}
+.track.quick ul.items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}
+.track.quick .src{background:var(--qp)}
+@media (max-width:720px){.track.quick ul.items{grid-template-columns:1fr}}
 
 /* login */
 .overlay{position:fixed;inset:0;background:rgba(16,24,40,.35);backdrop-filter:blur(3px);display:grid;place-items:center;padding:16px;z-index:20}
