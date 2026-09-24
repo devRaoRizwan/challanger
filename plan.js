@@ -373,7 +373,9 @@ const WEEKS = [
 // Day 1 = Fri 25 Sep 2026
 const START = new Date(2026, 8, 25);
 DAYS.forEach((d, i) => { d.date = new Date(START.getFullYear(), START.getMonth(), START.getDate() + i); d.idx = i; });
+const PRACTICE = window.PRACTICE || {};
 DAYS.forEach(d => {
+  d.qz = (PRACTICE[d.idx + 1] || []).map((x, j) => ({ ...x, k: "x", key: `d${d.idx+1}-qz-${j}` }));
   if (d.rev) { d.items.forEach((it, j) => it.key = `d${d.idx+1}-rev-${j}`); return; }
   d.job = JOB.map(x => ({...x}));
   TRACKS.forEach(tr => (d[tr.id] || []).forEach((it, j) => it.key = `d${d.idx+1}-${tr.id}-${j}`));

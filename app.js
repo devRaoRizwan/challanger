@@ -15,9 +15,11 @@ const ITEMS = {}; // key -> { it, day, track }
 DAYS.forEach(d => {
   if (d.rev) d.items.forEach(it => { ITEMS[it.key] = { it, day: d, track: "rev" }; });
   else TRACKS.forEach(tr => (d[tr.id] || []).forEach(it => { ITEMS[it.key] = { it, day: d, track: tr.id }; }));
+  d.qz.forEach(it => { ITEMS[it.key] = { it, day: d, track: "qz" }; });
 });
-const dayItems = d => d.rev ? d.items : TRACKS.flatMap(tr => d[tr.id] || []);
-const RACE = [...TRACKS, { id: "rev", name: "Sunday revision", c: "var(--rev)" }];
+const dayItems = d => (d.rev ? d.items : TRACKS.flatMap(tr => d[tr.id] || [])).concat(d.qz);
+const RACE = [...TRACKS, { id: "qz", name: "Extra practice", c: "var(--qz)" }, { id: "rev", name: "Sunday revision", c: "var(--rev)" }];
+const DIFF_PTS = { Easy: 5, Medium: 8, Hard: 12 };
 const TOTALS = {};
 Object.values(ITEMS).forEach(m => { TOTALS[m.track] = (TOTALS[m.track] || 0) + 1; });
 
@@ -30,6 +32,7 @@ function todayIdx(){ const t = new Date(); t.setHours(0, 0, 0, 0); return Math.r
 function basePts(key){
   const m = ITEMS[key]; if (!m) return 0;
   if (m.track === "rev") return 6;
+  if (m.track === "qz") return DIFF_PTS[m.it.d] || 5;
   if (m.it.k === "p") return m.track === "dsa" ? 10 : 8;
   if (m.track === "job") return 3;
   return m.it.k === "l" ? 4 : 5;
@@ -67,7 +70,7 @@ const $ = id => document.getElementById(id);
 // ---------- stats ----------
 function stats(pid){
   const done = state[pid];
-  let score = 0, problems = 0, sqlp = 0, count = 0, lastTs = 0;
+  let score = 0, problems = 0, sqlp = 0, extra = 0, count = 0, lastTs = 0;
   const perDay = {};
   const hours = [];
   for (const [key, ts] of Object.entries(done)) {
@@ -75,6 +78,7 @@ function stats(pid){
     count++;
     score += pts(key, ts);
     if (m.it.k === "p") { if (m.track === "dsa") problems++; else sqlp++; }
+    if (m.it.k === "x") { extra++; if (m.it.cat === "DSA") problems++; else if (m.it.cat === "SQL") sqlp++; }
     const ld = localDay(ts); perDay[ld] = (perDay[ld] || 0) + 1;
     hours.push(new Date(ts).getHours());
     if (ts > lastTs) lastTs = ts;
@@ -90,7 +94,7 @@ function stats(pid){
   const c = new Date(DAYS[0].date); c.setDate(c.getDate() - 7);
   const end = new Date(); end.setHours(0, 0, 0, 0);
   while (c <= end) { run = (perDay[dayStr(c)] || 0) >= STREAK_MIN ? run + 1 : 0; best = Math.max(best, run); c.setDate(c.getDate() + 1); }
-  return { score, problems, sqlp, count, lastTs, perDay, hours, streak, best, todayCount };
+  return { score, problems, sqlp, extra, count, lastTs, perDay, hours, streak, best, todayCount };
 }
 function duelPts(pid, d){
   let s = 0, n = 0;
@@ -128,6 +132,7 @@ const BADGES = [
   { name: "Unstoppable",   d: "10-day streak",                      test: (pid, S) => S.best >= 10 },
   { name: "SQL Slayer",    d: "25 SQL problems",                    test: (pid, S) => S.sqlp >= 25 },
   { name: "Pattern Hunter",d: "40 DSA problems",                    test: (pid, S) => S.problems >= 40 },
+  { name: "Grinder",       d: "30 extra practice problems",         test: (pid, S) => S.extra >= 30 },
   { name: "Centurion",     d: "100 items done",                     test: (pid, S) => S.count >= 100 },
   { name: "Early Bird",    d: "Tick something between 4 and 7 am",  test: (pid, S) => S.hours.some(h => h >= 4 && h < 7) },
   { name: "Night Owl",     d: "Tick something between midnight and 4 am", test: (pid, S) => S.hours.some(h => h < 4) },
@@ -164,6 +169,10 @@ function itemHTML(it, trackId){
   if (it.k === "p") {
     label = `<span class="num">#${it.n}</span><a href="${it.u}" target="_blank" rel="noopener">${esc(it.t)}</a>` +
       (trackId === "dsa" ? vidPill(V(it.t), "Solution") : "");
+  } else if (it.k === "x") {
+    const diff = it.d ? `<span class="diff diff-${it.d.toLowerCase()}">${esc(it.d)}</span>` : "";
+    label = `<span class="src">${esc(it.src)}</span><span class="cat">${esc(it.cat)}</span>` +
+      `<a href="${it.u}" target="_blank" rel="noopener">${it.n ? `<span class="num">#${esc(it.n)}</span>` : ""}${esc(it.t)}</a>${diff}`;
   } else if (it.u) label = `<a href="${it.u}" target="_blank" rel="noopener">${esc(it.t)}</a>` + vidPill(it.u);
   else label = esc(it.t);
   const b = basePts(it.key);
@@ -184,9 +193,12 @@ function buildPlan(){
 }
 function dayHTML(d, t){
   const isToday = d.idx === t;
+  const practice = d.qz.length
+    ? `<div class="track wide practice" style="--c:var(--qz)"><h4><span class="tn">Extra practice · solve on the platform</span><span class="h">bonus</span></h4><ul class="items">${d.qz.map(it => itemHTML(it, "qz")).join("")}</ul></div>`
+    : "";
   const body = d.rev
-    ? `<div class="tracks"><div class="track wide" style="--c:var(--rev)"><h4><span class="tn">Revision &amp; career</span><span class="h">~5 h</span></h4><ul class="items">${d.items.map(it => itemHTML(it, "rev")).join("")}</ul></div></div>`
-    : `<div class="tracks">${TRACKS.map(tr => `<div class="track${tr.id === "job" ? " wide" : ""}" style="--c:${tr.c}"><h4><span class="tn">${tr.name}</span><span class="h">${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}</div>`;
+    ? `<div class="tracks"><div class="track wide" style="--c:var(--rev)"><h4><span class="tn">Revision &amp; career</span><span class="h">~5 h</span></h4><ul class="items">${d.items.map(it => itemHTML(it, "rev")).join("")}</ul></div>${practice}</div>`
+    : `<div class="tracks">${TRACKS.map(tr => `<div class="track${tr.id === "job" ? " wide" : ""}" style="--c:${tr.c}"><h4><span class="tn">${tr.name}</span><span class="h">${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}${practice}</div>`;
   return `<details class="day${d.rev ? " is-rev" : ""}${isToday ? " is-today" : ""}" id="day${d.idx + 1}"${isToday ? " open" : ""}>
     <summary>
       <div class="when"><strong>Day ${d.idx + 1}</strong>${fmtD(d.date)}</div>
@@ -280,8 +292,8 @@ function updateAll(){
   const feed = events.filter(e => byId[e.player] && ITEMS[e.key] && state[e.player][e.key] === e.ts).slice(0, 25);
   $("feed").innerHTML = feed.length ? feed.map(e => {
     const m = ITEMS[e.key];
-    const verb = m.it.k === "p" ? "solved" : "finished";
-    const title = m.it.k === "p" ? `#${m.it.n} ${m.it.t}` : m.it.t;
+    const verb = m.it.k === "p" || m.it.k === "x" ? "solved" : "finished";
+    const title = m.it.n ? `#${m.it.n} ${m.it.t}` : m.it.k === "x" ? `${m.it.t} (${m.it.src})` : m.it.t;
     return `<li data-p="${e.player}"><span><strong>${esc(byId[e.player].short)}</strong> ${verb} ${esc(title)} <span class="pts">+${pts(e.key, e.ts)}</span></span><span class="t">${relTime(e.ts)}</span></li>`;
   }).join("") : `<li style="display:block"><p class="empty">No ticks yet. The first one gets First Blood.</p></li>`;
 
@@ -356,7 +368,7 @@ async function poll(){
     if (loaded) {
       fresh.filter(e => !me || e.player !== me.player).slice(0, 3).reverse().forEach(e => {
         const m = ITEMS[e.key]; if (!m) return;
-        const what = m.it.k === "p" ? `solved #${m.it.n} ${m.it.t}` : `finished "${m.it.t}"`;
+        const what = m.it.k === "p" || m.it.k === "x" ? `solved ${m.it.n ? "#" + m.it.n + " " : ""}${m.it.t}` : `finished "${m.it.t}"`;
         toast(`${byId[e.player].short} just ${what} (+${pts(e.key, e.ts)}). Your move.`, e.player);
         if (document.hidden) { unseen++; document.title = `(${unseen}) ${byId[e.player].short} is scoring…`; }
       });
