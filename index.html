@@ -11,10 +11,11 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<aside class="daylist" id="daylist" aria-label="All days"></aside>
 <div class="wrap">
   <div class="topbar">
     <div class="brand">
-      <span class="eyebrow">Backend interview sprint · 25 Sep → 24 Oct 2026</span>
+      <span class="eyebrow">🚀 Backend interview sprint · 25 Sep → 24 Oct 2026</span>
       <h1><span class="r">Rao</span><span class="v">vs</span><span class="a">Aneeq</span></h1>
     </div>
     <div class="who" id="who"></div>
@@ -33,27 +34,27 @@
   <section class="dash">
     <div>
       <div class="panel">
-        <h2 id="duel-title">Today's duel <span></span></h2>
+        <h2 id="duel-title">⚔️ Today's duel <span></span></h2>
         <div class="duel" id="duel"></div>
         <p class="duelnote" id="duel-note"></p>
         <div class="record" id="record" aria-label="Daily duel record"></div>
       </div>
       <div class="panel">
-        <h2>Track race <span>items done</span></h2>
+        <h2>🏁 Track race <span>items done</span></h2>
         <div class="race" id="race"></div>
       </div>
     </div>
     <div>
       <div class="panel">
-        <h2>Live feed <span>updates every 15 s</span></h2>
+        <h2>📡 Live feed <span>updates every 15 s</span></h2>
         <ul class="feed" id="feed"></ul>
       </div>
       <div class="panel">
-        <h2>Badges</h2>
+        <h2>🏅 Badges</h2>
         <div class="badges" id="badges"></div>
       </div>
       <details class="panel">
-        <summary><strong>Scoring rules</strong></summary>
+        <summary><strong>📜 Scoring rules</strong></summary>
         <ul class="rules">
           <li>DSA problem 10 · SQL problem 8 · task 5 · read/watch 4 · revision item 6 · interview prep 5</li>
           <li><strong>Extra practice:</strong> Easy 5 · Medium 8 · Hard 12 · <strong>Concept of the day:</strong> 5 per step · <strong>Quick picks:</strong> 3 each</li>
@@ -68,7 +69,7 @@
   </section>
 
   <details class="method">
-    <summary>How to run each block</summary>
+    <summary>🧭 How to run each block</summary>
     <div class="inner">
       <div><h3>Concept of the day · 30 min</h3><ul>
         <li>One core backend topic a day: concurrency, auth (JWT, OAuth), API integration and webhooks, multi-tenancy, deployment, LLM integration.</li>
@@ -95,7 +96,6 @@
   </details>
 
   <section class="planner" aria-label="30-day plan">
-    <aside class="daylist" id="daylist" aria-label="All days"></aside>
     <main class="dayview" id="dayview"></main>
   </section>
   <footer>Losing is optional. Ticking what you didn't do is cheating yourself, not Aneeq (or Rao).</footer>
@@ -103,7 +103,7 @@
 
 <div class="overlay" id="login" hidden>
   <form class="modal" id="login-form" autocomplete="off">
-    <h2>Who's playing?</h2>
+    <h2>🥊 Who's playing?</h2>
     <p>Pick your name and enter your PIN. Your PIN only lets you tick your own boxes.</p>
     <div class="pick" id="pick">
       <button type="button" data-p="rao" aria-pressed="false">Rao Rizwan</button>

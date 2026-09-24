@@ -20,6 +20,7 @@ DAYS.forEach(d => {
   d.qp.forEach(it => { ITEMS[it.key] = { it, day: d, track: "qp" }; });
 });
 const dayItems = d => d.qp.concat(d.cnItems, d.rev ? d.items : TRACKS.flatMap(tr => d[tr.id] || []), d.qz);
+const ICON = { dsa: "🧠", sql: "🗄️", py: "🐍", sd: "🏗️", iv: "🎤", qp: "⚡", cn: "💡", qz: "🎯", rev: "🔁" };
 const RACE = [{ id: "qp", name: "Quick picks", c: "var(--qp)" }, { id: "cn", name: "Concepts", c: "var(--cn)" }, ...TRACKS, { id: "qz", name: "Extra practice", c: "var(--qz)" }, { id: "rev", name: "Sunday revision", c: "var(--rev)" }];
 const DIFF_PTS = { Easy: 5, Medium: 8, Hard: 12 };
 
@@ -143,19 +144,19 @@ function firstTicker(){
 }
 
 const BADGES = [
-  { name: "First Blood",   d: "First tick of the sprint",           test: (pid)    => firstTicker() === pid },
-  { name: "Hat-trick",     d: "3 DSA problems in one day",          test: (pid)    => maxPerDay(pid, m => m.track === "dsa" && m.it.k === "p") >= 3 },
-  { name: "Clean Sweep",   d: "Finish a whole day on its date",     test: (pid)    => DAYS.some(d => dayItems(d).every(it => state[pid][it.key] && onTime(it.key, state[pid][it.key]))) },
-  { name: "On Fire",       d: "5-day streak",                       test: (pid, S) => S.best >= 5 },
-  { name: "Unstoppable",   d: "10-day streak",                      test: (pid, S) => S.best >= 10 },
-  { name: "SQL Slayer",    d: "25 SQL problems",                    test: (pid, S) => S.sqlp >= 25 },
-  { name: "Pattern Hunter",d: "40 DSA problems",                    test: (pid, S) => S.problems >= 40 },
-  { name: "Grinder",       d: "30 extra practice problems",         test: (pid, S) => S.extra >= 30 },
-  { name: "Concept Master", d: "Finish 20 concepts of the day",      test: (pid)    => DAYS.filter(d => d.cnItems.length && d.cnItems.every(it => state[pid][it.key])).length >= 20 },
-  { name: "Speed Demon",   d: "30 quick picks solved",              test: (pid)    => Object.keys(state[pid]).filter(k => ITEMS[k] && ITEMS[k].track === "qp").length >= 30 },
-  { name: "Centurion",     d: "100 items done",                     test: (pid, S) => S.count >= 100 },
-  { name: "Early Bird",    d: "Tick something between 4 and 7 am",  test: (pid, S) => S.hours.some(h => h >= 4 && h < 7) },
-  { name: "Night Owl",     d: "Tick something between midnight and 4 am", test: (pid, S) => S.hours.some(h => h < 4) },
+  { i: "🩸", name: "First Blood",   d: "First tick of the sprint",           test: (pid)    => firstTicker() === pid },
+  { i: "🎩", name: "Hat-trick",     d: "3 DSA problems in one day",          test: (pid)    => maxPerDay(pid, m => m.track === "dsa" && m.it.k === "p") >= 3 },
+  { i: "🧹", name: "Clean Sweep",   d: "Finish a whole day on its date",     test: (pid)    => DAYS.some(d => dayItems(d).every(it => state[pid][it.key] && onTime(it.key, state[pid][it.key]))) },
+  { i: "🔥", name: "On Fire",       d: "5-day streak",                       test: (pid, S) => S.best >= 5 },
+  { i: "🚀", name: "Unstoppable",   d: "10-day streak",                      test: (pid, S) => S.best >= 10 },
+  { i: "🗡️", name: "SQL Slayer",    d: "25 SQL problems",                    test: (pid, S) => S.sqlp >= 25 },
+  { i: "🧩", name: "Pattern Hunter",d: "40 DSA problems",                    test: (pid, S) => S.problems >= 40 },
+  { i: "⚙️", name: "Grinder",       d: "30 extra practice problems",         test: (pid, S) => S.extra >= 30 },
+  { i: "💡", name: "Concept Master", d: "Finish 20 concepts of the day",      test: (pid)    => DAYS.filter(d => d.cnItems.length && d.cnItems.every(it => state[pid][it.key])).length >= 20 },
+  { i: "⚡", name: "Speed Demon",   d: "30 quick picks solved",              test: (pid)    => Object.keys(state[pid]).filter(k => ITEMS[k] && ITEMS[k].track === "qp").length >= 30 },
+  { i: "💯", name: "Centurion",     d: "100 items done",                     test: (pid, S) => S.count >= 100 },
+  { i: "🐦", name: "Early Bird",    d: "Tick something between 4 and 7 am",  test: (pid, S) => S.hours.some(h => h >= 4 && h < 7) },
+  { i: "🦉", name: "Night Owl",     d: "Tick something between midnight and 4 am", test: (pid, S) => S.hours.some(h => h < 4) },
 ];
 
 // ---------- reality checks (brutal motivation) ----------
@@ -211,13 +212,13 @@ function realityCheck(S){
   const now = new Date();
   const slot = Math.floor(Date.now() / 20000); // rotates every 20 s
   const meId = me ? me.player : null;
-  let pool = "general", label = "Reality check";
+  let pool = "general", label = "🔥 Reality check";
   if (meId) {
     const mine = S[meId], rv = S[rival(meId).id];
-    if (mine.todayCount === 0 && now.getHours() >= 10) { pool = "idle"; label = "You, today"; }
-    else if (mine.todayCount < STREAK_MIN && mine.streak > 0 && now.getHours() >= 18) { pool = "risk"; label = "Streak alert"; }
-    else if (mine.score < rv.score) { pool = slot % 3 === 2 ? "general" : "behind"; label = pool === "behind" ? "You're losing" : label; }
-    else if (mine.score > rv.score) { pool = slot % 2 ? "general" : "ahead"; label = pool === "ahead" ? "Don't get comfy" : label; }
+    if (mine.todayCount === 0 && now.getHours() >= 10) { pool = "idle"; label = "😴 You, today"; }
+    else if (mine.todayCount < STREAK_MIN && mine.streak > 0 && now.getHours() >= 18) { pool = "risk"; label = "🚨 Streak alert"; }
+    else if (mine.score < rv.score) { pool = slot % 3 === 2 ? "general" : "behind"; label = pool === "behind" ? "😤 You're losing" : label; }
+    else if (mine.score > rv.score) { pool = slot % 2 ? "general" : "ahead"; label = pool === "ahead" ? "👀 Don't get comfy" : label; }
   }
   const list = QUOTES[pool];
   const r = meId ? rival(meId).short : "your rival";
@@ -281,7 +282,7 @@ function buildPlan(){
 function navHTML(d, t){
   const today = d.idx === t;
   return `<button type="button" class="dnav${d.rev ? " is-rev" : ""}${today ? " is-today" : ""}" id="nav${d.idx + 1}" data-idx="${d.idx}">
-    <span class="dn">Day ${d.idx + 1}<span class="lk" aria-hidden="true"></span></span>
+    <span class="dn"><span class="de" aria-hidden="true">${d.rev ? "🔁" : today ? "📍" : "📘"}</span>Day ${d.idx + 1}<span class="lk" aria-hidden="true"></span></span>
     <span class="dd">${fmtD(d.date)}${today ? " · <b>Today</b>" : ""}</span>
     <span class="dt">${esc(d.f)}</span>
     <span class="dp"><span class="bar r"><i></i></span><span class="bar a"><i></i></span></span>
@@ -330,7 +331,7 @@ function dayHTML(d, t){
   const isToday = d.idx === t;
   const c = d.cn;
   const concept = c ? `<div class="track wide concept" style="--c:var(--cn)">
-      <h4><span class="tn">Concept of the day · ${esc(c.t)}</span><span class="h">30 min</span></h4>
+      <h4><span class="ic">${ICON.cn}</span><span class="tn">Concept of the day · ${esc(c.t)}</span><span class="h">30 min</span></h4>
       <p class="cwhat">${md(c.what)}</p>
       <div class="cbox"><span class="clbl">Interview question</span>${md(c.ask)}</div>
       <div class="cbox try"><span class="clbl">Try it</span>${md(c.try)}</div>
@@ -338,14 +339,14 @@ function dayHTML(d, t){
       <ul class="items">${d.cnItems.map(it => itemHTML(it, "cn")).join("")}</ul>
     </div>` : "";
   const quick = d.qp.length
-    ? `<div class="track wide quick" style="--c:var(--qp)"><h4><span class="tn">Quick picks · warm up before DSA</span><span class="h">10 min</span></h4><ul class="items">${d.qp.map(it => itemHTML(it, "qp")).join("")}</ul></div>`
+    ? `<div class="track wide quick" style="--c:var(--qp)"><h4><span class="ic">${ICON.qp}</span><span class="tn">Quick picks · warm up before DSA</span><span class="h">10 min</span></h4><ul class="items">${d.qp.map(it => itemHTML(it, "qp")).join("")}</ul></div>`
     : "";
   const practice = d.qz.length
-    ? `<div class="track wide practice" style="--c:var(--qz)"><h4><span class="tn">Extra practice · solve on the platform</span><span class="h">bonus</span></h4><ul class="items">${d.qz.map(it => itemHTML(it, "qz")).join("")}</ul></div>`
+    ? `<div class="track wide practice" style="--c:var(--qz)"><h4><span class="ic">${ICON.qz}</span><span class="tn">Extra practice · solve on the platform</span><span class="h">bonus</span></h4><ul class="items">${d.qz.map(it => itemHTML(it, "qz")).join("")}</ul></div>`
     : "";
   const body = d.rev
-    ? `<div class="tracks"><div class="track wide" style="--c:var(--rev)"><h4><span class="tn">Revision &amp; career</span><span class="h">~5 h</span></h4><ul class="items">${d.items.map(it => itemHTML(it, "rev")).join("")}</ul></div>${quick}${concept}${practice}</div>`
-    : `<div class="tracks">${quick}${concept}${TRACKS.map(tr => `<div class="track${tr.id === "iv" ? " wide" : ""}" style="--c:${tr.c}"><h4><span class="tn">${tr.name}</span><span class="h">${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}${practice}</div>`;
+    ? `<div class="tracks"><div class="track wide" style="--c:var(--rev)"><h4><span class="ic">${ICON.rev}</span><span class="tn">Revision &amp; career</span><span class="h">~5 h</span></h4><ul class="items">${d.items.map(it => itemHTML(it, "rev")).join("")}</ul></div>${quick}${concept}${practice}</div>`
+    : `<div class="tracks">${quick}${concept}${TRACKS.map(tr => `<div class="track${tr.id === "iv" ? " wide" : ""}" style="--c:${tr.c}"><h4><span class="ic">${ICON[tr.id]}</span><span class="tn">${tr.name}</span><span class="h">${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}${practice}</div>`;
   return `<section class="day daypanel${d.rev ? " is-rev" : ""}${isToday ? " is-today" : ""}" id="day${d.idx + 1}" hidden>
     <header class="dayhead">
       <div class="dh-main">
@@ -355,6 +356,7 @@ function dayHTML(d, t){
         <span class="lockmsg"></span>
       </div>
       <div class="clock" aria-live="off">
+        <span class="ctime-l">⏰ Now</span>
         <span class="ctime"></span>
         <span class="cleft-l"></span>
         <span class="cleft"></span>
@@ -391,8 +393,8 @@ function updateAll(){
       <div class="score">${s.score}<small>pts</small></div>
       <div class="fstats">
         <span>🔥 <b>${s.streak}</b>-day streak</span>
-        <span><b>${won[p.id]}</b> days won</span>
-        <span><b>${s.problems}</b> DSA · <b>${s.sqlp}</b> SQL</span>
+        <span>🏆 <b>${won[p.id]}</b> days won</span>
+        <span>🧠 <b>${s.problems}</b> DSA · 🗄️ <b>${s.sqlp}</b> SQL</span>
       </div>`;
   });
   const total = S.rao.score + S.aneeq.score;
@@ -413,7 +415,7 @@ function updateAll(){
   const di = Math.max(0, Math.min(t, DAYS.length - 1));
   const d = DAYS[di];
   const live = t >= 0 && t < DAYS.length;
-  $("duel-title").innerHTML = `${live ? "Today's duel" : t < 0 ? "First duel" : "Final duel"} <span>Day ${di + 1} · ${fmtD(d.date)}</span>`;
+  $("duel-title").innerHTML = `⚔️ ${live ? "Today's duel" : t < 0 ? "First duel" : "Final duel"} <span>Day ${di + 1} · ${fmtD(d.date)}</span>`;
   const dp = { rao: duelPts("rao", d), aneeq: duelPts("aneeq", d) };
   const dw = dp.rao.s === dp.aneeq.s ? null : (dp.rao.s > dp.aneeq.s ? "rao" : "aneeq");
   $("duel").innerHTML = PLAYERS.map(p => `
@@ -443,7 +445,7 @@ function updateAll(){
     const c = { rao: 0, aneeq: 0 };
     PLAYERS.forEach(p => Object.keys(state[p.id]).forEach(k => { if (ITEMS[k] && ITEMS[k].track === tr.id) c[p.id]++; }));
     const tot = TOTALS[tr.id] || 1;
-    return `<div class="row" style="--c:${tr.c}"><span class="lbl">${esc(tr.name)}</span>
+    return `<div class="row" style="--c:${tr.c}"><span class="lbl">${ICON[tr.id] || ""} ${esc(tr.name)}</span>
       <div class="bars"><div class="bar r"><i style="width:${c.rao / tot * 100}%"></i></div><div class="bar a"><i style="width:${c.aneeq / tot * 100}%"></i></div>
       <div class="nums"><span>Rao ${c.rao}</span><span>${tot} total</span><span>Aneeq ${c.aneeq}</span></div></div></div>`;
   }).join("");
@@ -460,7 +462,7 @@ function updateAll(){
   // badges
   $("badges").innerHTML = BADGES.map(b => {
     const holders = PLAYERS.filter(p => b.test(p.id, S[p.id]));
-    return `<div class="badge${holders.length ? " got" : ""}"><b>${esc(b.name)}</b><span class="d">${esc(b.d)}</span><span class="holders">${PLAYERS.map(p => `<span class="${holders.includes(p) ? p.cls : ""}">${p.short}</span>`).join("")}</span></div>`;
+    return `<div class="badge${holders.length ? " got" : ""}"><span class="bi" aria-hidden="true">${b.i}</span><b>${esc(b.name)}</b><span class="d">${esc(b.d)}</span><span class="holders">${PLAYERS.map(p => `<span class="${holders.includes(p) ? p.cls : ""}">${p.short}</span>`).join("")}</span></div>`;
   }).join("");
 
   // plan: checkboxes, chips, day bars
