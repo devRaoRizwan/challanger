@@ -50,6 +50,17 @@ let me = null;
 try { me = JSON.parse(localStorage.getItem("arena-me") || "null"); } catch (e) { me = null; }
 if (me && !byId[me.player]) me = null;
 
+// video metadata by YouTube id (from videos.js)
+const VID_BY_ID = {};
+Object.values(window.VIDEOS || {}).forEach(v => { VID_BY_ID[v.id] = v; });
+const PLAY = '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>';
+function vidPill(url, prefix){
+  const m = /[?&]v=([\w-]{11})/.exec(url || "");
+  const v = m && VID_BY_ID[m[1]];
+  if (!v) return "";
+  return `<a class="vid" href="${url}" target="_blank" rel="noopener" title="${esc(v.title)} — ${esc(v.ch)}">${PLAY}${prefix ? prefix + " · " : ""}${esc(v.len)} · ${esc(v.ch)}</a>`;
+}
+
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const $ = id => document.getElementById(id);
 
@@ -152,8 +163,8 @@ function itemHTML(it, trackId){
   let label;
   if (it.k === "p") {
     label = `<span class="num">#${it.n}</span><a href="${it.u}" target="_blank" rel="noopener">${esc(it.t)}</a>` +
-      (trackId === "dsa" ? `<a class="aux" href="${V(it.t)}" target="_blank" rel="noopener">video ↗</a>` : "");
-  } else if (it.u) label = `<a href="${it.u}" target="_blank" rel="noopener">${esc(it.t)}</a>`;
+      (trackId === "dsa" ? vidPill(V(it.t), "Solution") : "");
+  } else if (it.u) label = `<a href="${it.u}" target="_blank" rel="noopener">${esc(it.t)}</a>` + vidPill(it.u);
   else label = esc(it.t);
   const b = basePts(it.key);
   return `<li class="item" data-key="${it.key}">
@@ -174,8 +185,8 @@ function buildPlan(){
 function dayHTML(d, t){
   const isToday = d.idx === t;
   const body = d.rev
-    ? `<div class="tracks"><div class="track wide" style="--c:var(--rev)"><h4>Revision &amp; career <span>~5 h</span></h4><ul class="items">${d.items.map(it => itemHTML(it, "rev")).join("")}</ul></div></div>`
-    : `<div class="tracks">${TRACKS.map(tr => `<div class="track${tr.id === "job" ? " wide" : ""}" style="--c:${tr.c}"><h4>${tr.name} <span>${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}</div>`;
+    ? `<div class="tracks"><div class="track wide" style="--c:var(--rev)"><h4><span class="tn">Revision &amp; career</span><span class="h">~5 h</span></h4><ul class="items">${d.items.map(it => itemHTML(it, "rev")).join("")}</ul></div></div>`
+    : `<div class="tracks">${TRACKS.map(tr => `<div class="track${tr.id === "job" ? " wide" : ""}" style="--c:${tr.c}"><h4><span class="tn">${tr.name}</span><span class="h">${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}</div>`;
   return `<details class="day${d.rev ? " is-rev" : ""}${isToday ? " is-today" : ""}" id="day${d.idx + 1}"${isToday ? " open" : ""}>
     <summary>
       <div class="when"><strong>Day ${d.idx + 1}</strong>${fmtD(d.date)}</div>
@@ -220,7 +231,7 @@ function updateAll(){
   $("tug-r").style.width = rShare + "%";
   $("tug-a").style.width = (100 - rShare) + "%";
   const tt = taunt(S);
-  $("taunt").innerHTML = esc(tt.main) + (tt.sub ? `<br><small style="font-size:14px;color:var(--muted);font-weight:500">${esc(tt.sub)}</small>` : "");
+  $("taunt").innerHTML = esc(tt.main) + (tt.sub ? `<small>${esc(tt.sub)}</small>` : "");
 
   if (loaded && lastLeader && leader && leader !== lastLeader) toast(`♛ ${byId[leader].name} just took the lead!`, leader);
   if (leader) lastLeader = leader;
@@ -277,7 +288,7 @@ function updateAll(){
   // badges
   $("badges").innerHTML = BADGES.map(b => {
     const holders = PLAYERS.filter(p => b.test(p.id, S[p.id]));
-    return `<div class="badge"><b>${esc(b.name)}</b><span class="d">${esc(b.d)}</span><span class="holders">${PLAYERS.map(p => `<span class="${holders.includes(p) ? p.cls : ""}">${p.short}</span>`).join("")}</span></div>`;
+    return `<div class="badge${holders.length ? " got" : ""}"><b>${esc(b.name)}</b><span class="d">${esc(b.d)}</span><span class="holders">${PLAYERS.map(p => `<span class="${holders.includes(p) ? p.cls : ""}">${p.short}</span>`).join("")}</span></div>`;
   }).join("");
 
   // plan: checkboxes, chips, day bars

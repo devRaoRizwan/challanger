@@ -2,14 +2,16 @@
 // Item keys (d<day>-<track>-<index>) are what gets saved, so don't reorder
 // items inside a day once you've started ticking them.
 (function(){
-const yt = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
+const VIDS = window.VIDEOS || {};
+// Real video link for a lookup phrase (see videos.js); falls back to a YouTube search.
+const yt = q => VIDS[q] ? "https://www.youtube.com/watch?v=" + VIDS[q].id : "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
 const lc = s => "https://leetcode.com/problems/" + s + "/";
 const slug = t => t.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 // P = LeetCode problem (counts toward stats), L = learn/read/watch with link, T = task
 const P = (n, t, s) => ({k:"p", n, t, u: lc(s || slug(t))});
 const L = (t, u) => ({k:"l", t, u});
 const T = (t, u) => ({k:"t", t, u});
-const V = t => yt("neetcode " + t); // video solution search for DSA problems
+const V = t => yt("neetcode " + t); // NeetCode solution video for a DSA problem
 const RP = "https://realpython.com/";
 const PGT = "https://www.postgresqltutorial.com/";
 const JOB = [T("Apply to 5 jobs + send 1 follow-up / recruiter message")];

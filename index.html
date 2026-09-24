@@ -15,7 +15,7 @@
   <div class="topbar">
     <div class="brand">
       <span class="eyebrow">Backend interview sprint · 25 Sep → 24 Oct 2026</span>
-      <h1>Rao vs Aneeq</h1>
+      <h1><span class="r">Rao</span><span class="v">vs</span><span class="a">Aneeq</span></h1>
     </div>
     <div class="who" id="who"></div>
   </div>
@@ -23,7 +23,7 @@
 
   <section class="arena" aria-label="Scoreboard">
     <div class="fighter" data-p="rao" id="f-rao"></div>
-    <div class="vs" aria-hidden="true">vs</div>
+    <div class="vs" aria-hidden="true">VS</div>
     <div class="fighter" data-p="aneeq" id="f-aneeq"></div>
     <div class="tug" aria-hidden="true"><i class="r" id="tug-r" style="width:50%"></i><i class="a" id="tug-a" style="width:50%"></i></div>
     <p class="taunt" id="taunt"></p>
@@ -97,7 +97,7 @@
       <button type="button" data-p="rao" aria-pressed="false">Rao Rizwan</button>
       <button type="button" data-p="aneeq" aria-pressed="false">Aneeq</button>
     </div>
-    <label class="field" for="pin">PIN<input id="pin" type="password" inputmode="numeric" required></label>
+    <label class="field" for="pin">PIN<input id="pin" type="password" required></label>
     <div class="formerr" id="login-err" aria-live="polite"></div>
     <div class="actions">
       <button type="button" class="btn ghost" id="watch">Just watch</button>
@@ -107,6 +107,7 @@
 </div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 
+<script src="videos.js"></script>
 <script src="plan.js"></script>
 <script src="app.js"></script>
 </body>
