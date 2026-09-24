@@ -22,6 +22,19 @@ DAYS.forEach(d => {
 const dayItems = d => d.qp.concat(d.cnItems, d.rev ? d.items : TRACKS.flatMap(tr => d[tr.id] || []), d.qz);
 const RACE = [{ id: "qp", name: "Quick picks", c: "var(--qp)" }, { id: "cn", name: "Concepts", c: "var(--cn)" }, ...TRACKS, { id: "qz", name: "Extra practice", c: "var(--qz)" }, { id: "rev", name: "Sunday revision", c: "var(--rev)" }];
 const DIFF_PTS = { Easy: 5, Medium: 8, Hard: 12 };
+
+// ---------- day locks ----------
+// Day N+1 unlocks when every item of day N is done (the bonus "Extra practice" block doesn't count).
+// Locks are per player; spectators (not logged in) see everything.
+const requiredItems = d => dayItems(d).filter(it => ITEMS[it.key].track !== "qz");
+const dayComplete = (pid, d) => requiredItems(d).every(it => state[pid][it.key]);
+function unlockedCount(pid){
+  let n = 1;
+  while (n < DAYS.length && dayComplete(pid, DAYS[n - 1])) n++;
+  return n; // days 1..n are open
+}
+const isLocked = idx => !!me && idx >= unlockedCount(me.player);
+let lastUnlocked = null;
 const TOTALS = {};
 Object.values(ITEMS).forEach(m => { TOTALS[m.track] = (TOTALS[m.track] || 0) + 1; });
 
@@ -255,14 +268,63 @@ function itemHTML(it, trackId){
     <span class="chips">${PLAYERS.map(p => `<span class="chip ${p.cls}" title="${p.name}">${p.ch}</span>`).join("")}</span>
   </li>`;
 }
+// Layout: all days listed in the left column; only the selected day is shown on the right.
+let selected = null;
 function buildPlan(){
   const t = todayIdx();
-  $("weeknav").innerHTML = WEEKS.map(w => `<a href="#week${w.n}">Week ${w.n} · ${fmtD(DAYS[w.from].date)} – ${fmtD(DAYS[w.to].date)}</a>`).join("");
-  $("plan").innerHTML = WEEKS.map(w => `
-    <section class="week" id="week${w.n}">
-      <div class="weekhead"><h2>Week ${w.n} · ${esc(w.t)}</h2><span class="eyebrow">Days ${w.from + 1}–${w.to + 1}</span></div>
-      ${DAYS.slice(w.from, w.to + 1).map(d => dayHTML(d, t)).join("")}
-    </section>`).join("");
+  $("daylist").innerHTML = WEEKS.map(w => `
+    <div class="wk"><div class="wkh">Week ${w.n} · ${esc(w.t)}</div>
+      ${DAYS.slice(w.from, w.to + 1).map(d => navHTML(d, t)).join("")}
+    </div>`).join("");
+  $("dayview").innerHTML = DAYS.map(d => dayHTML(d, t)).join("");
+}
+function navHTML(d, t){
+  const today = d.idx === t;
+  return `<button type="button" class="dnav${d.rev ? " is-rev" : ""}${today ? " is-today" : ""}" id="nav${d.idx + 1}" data-idx="${d.idx}">
+    <span class="dn">Day ${d.idx + 1}<span class="lk" aria-hidden="true"></span></span>
+    <span class="dd">${fmtD(d.date)}${today ? " · <b>Today</b>" : ""}</span>
+    <span class="dt">${esc(d.f)}</span>
+    <span class="dp"><span class="bar r"><i></i></span><span class="bar a"><i></i></span></span>
+    <span class="nums"><span class="nr"></span><span class="na"></span></span>
+  </button>`;
+}
+function defaultDay(){
+  const t = Math.max(0, Math.min(todayIdx(), DAYS.length - 1));
+  return me ? Math.min(t, unlockedCount(me.player) - 1) : t;
+}
+function selectDay(idx, scroll){
+  if (isLocked(idx)) { toast(`Day ${idx + 1} is locked. Finish Day ${idx} first.`, null, true); return; }
+  selected = idx;
+  DAYS.forEach(d => {
+    $("day" + (d.idx + 1)).hidden = d.idx !== idx;
+    const nav = $("nav" + (d.idx + 1));
+    nav.classList.toggle("sel", d.idx === idx);
+    nav.setAttribute("aria-current", d.idx === idx ? "true" : "false");
+  });
+  tickClock();
+  if (scroll) $("dayview").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+const pad = n => String(n).padStart(2, "0");
+function fmtDur(ms){
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+  return (d ? `${d}d ` : "") + `${pad(h)}:${pad(m)}:${pad(sec)}`;
+}
+function tickClock(){
+  if (selected === null) return;
+  const d = DAYS[selected], el = $("day" + (selected + 1));
+  const now = new Date();
+  const start = d.date, end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 1);
+  el.querySelector(".ctime").textContent = now.toLocaleTimeString("en-GB");
+  const clock = el.querySelector(".clock");
+  let label, value;
+  if (now < start) { label = "Starts in"; value = fmtDur(start - now); }
+  else if (now < end) { label = "Left today · on-time bonus"; value = fmtDur(end - now); }
+  else { label = "Past day"; value = "catch up · base points"; }
+  el.querySelector(".cleft-l").textContent = label;
+  el.querySelector(".cleft").textContent = value;
+  clock.classList.toggle("urgent", now >= start && now < end && end - now < 3 * 3600e3);
+  clock.classList.toggle("past", now >= end);
 }
 function dayHTML(d, t){
   const isToday = d.idx === t;
@@ -284,15 +346,25 @@ function dayHTML(d, t){
   const body = d.rev
     ? `<div class="tracks"><div class="track wide" style="--c:var(--rev)"><h4><span class="tn">Revision &amp; career</span><span class="h">~5 h</span></h4><ul class="items">${d.items.map(it => itemHTML(it, "rev")).join("")}</ul></div>${quick}${concept}${practice}</div>`
     : `<div class="tracks">${quick}${concept}${TRACKS.map(tr => `<div class="track${tr.id === "iv" ? " wide" : ""}" style="--c:${tr.c}"><h4><span class="tn">${tr.name}</span><span class="h">${tr.hrs}</span></h4><ul class="items">${d[tr.id].map(it => itemHTML(it, tr.id)).join("")}</ul></div>`).join("")}${practice}</div>`;
-  return `<details class="day${d.rev ? " is-rev" : ""}${isToday ? " is-today" : ""}" id="day${d.idx + 1}"${isToday ? " open" : ""}>
-    <summary>
-      <div class="when"><strong>Day ${d.idx + 1}</strong>${fmtD(d.date)}</div>
-      <div class="focus">${esc(d.f)} ${isToday ? '<span class="tag">Today</span>' : ""}<small>${d.rev ? "Sunday · " : ""}${esc(d.s)}${d.cn ? ` · <span class="cn-tag">Concept: ${esc(d.cn.t)}</span>` : ""}</small></div>
-      <div class="dayprog" aria-hidden="true">
-        <div class="bar r"><i></i></div><div class="bar a"><i></i></div>
-        <div class="nums"><span class="nr"></span><span class="na"></span></div>
+  return `<section class="day daypanel${d.rev ? " is-rev" : ""}${isToday ? " is-today" : ""}" id="day${d.idx + 1}" hidden>
+    <header class="dayhead">
+      <div class="dh-main">
+        <span class="eyebrow">Day ${d.idx + 1} of ${DAYS.length} · ${fmtD(d.date)}${isToday ? " · Today" : ""}${d.rev ? " · Sunday" : ""}</span>
+        <h2>${esc(d.f)}</h2>
+        <p class="dsub">${esc(d.s)}${d.cn ? ` · <span class="cn-tag">Concept: ${esc(d.cn.t)}</span>` : ""}</p>
+        <span class="lockmsg"></span>
       </div>
-    </summary>${body}</details>`;
+      <div class="clock" aria-live="off">
+        <span class="ctime"></span>
+        <span class="cleft-l"></span>
+        <span class="cleft"></span>
+      </div>
+    </header>
+    <div class="dayprog" aria-hidden="true">
+      <div class="bar r"><i></i></div><div class="bar a"><i></i></div>
+      <div class="nums"><span class="nr"></span><span class="na"></span></div>
+    </div>
+    ${body}</section>`;
 }
 
 // ---------- render live parts ----------
@@ -397,8 +469,9 @@ function updateAll(){
     const mine = !!(me && state[me.player][key]);
     const inp = li.querySelector("input");
     inp.checked = mine;
-    inp.disabled = !me;
-    inp.title = me ? "" : "Log in to tick";
+    const lockedItem = ITEMS[key] && isLocked(ITEMS[key].day.idx);
+    inp.disabled = !me || lockedItem;
+    inp.title = !me ? "Log in to tick" : lockedItem ? "Finish the previous day to unlock" : "";
     li.classList.toggle("mine", mine);
     const chips = li.querySelectorAll(".chip");
     PLAYERS.forEach((p, i) => chips[i].classList.toggle("on", !!state[p.id][key]));
@@ -408,11 +481,40 @@ function updateAll(){
     const items = dayItems(dd);
     const n = { rao: 0, aneeq: 0 };
     items.forEach(it => PLAYERS.forEach(p => { if (state[p.id][it.key]) n[p.id]++; }));
-    el.querySelector(".bar.r i").style.width = n.rao / items.length * 100 + "%";
-    el.querySelector(".bar.a i").style.width = n.aneeq / items.length * 100 + "%";
-    el.querySelector(".nr").textContent = `R ${n.rao}/${items.length}`;
-    el.querySelector(".na").textContent = `A ${n.aneeq}/${items.length}`;
+    const nav = $("nav" + (dd.idx + 1));
+    [el, nav].forEach(box => {
+      box.querySelector(".bar.r i").style.width = n.rao / items.length * 100 + "%";
+      box.querySelector(".bar.a i").style.width = n.aneeq / items.length * 100 + "%";
+      box.querySelector(".nr").textContent = `R ${n.rao}/${items.length}`;
+      box.querySelector(".na").textContent = `A ${n.aneeq}/${items.length}`;
+    });
+    const locked = isLocked(dd.idx);
+    el.classList.toggle("locked", locked);
+    nav.classList.toggle("locked", locked);
+    const doneMine = !!me && dayComplete(me.player, dd);
+    nav.classList.toggle("complete", doneMine);
+    nav.querySelector(".lk").textContent = locked ? "🔒" : doneMine ? "✓" : "";
+    nav.title = locked ? `Finish Day ${dd.idx} to unlock` : "";
+    const msg = el.querySelector(".lockmsg");
+    if (locked) {
+      const left = requiredItems(DAYS[dd.idx - 1]).filter(it => !state[me.player][it.key]).length;
+      msg.textContent = dd.idx === unlockedCount(me.player)
+        ? `🔒 Finish Day ${dd.idx} to unlock (${left} left)`
+        : `🔒 Locked · finish Day ${dd.idx} first`;
+    } else msg.textContent = "";
   });
+
+  // announce a newly unlocked day
+  if (me) {
+    const u = unlockedCount(me.player);
+    if (lastUnlocked !== null && u > lastUnlocked && u <= DAYS.length) {
+      toast(`🔓 Day ${u} unlocked. ${rival(me.player).short} can't rest now.`, me.player);
+      selectDay(u - 1, true);
+    }
+    lastUnlocked = u;
+  } else lastUnlocked = null;
+
+  if (selected === null || isLocked(selected)) selectDay(defaultDay());
 }
 
 function relTime(ts){
@@ -477,6 +579,7 @@ document.addEventListener("change", async e => {
   const inp = e.target.closest("input[data-key]");
   if (!inp || !me) return;
   const key = inp.dataset.key, on = inp.checked, pid = me.player;
+  if (ITEMS[key] && isLocked(ITEMS[key].day.idx)) { inp.checked = !on; toast("That day is still locked. Finish the previous day first.", null, true); return; }
   const prev = state[pid][key];
   const S0 = stats(pid);
   if (on) state[pid][key] = Date.now() + serverOffset; else delete state[pid][key];
@@ -546,6 +649,12 @@ $("watch").addEventListener("click", () => {
   try { localStorage.setItem("arena-watch", "1"); } catch (e) {}
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("login").hidden) $("login").hidden = true; });
+
+$("daylist").addEventListener("click", e => {
+  const b = e.target.closest(".dnav"); if (!b) return;
+  selectDay(Number(b.dataset.idx), matchMedia("(max-width: 860px)").matches);
+});
+setInterval(tickClock, 1000);
 
 // ---------- boot ----------
 buildPlan();

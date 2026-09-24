@@ -225,9 +225,67 @@ ul.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;g
 .cn-tag{color:var(--cn);font-weight:500}
 
 .track.quick{background:#fff6ed;border-color:#fed7aa}
-.track.quick ul.items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}
+.track.quick ul.items{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:8px 16px}
 .track.quick .src{background:var(--qp)}
 @media (max-width:720px){.track.quick ul.items{grid-template-columns:1fr}}
+
+.day.locked{background:var(--tint);opacity:.72}
+.day.locked:hover{box-shadow:var(--shadow)}
+.day.locked>summary{cursor:not-allowed}
+.day.locked .tracks{display:none}
+.day.locked .focus{color:var(--muted)}
+.lockmsg{display:block;font-family:var(--mono);font-size:11.5px;color:var(--bad);font-weight:500}
+.lockmsg:empty{display:none}
+
+/* planner: day column on the left, one day on the right */
+.planner{display:grid;grid-template-columns:280px minmax(0,1fr);gap:20px;align-items:start}
+.daylist{position:sticky;top:calc(12px + env(safe-area-inset-top, 0px));max-height:calc(100vh - 24px);overflow:auto;background:var(--tint);border:1px solid var(--line);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:14px}
+.wk{display:flex;flex-direction:column;gap:6px}
+.wkh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:4px 6px 0}
+.dnav{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:2px 8px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 11px;transition:border-color .15s, box-shadow .15s}
+.dnav:hover{border-color:#c0c6d0}
+.dnav:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.dnav .dn{font-weight:600;font-size:13px;display:flex;gap:6px;align-items:center}
+.dnav .dd{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
+.dnav .dd b{color:var(--gold)}
+.dnav .dt{grid-column:1 / -1;font-size:12.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dnav .dp{grid-column:1 / -1;display:flex;flex-direction:column;gap:3px;margin-top:4px}
+.dnav .bar{height:4px;border-radius:999px;background:var(--sunk);overflow:hidden;display:block}
+.dnav .bar i{display:block;height:100%;border-radius:999px;transition:width .4s}
+.dnav .bar.r i{background:var(--rao)} .dnav .bar.a i{background:var(--aneeq)}
+.dnav .nums{grid-column:1 / -1;display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.dnav.is-rev{background:#fbfbfd}
+.dnav.is-today{border-color:var(--gold)}
+.dnav.sel{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+.dnav.complete .lk{color:var(--done)}
+.dnav.locked{cursor:not-allowed;opacity:.55;background:transparent}
+.dnav.locked:hover{border-color:var(--line)}
+
+.dayview{min-width:0;scroll-margin-top:12px}
+.daypanel{padding-bottom:4px}
+.daypanel:hover{box-shadow:var(--shadow)}
+.dayhead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;padding:18px 18px 8px}
+.dh-main{display:flex;flex-direction:column;gap:4px;min-width:0}
+.dayhead h2{font-size:clamp(22px,3vw,30px)}
+.dsub{margin:0;color:var(--muted);font-size:14px}
+.daypanel .dayprog{width:auto;padding:0 18px 12px;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+.daypanel .dayprog .nums{grid-column:1 / -1}
+.clock{display:flex;flex-direction:column;align-items:flex-end;gap:2px;background:var(--ink);color:#fff;border-radius:14px;padding:10px 16px;min-width:190px;font-variant-numeric:tabular-nums}
+.clock .ctime{font-family:var(--mono);font-size:26px;font-weight:500;line-height:1.1;letter-spacing:.02em}
+.clock .cleft-l{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#aab4c8}
+.clock .cleft{font-family:var(--mono);font-size:15px;color:#ffd08a}
+.clock.urgent{background:var(--bad);animation:pulse 1.6s ease-in-out infinite}
+.clock.urgent .cleft{color:#fff}
+.clock.past{background:#475467}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(217,45,32,.18)}}
+@media (max-width:860px){
+  .planner{grid-template-columns:1fr}
+  .daylist{position:static;max-height:none;flex-direction:row;overflow-x:auto;padding:8px}
+  .wk{flex-direction:row;align-items:stretch}
+  .wkh{writing-mode:vertical-rl;transform:rotate(180deg);padding:4px 0}
+  .dnav{min-width:150px}
+  .clock{align-items:flex-start;width:100%}
+}
 
 /* login */
 .overlay{position:fixed;inset:0;background:rgba(16,24,40,.35);backdrop-filter:blur(3px);display:grid;place-items:center;padding:16px;z-index:20}
