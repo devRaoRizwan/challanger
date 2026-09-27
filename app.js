@@ -6,10 +6,10 @@ const PLAYERS = [
 ];
 const byId = Object.fromEntries(PLAYERS.map(p => [p.id, p]));
 const CONTAINERS = [
-  { id: "lc",  name: "LeetCode DSA",   ic: "🧠", c: "var(--lc)",  src: "NeetCode 150 roadmap" },
-  { id: "oop", name: "OOP & LLD",      ic: "🧩", c: "var(--oop)", src: "AlgoMaster LLD course" },
-  { id: "db",  name: "Database / SQL", ic: "🗄️", c: "var(--db)",  src: "LeetCode SQL 50 → PGExercises" },
-  { id: "sd",  name: "System Design",  ic: "🏗️", c: "var(--sd)",  src: "AlgoMaster system design" },
+  { id: "lc",  name: "LeetCode DSA",   c: "var(--lc)",  src: "NeetCode 150 roadmap" },
+  { id: "oop", name: "OOP & LLD",      c: "var(--oop)", src: "AlgoMaster LLD course" },
+  { id: "db",  name: "Database / SQL", c: "var(--db)",  src: "LeetCode SQL 50 → PGExercises" },
+  { id: "sd",  name: "System Design",  c: "var(--sd)",  src: "AlgoMaster system design" },
 ];
 const POLL_MS = 15000;
 
@@ -36,7 +36,7 @@ function primersHTML(d){
     const p = PRIMERS[s], isNew = FIRST_DB_DAY[s] === d.idx;
     const md = esc(p.text).replace(/`([^`]+)`/g, "<code>$1</code>");
     return `<details class="primer"${isNew ? " open" : ""}>
-      <summary>📖 Learn first · ${esc(s.replace("SQL 50 · ", "").replace("PGExercises · ", ""))}${isNew ? '<span class="new">new topic</span>' : ""}</summary>
+      <summary>Learn first · ${esc(s.replace("SQL 50 · ", "").replace("PGExercises · ", ""))}${isNew ? '<span class="new">new topic</span>' : ""}</summary>
       <p>${md}</p>
       <div class="plinks">${p.links.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${esc(t)} ↗</a>`).join("")}</div>
     </details>`;
@@ -85,7 +85,7 @@ function itemHTML(it){
 function ipHTML(d){
   if (!d.ip.length) return "";
   return `<div class="box ip" style="--c:var(--ip)" data-c="ip">
-    <h3><span class="ic">🎤</span><span class="bn">Interview prep<small>Quick classic questions · solve each in under 10 minutes</small></span><span class="opt">optional</span><span class="cnt"></span></h3>
+    <h3><span class="ic"></span><span class="bn">Interview prep<small>Quick classic questions · solve each in under 10 minutes</small></span><span class="opt">optional</span><span class="cnt"></span></h3>
     <ol class="items">${d.ip.map((it, j) => `<li class="item" data-key="${it.key}">
       <input type="checkbox" id="${it.key}" data-key="${it.key}">
       <div class="body"><label for="${it.key}"><span class="qn">Q${j + 1}</span>${esc(it.q)}</label></div>
@@ -104,7 +104,7 @@ function dayHTML(d, t){
         <span class="lockmsg"></span>
       </div>
       <div class="clock">
-        <span class="ctime-l">⏰ Now</span>
+        <span class="ctime-l">Now</span>
         <span class="ctime"></span>
         <span class="cleft-l"></span>
         <span class="cleft"></span>
@@ -116,7 +116,7 @@ function dayHTML(d, t){
     </div>
     <div class="containers">
       ${CONTAINERS.map(c => `<div class="box" style="--c:${c.c}" data-c="${c.id}">
-        <h3><span class="ic">${c.ic}</span><span class="bn">${c.name}<small>${esc(sections(d, c.id).join(" · "))}</small></span><span class="cnt"></span></h3>
+        <h3><span class="ic"></span><span class="bn">${c.name}<small>${esc(sections(d, c.id).join(" · "))}</small></span><span class="cnt"></span></h3>
         ${c.id === "db" ? primersHTML(d) : ""}
         <ul class="items">${d.c[c.id].map(itemHTML).join("")}</ul>
         <p class="bsrc">Source: ${esc(c.src)}</p>
@@ -128,7 +128,7 @@ function dayHTML(d, t){
 function navHTML(d, t){
   const today = d.idx === t;
   return `<button type="button" class="dnav${d.rev ? " is-rev" : ""}${today ? " is-today" : ""}" id="nav${d.idx + 1}" data-idx="${d.idx}">
-    <span class="dn"><span class="de" aria-hidden="true">${d.rev ? "🔁" : today ? "📍" : "📘"}</span>Day ${d.idx + 1}<span class="lk" aria-hidden="true"></span></span>
+    <span class="dn">Day ${d.idx + 1}<span class="lk" aria-hidden="true"></span></span>
     <span class="dd">${fmtD(d.date)}${today ? " · <b>Today</b>" : ""}</span>
     <span class="dt">${esc(dayTitle(d))}</span>
     <span class="dp"><span class="bar r"><i></i></span><span class="bar a"><i></i></span></span>
@@ -223,14 +223,14 @@ function update(){
     const mineDone = !!me && dayComplete(me.player, d);
     nav.classList.toggle("locked", locked);
     nav.classList.toggle("complete", mineDone);
-    nav.querySelector(".lk").textContent = locked ? "🔒" : mineDone ? "✓" : "";
+    nav.querySelector(".lk").textContent = locked ? "Locked" : mineDone ? "✓ Done" : "";
     nav.title = locked ? `Finish Day ${d.idx} to unlock` : "";
     const left = locked && d.idx === u ? itemsOf(DAYS[d.idx - 1]).filter(it => !state[me.player][it.key]).length : 0;
-    el.querySelector(".lockmsg").textContent = locked ? (d.idx === u ? `🔒 Finish Day ${d.idx} to unlock (${left} left)` : `🔒 Locked · finish Day ${d.idx} first`) : "";
+    el.querySelector(".lockmsg").textContent = locked ? (d.idx === u ? `Finish Day ${d.idx} to unlock (${left} left)` : `Locked · finish Day ${d.idx} first`) : "";
   });
   if (me) {
     if (lastUnlocked !== null && u > lastUnlocked && u <= DAYS.length) {
-      toast(`🔓 Day ${u} unlocked.`);
+      toast(`Day ${u} unlocked.`);
       selectDay(u - 1);
     }
     lastUnlocked = u;
