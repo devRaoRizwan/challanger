@@ -4,7 +4,7 @@
   --bg:#ffffff; --tint:#f7f8fb; --sunk:#eef1f6; --ink:#101828; --ink2:#344054; --muted:#667085; --line:#e6e8f0;
   --link:#4338ca; --gold:#eab308; --gold-soft:#fef3c7; --done:#10b981; --bad:#e11d48;
   --rao:#2f6bff; --aneeq:#ff5a1f;
-  --lc:#7c3aed; --oop:#16a34a; --db:#0ea5a4; --sd:#db2777;
+  --ip:#ea580c; --lc:#7c3aed; --oop:#16a34a; --db:#0ea5a4; --sd:#db2777;
   --yt:#cc1a1a; --yt-soft:#fff1f1;
   --shadow:0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.06);
   --shadow-lg:0 12px 32px rgba(16,24,40,.10);
@@ -124,6 +124,29 @@ ul.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 .chip{width:19px;height:19px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-family:var(--mono);font-size:10px;display:grid;place-items:center;color:#98a2b3}
 .chip.r.on{background:var(--rao);border-color:var(--rao);color:#fff}
 .chip.a.on{background:var(--aneeq);border-color:var(--aneeq);color:#fff}
+
+/* DB "learn first" notes */
+.primer{background:color-mix(in srgb,var(--db) 6%,#fff);border:1px solid color-mix(in srgb,var(--db) 25%,#fff);border-radius:10px;padding:8px 12px}
+.primer summary{cursor:pointer;font-size:13px;font-weight:600;color:#0f766e;list-style:none;display:flex;align-items:center;gap:8px}
+.primer summary::-webkit-details-marker{display:none}
+.primer summary::after{content:"+";margin-left:auto;font-family:var(--mono);color:var(--muted)}
+.primer[open] summary::after{content:"–"}
+.primer .new{font-family:var(--mono);font-size:10px;font-weight:500;color:#fff;background:var(--db);border-radius:999px;padding:0 7px}
+.primer p{margin:8px 0 6px;font-size:13.5px;color:var(--ink2);line-height:1.55}
+.primer code{font-family:var(--mono);font-size:.9em;background:#fff;border:1px solid var(--line);border-radius:4px;padding:0 4px}
+.plinks{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:2px}
+.plinks a{font-size:12px;font-weight:500;background:#fff;border:1px solid var(--line);border-radius:999px;padding:1px 9px}
+.plinks a:hover{text-decoration:none;border-color:var(--db)}
+
+/* optional interview prep box: full width under the 4 containers */
+.box.ip{grid-column:1 / -1}
+.box.ip ol.items{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:24px}
+.box.ip .item{border-top:1px solid #f0f1f6}
+.box.ip .item:first-child{padding-top:9px}
+.box.ip label{font-weight:500}
+.qn{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--ip);background:color-mix(in srgb,var(--ip) 10%,#fff);border-radius:4px;padding:1px 6px;margin-right:8px}
+.opt{font-family:var(--mono);font-size:10.5px;color:var(--ip);border:1px dashed var(--ip);border-radius:999px;padding:0 8px}
+.item.mine .body label{color:var(--muted);text-decoration:line-through;text-decoration-color:#c0c6d0}
 
 footer{color:var(--muted);font-size:13px;text-align:center;border-top:1px solid var(--line);padding-top:16px}
 

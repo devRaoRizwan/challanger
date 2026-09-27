@@ -20,9 +20,28 @@ const DAYS = window.PLAN.days.map((d, idx) => {
 const WEEKS = [];
 DAYS.forEach(d => { const w = Math.floor(d.idx / 7); (WEEKS[w] = WEEKS[w] || []).push(d); });
 const itemsOf = d => CONTAINERS.flatMap(c => d.c[c.id]);
+// Optional interview prep questions (interviewprep.js): tickable, but not needed to unlock the next day.
+const IP = window.INTERVIEW_PREP || {};
+DAYS.forEach(d => { d.ip = (IP[d.idx + 1] || []).map((q, j) => ({ q, key: `d${d.idx + 1}-ip-${j}` })); });
 const ITEM_DAY = {};
-DAYS.forEach(d => itemsOf(d).forEach(it => { ITEM_DAY[it.key] = d.idx; }));
+DAYS.forEach(d => itemsOf(d).concat(d.ip).forEach(it => { ITEM_DAY[it.key] = d.idx; }));
 const sections = (d, cid) => [...new Set(d.c[cid].map(x => x.sec))];
+// "Learn first" notes for the DB container (primers.js). Open on the day a topic first appears.
+const PRIMERS = window.DB_PRIMERS || {};
+const FIRST_DB_DAY = {};
+DAYS.forEach(d => { if (!d.rev) d.c.db.forEach(x => { if (!(x.sec in FIRST_DB_DAY)) FIRST_DB_DAY[x.sec] = d.idx; }); });
+function primersHTML(d){
+  if (d.rev) return "";
+  return sections(d, "db").filter(s => PRIMERS[s]).map(s => {
+    const p = PRIMERS[s], isNew = FIRST_DB_DAY[s] === d.idx;
+    const md = esc(p.text).replace(/`([^`]+)`/g, "<code>$1</code>");
+    return `<details class="primer"${isNew ? " open" : ""}>
+      <summary>📖 Learn first · ${esc(s.replace("SQL 50 · ", "").replace("PGExercises · ", ""))}${isNew ? '<span class="new">new topic</span>' : ""}</summary>
+      <p>${md}</p>
+      <div class="plinks">${p.links.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${esc(t)} ↗</a>`).join("")}</div>
+    </details>`;
+  }).join("");
+}
 const dayTitle = d => d.rev ? "Weekly revision" : sections(d, "lc").join(" · ");
 
 // ---------- helpers ----------
@@ -63,6 +82,17 @@ function itemHTML(it){
     <span class="chips">${PLAYERS.map(p => `<span class="chip ${p.cls}" title="${p.name}">${p.ch}</span>`).join("")}</span>
   </li>`;
 }
+function ipHTML(d){
+  if (!d.ip.length) return "";
+  return `<div class="box ip" style="--c:var(--ip)" data-c="ip">
+    <h3><span class="ic">🎤</span><span class="bn">Interview prep<small>Quick classic questions · solve each in under 10 minutes</small></span><span class="opt">optional</span><span class="cnt"></span></h3>
+    <ol class="items">${d.ip.map((it, j) => `<li class="item" data-key="${it.key}">
+      <input type="checkbox" id="${it.key}" data-key="${it.key}">
+      <div class="body"><label for="${it.key}"><span class="qn">Q${j + 1}</span>${esc(it.q)}</label></div>
+      <span class="chips">${PLAYERS.map(p => `<span class="chip ${p.cls}" title="${p.name}">${p.ch}</span>`).join("")}</span>
+    </li>`).join("")}</ol>
+  </div>`;
+}
 function dayHTML(d, t){
   const today = d.idx === t;
   return `<section class="daypanel${today ? " is-today" : ""}${d.rev ? " is-rev" : ""}" id="day${d.idx + 1}" hidden>
@@ -87,9 +117,11 @@ function dayHTML(d, t){
     <div class="containers">
       ${CONTAINERS.map(c => `<div class="box" style="--c:${c.c}" data-c="${c.id}">
         <h3><span class="ic">${c.ic}</span><span class="bn">${c.name}<small>${esc(sections(d, c.id).join(" · "))}</small></span><span class="cnt"></span></h3>
+        ${c.id === "db" ? primersHTML(d) : ""}
         <ul class="items">${d.c[c.id].map(itemHTML).join("")}</ul>
         <p class="bsrc">Source: ${esc(c.src)}</p>
       </div>`).join("")}
+      ${ipHTML(d)}
     </div>
   </section>`;
 }
@@ -185,6 +217,8 @@ function update(){
       const done = me ? d.c[c.id].filter(it => state[me.player][it.key]).length : null;
       el.querySelector(`.box[data-c="${c.id}"] .cnt`).textContent = done === null ? "5 items" : `${done}/5`;
     });
+    const ipCnt = el.querySelector('.box[data-c="ip"] .cnt');
+    if (ipCnt) ipCnt.textContent = me ? `${d.ip.filter(it => state[me.player][it.key]).length}/${d.ip.length}` : `${d.ip.length} questions`;
     const locked = isLocked(d.idx);
     const mineDone = !!me && dayComplete(me.player, d);
     nav.classList.toggle("locked", locked);
