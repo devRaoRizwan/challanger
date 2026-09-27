@@ -1,13 +1,13 @@
 // GET /api/state: both players' ticks plus the recent activity feed.
 // Public (read-only), so anyone with the link can watch the scoreboard.
-import { redis, PLAYERS, hashToObject } from "./_redis.js";
+import { redis, PLAYERS, NS, hashToObject } from "./_redis.js";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ error: "Use GET" });
   try {
     const out = await redis([
-      ...PLAYERS.map((p) => ["HGETALL", `sprint:done:${p}`]),
-      ["LRANGE", "sprint:events", 0, 59],
+      ...PLAYERS.map((p) => ["HGETALL", `${NS}:done:${p}`]),
+      ["LRANGE", `${NS}:events`, 0, 59],
     ]);
     const players = {};
     PLAYERS.forEach((p, i) => {

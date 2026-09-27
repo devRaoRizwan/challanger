@@ -4,9 +4,9 @@
 //   { player, pin, key, done: false }    -> untick
 // PINs come from env vars RAO_PIN and ANEEQ_PIN.
 import { timingSafeEqual } from "node:crypto";
-import { redis, PLAYERS } from "./_redis.js";
+import { redis, PLAYERS, NS } from "./_redis.js";
 
-const KEY_RE = /^d\d{1,2}-(dsa|sql|py|sd|iv|rev|qz|cn|qp)-\d{1,2}$/;
+const KEY_RE = /^d\d{1,2}-(lc|db|oop|sd)-\d{1,2}$/;
 const MAX_FAILS = 10; // wrong PINs allowed per player per 15 minutes
 
 function pinMatches(player, pin) {
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
   if (!PLAYERS.includes(player)) return res.status(400).json({ error: "Unknown player" });
 
   try {
-    const failKey = `sprint:fail:${player}`;
+    const failKey = `${NS}:fail:${player}`;
     const [fails] = await redis([["GET", failKey]]);
     if (Number(fails) >= MAX_FAILS) {
       return res.status(429).json({ error: "Too many wrong PINs. Try again in 15 minutes." });
@@ -40,15 +40,15 @@ export default async function handler(req, res) {
     const ts = Date.now();
     if (done) {
       // HSETNX keeps the first tick time, so re-ticking can't farm on-time bonuses.
-      const [added] = await redis([["HSETNX", `sprint:done:${player}`, key, String(ts)]]);
+      const [added] = await redis([["HSETNX", `${NS}:done:${player}`, key, String(ts)]]);
       if (added === 1) {
         await redis([
-          ["LPUSH", "sprint:events", JSON.stringify({ player, key, ts })],
-          ["LTRIM", "sprint:events", 0, 199],
+          ["LPUSH", `${NS}:events`, JSON.stringify({ player, key, ts })],
+          ["LTRIM", `${NS}:events`, 0, 199],
         ]);
       }
     } else {
-      await redis([["HDEL", `sprint:done:${player}`, key]]);
+      await redis([["HDEL", `${NS}:done:${player}`, key]]);
     }
     return res.status(200).json({ ok: true, ts });
   } catch (e) {

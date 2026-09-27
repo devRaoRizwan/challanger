@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Rao vs Aneeq Sprint</title>
-<meta name="description" content="30-day backend interview sprint. Two players, one scoreboard.">
+<meta name="description" content="30-day backend interview sprint: LeetCode DSA, OOP, Databases and System Design, 5 each per day.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -12,93 +12,20 @@
 </head>
 <body>
 <aside class="daylist" id="daylist" aria-label="All days"></aside>
+
 <div class="wrap">
-  <div class="topbar">
+  <header class="topbar">
     <div class="brand">
-      <span class="eyebrow">🚀 Backend interview sprint · 25 Sep → 24 Oct 2026</span>
+      <span class="eyebrow">🚀 Backend interview sprint · Mon 28 Sep → Tue 27 Oct 2026</span>
       <h1><span class="r">Rao</span><span class="v">vs</span><span class="a">Aneeq</span></h1>
     </div>
     <div class="who" id="who"></div>
-  </div>
-  <div class="status" id="status" aria-live="polite">Connecting to the scoreboard…</div>
+  </header>
+  <div class="status" id="status" aria-live="polite">Connecting…</div>
 
-  <section class="arena" aria-label="Scoreboard">
-    <div class="fighter" data-p="rao" id="f-rao"></div>
-    <div class="vs" aria-hidden="true">VS</div>
-    <div class="fighter" data-p="aneeq" id="f-aneeq"></div>
-    <div class="tug" aria-hidden="true"><i class="r" id="tug-r" style="width:50%"></i><i class="a" id="tug-a" style="width:50%"></i></div>
-    <p class="taunt" id="taunt"></p>
-    <blockquote class="reality" id="reality" aria-live="polite"><span class="rl" id="reality-label">Reality check</span><span class="rq" id="reality-text"></span></blockquote>
-  </section>
+  <main class="dayview" id="dayview"></main>
 
-  <section class="dash">
-    <div>
-      <div class="panel">
-        <h2 id="duel-title">⚔️ Today's duel <span></span></h2>
-        <div class="duel" id="duel"></div>
-        <p class="duelnote" id="duel-note"></p>
-        <div class="record" id="record" aria-label="Daily duel record"></div>
-      </div>
-      <div class="panel">
-        <h2>🏁 Track race <span>items done</span></h2>
-        <div class="race" id="race"></div>
-      </div>
-    </div>
-    <div>
-      <div class="panel">
-        <h2>📡 Live feed <span>updates every 15 s</span></h2>
-        <ul class="feed" id="feed"></ul>
-      </div>
-      <div class="panel">
-        <h2>🏅 Badges</h2>
-        <div class="badges" id="badges"></div>
-      </div>
-      <details class="panel">
-        <summary><strong>📜 Scoring rules</strong></summary>
-        <ul class="rules">
-          <li>DSA problem 10 · SQL problem 8 · task 5 · read/watch 4 · revision item 6 · interview prep 5</li>
-          <li><strong>Extra practice:</strong> Easy 5 · Medium 8 · Hard 12 · <strong>Concept of the day:</strong> 5 per step · <strong>Quick picks:</strong> 3 each</li>
-          <li><strong>On-time bonus ×1.5</strong> when you tick an item on its scheduled day. Catching up later gets base points only.</li>
-          <li><strong>Daily duel:</strong> whoever earns more on-time points on that day's plan wins the day.</li>
-          <li><strong>Streak:</strong> consecutive days with 5+ ticks. Miss a day and it resets to 0.</li>
-          <li><strong>Day locks:</strong> the next day unlocks only when you've finished every item of the current day (Extra practice is bonus). Locks follow each player's own progress.</li>
-          <li>Each item's first tick time is kept, so unticking and re-ticking gains nothing. It's on your honor: only tick what you really did.</li>
-        </ul>
-      </details>
-    </div>
-  </section>
-
-  <details class="method">
-    <summary>🧭 How to run each block</summary>
-    <div class="inner">
-      <div><h3>Concept of the day · 30 min</h3><ul>
-        <li>One core backend topic a day: concurrency, auth (JWT, OAuth), API integration and webhooks, multi-tenancy, deployment, LLM integration.</li>
-        <li>Watch the video, skim the docs, answer the interview question aloud, then do the short try-it.</li></ul></div>
-      <div><h3>DSA · 2 h</h3><ul>
-        <li>Try each problem for 25 minutes. If stuck, watch the NeetCode video, then close it and write the code yourself.</li>
-        <li>Write the pattern and complexity in your notes. Start each day by re-solving yesterday's hardest problem.</li></ul></div>
-      <div><h3>SQL / DB · 1.5 h</h3><ul>
-        <li>Solve on LeetCode, then run the query again in local Postgres. On theory days, answer the question aloud.</li></ul></div>
-      <div><h3>Python / frameworks · 1 h</h3><ul>
-        <li>Read, code the exercise in <code>py_daily/dayNN.py</code>, then answer the question aloud in under 90 seconds.</li></ul></div>
-      <div><h3>System design · 1 h</h3><ul>
-        <li>For full designs, try it alone on <a href="https://excalidraw.com" target="_blank" rel="noopener">Excalidraw</a> for 30 minutes before watching the solution.</li></ul></div>
-      <div><h3>Duel each other</h3><ul>
-        <li>On Sundays, run mock interviews on each other: one of you asks, the other solves aloud.</li></ul></div>
-      <div><h3>Where to practice</h3><ul>
-        <li>Python: <a href="https://www.hackerrank.com/domains/python" target="_blank" rel="noopener">HackerRank Python</a> · <a href="https://exercism.org/tracks/python" target="_blank" rel="noopener">Exercism Python</a> (free mentoring)</li>
-        <li>SQL: <a href="https://pgexercises.com/" target="_blank" rel="noopener">PGExercises</a> (Postgres, runs in the browser) · <a href="https://www.hackerrank.com/domains/sql" target="_blank" rel="noopener">HackerRank SQL</a> · <a href="https://leetcode.com/studyplan/top-sql-50/" target="_blank" rel="noopener">LeetCode SQL 50</a></li>
-        <li>DSA: <a href="https://neetcode.io/practice" target="_blank" rel="noopener">NeetCode practice</a> · <a href="https://leetcode.com/problemset/" target="_blank" rel="noopener">LeetCode</a></li></ul></div>
-      <div><h3>Core references</h3><ul>
-        <li><a href="https://neetcode.io/roadmap" target="_blank" rel="noopener">NeetCode</a> · <a href="https://sqlbolt.com/" target="_blank" rel="noopener">SQLBolt</a> · <a href="https://leetcode.com/studyplan/top-sql-50/" target="_blank" rel="noopener">SQL 50</a> · <a href="https://use-the-index-luke.com/" target="_blank" rel="noopener">Use The Index, Luke</a></li>
-        <li><a href="https://github.com/donnemartin/system-design-primer" target="_blank" rel="noopener">System Design Primer</a> · <a href="https://www.youtube.com/@ByteByteGo" target="_blank" rel="noopener">ByteByteGo</a> · <em>Fluent Python</em></li></ul></div>
-    </div>
-  </details>
-
-  <section class="planner" aria-label="30-day plan">
-    <main class="dayview" id="dayview"></main>
-  </section>
-  <footer>Losing is optional. Ticking what you didn't do is cheating yourself, not Aneeq (or Rao).</footer>
+  <footer>Every day: 5 LeetCode DSA · 5 OOP · 5 DB · 5 System Design. Sundays revisit the week's hardest items. The next day unlocks when all 20 are done.</footer>
 </div>
 
 <div class="overlay" id="login" hidden>
@@ -113,16 +40,12 @@
     <div class="formerr" id="login-err" aria-live="polite"></div>
     <div class="actions">
       <button type="button" class="btn ghost" id="watch">Just watch</button>
-      <button type="submit" class="btn" id="enter">Enter the arena</button>
+      <button type="submit" class="btn" id="enter">Enter</button>
     </div>
   </form>
 </div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 
-<script src="videos.js"></script>
-<script src="quickpicks.js"></script>
-<script src="concepts.js"></script>
-<script src="practice.js"></script>
 <script src="plan.js"></script>
 <script src="app.js"></script>
 </body>

@@ -27,17 +27,25 @@ vercel dev               # http://localhost:3000
 
 Opening `index.html` directly from disk shows the plan, but not the live scoreboard.
 
-## Scoring
+## The plan
 
-- DSA problem 10, SQL problem 8, task 5, read/watch 4, revision 6, interview prep 5, extra practice 5/8/12 (Easy/Medium/Hard), concept steps 5.
-- ×1.5 if ticked on the item's scheduled day.
-- Daily duel: more on-time points on that day's plan wins the day.
-- Streak: consecutive days with 5+ ticks.
+30 days, Mon 28 Sep → Tue 27 Oct 2026. Every day has 4 containers with 5 items each:
+
+| Container | Source (followed in its own order) |
+|---|---|
+| 🧠 LeetCode DSA | NeetCode 150 roadmap: 130 free problems, each with its NeetCode video |
+| 🧩 OOP & LLD | AlgoMaster LLD course (free chapters) → AlgoMaster concurrency → LLD interview problems (AlgoMaster + github.com/ashishps1/awesome-low-level-design) |
+| 🗄️ Database / SQL | LeetCode SQL 50 (study-plan order) + 9 classic LeetCode DB problems → all 71 PGExercises |
+| 🏗️ System Design | AlgoMaster system design course (free chapters) → AlgoMaster interview course → problem videos from github.com/ashishps1/awesome-system-design-resources |
+
+Sundays (days 7, 14, 21, 28) revisit 5 of that week's hardest items per container.
+The next day unlocks only when all 20 items of the current day are ticked (per player).
+To change the content, edit `plan.js`.
 
 ## Data
 
-Redis keys: `sprint:done:rao` and `sprint:done:aneeq` (hash: item key → tick time)
-and `sprint:events` (activity feed). To reset the competition, delete those keys
+Redis keys: `sprint2:done:rao` and `sprint2:done:aneeq` (hash: item key → tick time).
+The old plan's `sprint:*` keys are left untouched and unused. To reset progress, delete the `sprint2:*` keys
 in the Upstash console.
 
 To change the plan, edit `plan.js`. Item keys are `d<day>-<track>-<index>`, so

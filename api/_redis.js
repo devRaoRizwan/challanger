@@ -6,6 +6,8 @@
 // KV_REST_API_TOKEN (or UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN).
 
 export const PLAYERS = ["rao", "aneeq"];
+// Key namespace. "sprint2" = the 4-container plan starting 28 Sep 2026 (old "sprint:" data is left untouched).
+export const NS = "sprint2";
 
 const REDIS_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
