@@ -2,11 +2,11 @@
 //   { player, pin, check: true }         -> just verifies the PIN (login)
 //   { player, pin, key, done: true }     -> tick (server records the time)
 //   { player, pin, key, done: false }    -> untick
-// PINs come from env vars RAO_PIN and ANEEQ_PIN.
+// The PIN comes from the RAO_PIN env var.
 import { timingSafeEqual } from "node:crypto";
 import { redis, PLAYERS, NS } from "./_redis.js";
 
-const KEY_RE = /^d\d{1,2}-(lc|db|oop|sd|ip)-\d{1,2}$/;
+const KEY_RE = /^d\d{1,2}-(lc|sql)-\d{1,2}$/;
 const MAX_FAILS = 10; // wrong PINs allowed per player per 15 minutes
 
 function pinMatches(player, pin) {

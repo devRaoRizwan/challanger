@@ -3,52 +3,59 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rao vs Aneeq Sprint</title>
-<meta name="description" content="30-day backend interview sprint: LeetCode DSA, OOP, Databases and System Design, 5 each per day.">
+<title>DSA + SQL Story</title>
+<meta name="description" content="Two months of DSA and SQL, Mon 5 Oct → Sat 5 Dec 2026, built chapter by chapter.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <aside class="daylist" id="daylist" aria-label="All days"></aside>
 
 <div class="wrap">
-  <header class="topbar">
-    <div class="brand">
-      <span class="eyebrow">Backend interview sprint · Mon 28 Sep → Tue 27 Oct 2026</span>
-      <h1><span class="r">Rao</span><span class="v">vs</span><span class="a">Aneeq</span></h1>
+  <header class="hero">
+    <div class="hero-top">
+      <div>
+        <p class="hero-sub">Mon 5 Oct → Sat 5 Dec 2026 · 62 days</p>
+        <h1>Rao's DSA + SQL story</h1>
+      </div>
+      <div class="who" id="who"></div>
     </div>
-    <div class="who" id="who"></div>
+    <div class="stats" id="stats"></div>
   </header>
-  <div class="status" id="status" aria-live="polite">Connecting…</div>
+
+  <section class="quote" id="quote" aria-live="polite">
+    <p class="q-label" id="q-label"></p>
+    <p class="q-text" id="q-text"></p>
+  </section>
+
+  <section class="storymap" aria-label="Story map">
+    <div class="sm-row"><h2>DSA chapters</h2><div class="chain" id="chain-dsa"></div></div>
+    <div class="sm-row"><h2>SQL chapters</h2><div class="chain" id="chain-sql"></div></div>
+  </section>
 
   <main class="dayview" id="dayview"></main>
-
-  <footer>Every day: 5 LeetCode DSA · 5 OOP · 5 DB · 5 System Design. Sundays revisit the week's hardest items. The next day unlocks when all 20 are done.</footer>
+  <p class="status" id="status" aria-live="polite">Connecting…</p>
 </div>
 
 <div class="overlay" id="login" hidden>
   <form class="modal" id="login-form" autocomplete="off">
-    <h2>Who's playing?</h2>
-    <p>Pick your name and enter your PIN. Your PIN only lets you tick your own boxes.</p>
-    <div class="pick" id="pick">
-      <button type="button" data-p="rao" aria-pressed="false">Rao Rizwan</button>
-      <button type="button" data-p="aneeq" aria-pressed="false">Aneeq</button>
-    </div>
+    <h2>Enter your PIN</h2>
+    <p>Your PIN lets you tick problems. Without it the page is view-only.</p>
     <label class="field" for="pin">PIN<input id="pin" type="password" required></label>
     <div class="formerr" id="login-err" aria-live="polite"></div>
     <div class="actions">
-      <button type="button" class="btn ghost" id="watch">Just watch</button>
-      <button type="submit" class="btn" id="enter">Enter</button>
+      <button type="button" class="btn ghost" id="watch">View only</button>
+      <button type="submit" class="btn" id="enter">Unlock</button>
     </div>
   </form>
 </div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 
 <script src="plan.js"></script>
+<script src="story.js"></script>
 <script src="primers.js"></script>
-<script src="interviewprep.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

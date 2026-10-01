@@ -1,153 +1,191 @@
 (function(){
 // ---------- data ----------
-const PLAYERS = [
-  { id: "rao",   name: "Rao Rizwan", short: "Rao",   ch: "R", cls: "r" },
-  { id: "aneeq", name: "Aneeq",      short: "Aneeq", ch: "A", cls: "a" },
-];
-const byId = Object.fromEntries(PLAYERS.map(p => [p.id, p]));
-const CONTAINERS = [
-  { id: "lc",  name: "LeetCode DSA",   c: "var(--lc)",  src: "NeetCode 150 roadmap" },
-  { id: "oop", name: "OOP & LLD",      c: "var(--oop)", src: "AlgoMaster LLD course" },
-  { id: "db",  name: "Database / SQL", c: "var(--db)",  src: "LeetCode SQL 50 → PGExercises" },
-  { id: "sd",  name: "System Design",  c: "var(--sd)",  src: "AlgoMaster system design" },
-];
+const PID = "rao";
 const POLL_MS = 15000;
-
+const STORY = window.STORY || { dsa: {}, sql: {} };
+const PRIMERS = window.DB_PRIMERS || {};
 const DAYS = window.PLAN.days.map((d, idx) => {
   const [y, m, dd] = d.date.split("-").map(Number);
   return { ...d, idx, date: new Date(y, m - 1, dd) };
 });
-const WEEKS = [];
-DAYS.forEach(d => { const w = Math.floor(d.idx / 7); (WEEKS[w] = WEEKS[w] || []).push(d); });
-const itemsOf = d => CONTAINERS.flatMap(c => d.c[c.id]);
-// Optional interview prep questions (interviewprep.js): tickable, but not needed to unlock the next day.
-const IP = window.INTERVIEW_PREP || {};
-DAYS.forEach(d => { d.ip = (IP[d.idx + 1] || []).map((q, j) => ({ q, key: `d${d.idx + 1}-ip-${j}` })); });
-const ITEM_DAY = {};
-DAYS.forEach(d => itemsOf(d).concat(d.ip).forEach(it => { ITEM_DAY[it.key] = d.idx; }));
-const sections = (d, cid) => [...new Set(d.c[cid].map(x => x.sec))];
-// "Learn first" notes for the DB container (primers.js). Open on the day a topic first appears.
-const PRIMERS = window.DB_PRIMERS || {};
-const FIRST_DB_DAY = {};
-DAYS.forEach(d => { if (!d.rev) d.c.db.forEach(x => { if (!(x.sec in FIRST_DB_DAY)) FIRST_DB_DAY[x.sec] = d.idx; }); });
-function primersHTML(d){
-  if (d.rev) return "";
-  return sections(d, "db").filter(s => PRIMERS[s]).map(s => {
-    const p = PRIMERS[s], isNew = FIRST_DB_DAY[s] === d.idx;
-    const md = esc(p.text).replace(/`([^`]+)`/g, "<code>$1</code>");
-    return `<details class="primer"${isNew ? " open" : ""}>
-      <summary>Learn first · ${esc(s.replace("SQL 50 · ", "").replace("PGExercises · ", ""))}${isNew ? '<span class="new">new topic</span>' : ""}</summary>
-      <p>${md}</p>
-      <div class="plinks">${p.links.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${esc(t)} ↗</a>`).join("")}</div>
-    </details>`;
-  }).join("");
-}
-const dayTitle = d => d.rev ? "Weekly revision" : sections(d, "lc").join(" · ");
+const DSA_CH = window.PLAN.dsaChapters, SQL_CH = window.PLAN.sqlChapters;
+const itemsOf = d => d.lc.items.concat(d.sql.items);
+const STUDY = DAYS.filter(d => d.type === "study");
+const DSA_TOTAL = STUDY.reduce((n, d) => n + d.lc.items.length, 0);
+const SQL_TOTAL = STUDY.reduce((n, d) => n + d.sql.items.length, 0);
+// chapter → its study days
+const chapterDays = (kind, ci) => STUDY.filter(d => d[kind].ch === ci);
 
 // ---------- helpers ----------
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const md = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
 const fmtD = d => d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
 function todayIdx(){ const t = new Date(); t.setHours(0, 0, 0, 0); return Math.round((t - DAYS[0].date) / 864e5); }
 const PLAY = '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>';
 
 // ---------- state ----------
-let state = { rao: {}, aneeq: {} };
-let pending = 0, selected = null, lastUnlocked = null;
-let me = null;
-try { me = JSON.parse(localStorage.getItem("arena-me") || "null"); } catch (e) { me = null; }
-if (me && !byId[me.player]) me = null;
+let done = {};
+let pending = 0, selected = null;
+let pin = null;
+try { pin = localStorage.getItem("solo-pin"); } catch (e) { pin = null; }
 
-// ---------- locks: day N+1 opens when all 20 items of day N are done ----------
-const dayComplete = (pid, d) => itemsOf(d).every(it => state[pid][it.key]);
-function unlockedCount(pid){
-  let n = 1;
-  while (n < DAYS.length && dayComplete(pid, DAYS[n - 1])) n++;
-  return n;
+const isDone = it => !!done[it.key];
+const dayComplete = d => itemsOf(d).every(isDone);
+function progress(){
+  const t = todayIdx();
+  let behind = 0, ahead = 0;
+  DAYS.forEach(d => {
+    if (d.idx < t && !dayComplete(d)) behind++;
+    if (d.idx > t && dayComplete(d)) ahead++;
+  });
+  // streak: consecutive complete plan days ending today (or yesterday if today isn't finished yet)
+  let i = Math.min(t, DAYS.length - 1);
+  if (i >= 0 && !dayComplete(DAYS[i])) i--;
+  let streak = 0;
+  while (i >= 0 && dayComplete(DAYS[i])) { streak++; i--; }
+  const dsa = STUDY.reduce((n, d) => n + d.lc.items.filter(isDone).length, 0);
+  const sql = STUDY.reduce((n, d) => n + d.sql.items.filter(isDone).length, 0);
+  const daysDone = DAYS.filter(dayComplete).length;
+  const today = t >= 0 && t < DAYS.length ? DAYS[t] : null;
+  const todayDone = today ? itemsOf(today).filter(isDone).length : 0;
+  const todayTotal = today ? itemsOf(today).length : 0;
+  return { t, behind, ahead, streak, dsa, sql, daysDone, today, todayDone, todayTotal };
 }
-const isLocked = idx => !!me && idx >= unlockedCount(me.player);
+
+// ---------- titles ----------
+function dayLabel(d){
+  if (d.type === "checkpoint") return `Checkpoint · week ${d.week}`;
+  if (d.type === "mock") return `Mock interview ${d.idx - DAYS.findIndex(x => x.type === "mock") + 1} of 6`;
+  return `${d.lc.chName}${d.lc.parts > 1 ? ` · part ${d.lc.part}/${d.lc.parts}` : ""}`;
+}
+
+// ---------- quotes (brutal, based on how you're doing) ----------
+const QUOTES = {
+  before:  ["Starts Monday. Decide now that you won't miss a single day.", "The plan is ready. The only missing part is you showing up on Monday."],
+  finished:["All 62 days done. Now go and take the offer.", "Plan complete. You did what most people only talk about."],
+  behindBig:["{n} days behind. The plan didn't get harder. You got comfortable.", "{n} days of problems are waiting for you. Interviews won't wait with them.", "{n} days behind. Every day you skip, someone else is preparing for your job."],
+  behindSmall:["{n} day(s) behind. That's how every 'I'll catch up on Sunday' starts.", "Behind by {n}. Fix it today, not 'this weekend'.", "{n} day(s) behind already. Small slips become a lost month."],
+  idle:    ["Zero problems today. The interviewer won't ask how busy you were.", "Nothing ticked today. Comfort is the most expensive thing you own right now.", "Your LeetCode tab is only open in your head."],
+  partial: ["{d} of {tt} done. Half a day is a full excuse.", "{left} left today. Finish what you started.", "{d}/{tt}. Stopping here is exactly what you'd tell yourself not to do."],
+  streak:  ["{s}-day streak. Break it tonight and you start from zero.", "{s} days in a row. Don't be the one who ends it."],
+  doneToday:["Today's done. Don't let tomorrow turn it into a fluke.", "Done for today. Do it again tomorrow. That's the whole secret."],
+  ahead:   ["{a} day(s) ahead. Don't celebrate, protect the lead.", "Ahead of schedule by {a}. Good. Now make it boring and repeat it."],
+  general: ["Nobody is coming to save your career. Open LeetCode.", "Motivation is for amateurs. Show up anyway.", "The job market doesn't care that you're tired."],
+};
+function pickQuote(P){
+  const slot = Math.floor(Date.now() / 20000);
+  const hour = new Date().getHours();
+  let pool, tone, label;
+  if (P.t < 0) { pool = "before"; tone = "neutral"; label = "Before you start"; }
+  else if (P.daysDone === DAYS.length) { pool = "finished"; tone = "good"; label = "Finished"; }
+  else if (P.behind >= 3) { pool = "behindBig"; tone = "bad"; label = `Behind by ${P.behind} days`; }
+  else if (P.behind >= 1) { pool = "behindSmall"; tone = "bad"; label = `Behind by ${P.behind} day${P.behind > 1 ? "s" : ""}`; }
+  else if (P.today && P.todayDone === P.todayTotal) { pool = P.ahead ? (slot % 2 ? "ahead" : "doneToday") : "doneToday"; tone = "good"; label = "On track"; }
+  else if (P.todayDone === 0 && hour >= 11) { pool = "idle"; tone = "bad"; label = "Nothing done today"; }
+  else if (P.todayDone > 0) { pool = P.streak >= 3 && slot % 2 ? "streak" : "partial"; tone = "warn"; label = "Today in progress"; }
+  else { pool = P.streak >= 3 ? "streak" : "general"; tone = "neutral"; label = "Reality check"; }
+  const list = QUOTES[pool];
+  const text = list[slot % list.length]
+    .replace("{n}", P.behind).replace("{d}", P.todayDone).replace("{tt}", P.todayTotal)
+    .replace("{left}", P.todayTotal - P.todayDone).replace("{s}", P.streak).replace("{a}", P.ahead);
+  return { text, tone, label };
+}
 
 // ---------- build ----------
 function itemHTML(it){
   const num = it.n ? `<span class="num">#${esc(it.n)}</span>` : "";
   const diff = it.d ? `<span class="diff diff-${it.d.toLowerCase()}">${esc(it.d)}</span>` : "";
   const vid = it.v ? `<a class="vid" href="https://www.youtube.com/watch?v=${it.v.id}" target="_blank" rel="noopener" title="${esc(it.v.title)}">${PLAY}${esc(it.v.len)} · NeetCode</a>` : "";
-  const src = it.src.startsWith("YouTube") ? `<span class="src yt">▶ ${esc(it.src.replace("YouTube · ", ""))}</span>` : `<span class="src">${esc(it.src)}</span>`;
-  return `<li class="item${it.rev ? " rev" : ""}" data-key="${it.key}">
+  const tag = it.mock ? '<span class="again">Timed</span>' : it.rev ? '<span class="again">Re-solve</span>' : "";
+  return `<li class="item" data-key="${it.key}">
     <input type="checkbox" id="${it.key}" data-key="${it.key}">
     <div class="body">
-      <label for="${it.key}">${it.rev ? '<span class="again">↻ Revisit</span>' : ""}${num}<a href="${it.u}" target="_blank" rel="noopener">${esc(it.t)}</a></label>
-      <div class="meta">${diff}${src}${vid}<span class="sec">${esc(it.sec)}</span></div>
+      <label for="${it.key}">${tag}${num}<a href="${it.u}" target="_blank" rel="noopener">${esc(it.t)}</a></label>
+      <div class="meta">${diff}<span class="src">${esc(it.src)}</span>${vid}${it.rev || it.mock ? `<span class="sec">${esc(it.sec.replace("SQL 50 · ", "").replace("PGExercises · ", "PGExercises: "))}</span>` : ""}</div>
     </div>
-    <span class="chips">${PLAYERS.map(p => `<span class="chip ${p.cls}" title="${p.name}">${p.ch}</span>`).join("")}</span>
   </li>`;
 }
-function ipHTML(d){
-  if (!d.ip.length) return "";
-  return `<div class="box ip" style="--c:var(--ip)" data-c="ip">
-    <h3><span class="ic"></span><span class="bn">Interview prep<small>Quick classic questions · solve each in under 10 minutes</small></span><span class="opt">optional</span><span class="cnt"></span></h3>
-    <ol class="items">${d.ip.map((it, j) => `<li class="item" data-key="${it.key}">
-      <input type="checkbox" id="${it.key}" data-key="${it.key}">
-      <div class="body"><label for="${it.key}"><span class="qn">Q${j + 1}</span>${esc(it.q)}</label></div>
-      <span class="chips">${PLAYERS.map(p => `<span class="chip ${p.cls}" title="${p.name}">${p.ch}</span>`).join("")}</span>
-    </li>`).join("")}</ol>
-  </div>`;
+function noteHTML(title, builds, text, links, open){
+  return `<details class="note"${open ? " open" : ""}>
+    <summary>${esc(title)}${open ? '<span class="new">new chapter</span>' : ""}</summary>
+    ${builds ? `<p class="builds"><b>Builds on:</b> ${esc(builds)}</p>` : ""}
+    <p>${md(text)}</p>
+    ${links && links.length ? `<div class="plinks">${links.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${esc(t)} ↗</a>`).join("")}</div>` : ""}
+  </details>`;
+}
+function boxHTML(d, kind){
+  const isDsa = kind === "lc";
+  const part = d[kind];
+  let head, note = "";
+  if (d.type === "study") {
+    const chNum = part.ch + 1;
+    head = `<h3><span class="tag">${isDsa ? "DSA" : "SQL"}</span><span class="bn">Chapter ${chNum} · ${esc(part.chName)}<small>${part.parts > 1 ? `Part ${part.part} of ${part.parts}` : "One-day chapter"}</small></span><span class="cnt"></span></h3>`;
+    if (isDsa) {
+      const s = STORY.dsa[part.chName];
+      if (s) note = noteHTML(part.part === 1 ? "Start of the chapter: what to know" : `Chapter ${chNum} recap`, s.builds, s.text, null, part.part === 1);
+    } else {
+      const p = PRIMERS[part.sec];
+      if (p) note = noteHTML(part.part === 1 ? "Start of the chapter: what to know" : `Chapter ${chNum} recap`, STORY.sql[part.chName], p.text, p.links, part.part === 1);
+    }
+  } else {
+    head = `<h3><span class="tag">${isDsa ? "DSA" : "SQL"}</span><span class="bn">${d.type === "mock" ? (isDsa ? "Timed problems" : "Timed queries") : (isDsa ? "Re-solve this week's hardest" : "Re-solve this week's hardest queries")}<small>${d.type === "mock" ? (isDsa ? "25 min per medium · 40 min for the hard one · talk out loud" : "15 min each, no hints") : "No notes, no video. If you can't, rewatch and redo it tomorrow."}</small></span><span class="cnt"></span></h3>`;
+  }
+  return `<div class="box ${isDsa ? "dsa" : "sql"}" data-k="${kind}">${head}${note}<ul class="items">${part.items.map(itemHTML).join("")}</ul></div>`;
 }
 function dayHTML(d, t){
   const today = d.idx === t;
-  return `<section class="daypanel${today ? " is-today" : ""}${d.rev ? " is-rev" : ""}" id="day${d.idx + 1}" hidden>
+  let title, sub;
+  if (d.type === "study") {
+    title = `Chapter ${d.lc.ch + 1}: ${esc(d.lc.chName)}`;
+    sub = `${d.lc.parts > 1 ? `Part ${d.lc.part} of ${d.lc.parts}` : "One-day chapter"} · SQL: ${esc(d.sql.chName)}${d.sql.parts > 1 ? ` (part ${d.sql.part} of ${d.sql.parts})` : ""}`;
+  } else if (d.type === "checkpoint") {
+    title = `Checkpoint: week ${d.week}`;
+    sub = "Prove this week stuck. Re-solve its hardest problems from scratch.";
+  } else {
+    title = dayLabel(d);
+    sub = "Final week. Treat every problem like a real interview: timer on, explain your approach out loud.";
+  }
+  return `<section class="daypanel${today ? " is-today" : ""} t-${d.type}" id="day${d.idx + 1}" hidden>
     <header class="dayhead">
-      <div class="dh-main">
-        <span class="eyebrow">Day ${d.idx + 1} of ${DAYS.length} · ${fmtD(d.date)}${today ? " · Today" : ""}${d.rev ? " · Sunday revision" : ""}</span>
-        <h2>${esc(dayTitle(d))}</h2>
-        <p class="dsub">${d.rev ? "Re-solve 5 of this week's hardest items in each container, without looking at your old answers." : "5 items in each container · 20 in total"}</p>
-        <span class="lockmsg"></span>
-      </div>
-      <div class="clock">
-        <span class="ctime-l">Now</span>
-        <span class="ctime"></span>
-        <span class="cleft-l"></span>
-        <span class="cleft"></span>
-      </div>
+      <p class="dh-eyebrow">Week ${d.week} · Day ${d.idx + 1} of ${DAYS.length} · ${fmtD(d.date)}${today ? ' · <b>Today</b>' : ""}</p>
+      <h2>${title}</h2>
+      <p class="dsub">${sub}</p>
+      <div class="dayprog"><div class="bar"><i></i></div><span class="dcount"></span></div>
     </header>
-    <div class="dayprog" aria-hidden="true">
-      <div class="bar r"><i></i></div><div class="bar a"><i></i></div>
-      <div class="nums"><span class="nr"></span><span class="na"></span></div>
-    </div>
-    <div class="containers">
-      ${CONTAINERS.map(c => `<div class="box" style="--c:${c.c}" data-c="${c.id}">
-        <h3><span class="ic"></span><span class="bn">${c.name}<small>${esc(sections(d, c.id).join(" · "))}</small></span><span class="cnt"></span></h3>
-        ${c.id === "db" ? primersHTML(d) : ""}
-        <ul class="items">${d.c[c.id].map(itemHTML).join("")}</ul>
-        <p class="bsrc">Source: ${esc(c.src)}</p>
-      </div>`).join("")}
-      ${ipHTML(d)}
-    </div>
+    <div class="containers">${boxHTML(d, "lc")}${boxHTML(d, "sql")}</div>
   </section>`;
 }
 function navHTML(d, t){
   const today = d.idx === t;
-  return `<button type="button" class="dnav${d.rev ? " is-rev" : ""}${today ? " is-today" : ""}" id="nav${d.idx + 1}" data-idx="${d.idx}">
-    <span class="dn">Day ${d.idx + 1}<span class="lk" aria-hidden="true"></span></span>
+  return `<button type="button" class="dnav t-${d.type}${today ? " is-today" : ""}" id="nav${d.idx + 1}" data-idx="${d.idx}">
+    <span class="dn">Day ${d.idx + 1}<span class="lk"></span></span>
     <span class="dd">${fmtD(d.date)}${today ? " · <b>Today</b>" : ""}</span>
-    <span class="dt">${esc(dayTitle(d))}</span>
-    <span class="dp"><span class="bar r"><i></i></span><span class="bar a"><i></i></span></span>
-    <span class="nums"><span class="nr"></span><span class="na"></span></span>
+    <span class="dt">${esc(dayLabel(d))}</span>
+    <span class="bar"><i></i></span>
   </button>`;
+}
+function chainHTML(kind, names){
+  return names.map((n, ci) => {
+    const ds = chapterDays(kind, ci);
+    const range = ds.length ? `Day ${ds[0].idx + 1}${ds.length > 1 ? `–${ds[ds.length - 1].idx + 1}` : ""}` : "";
+    return `<button type="button" class="blk" data-kind="${kind}" data-ch="${ci}" data-name="${esc(n)}" data-first="${ds[0] ? ds[0].idx : 0}">
+      <span class="bnum">${ci + 1}</span><span class="bname">${esc(n.replace("PGExercises: ", "PGX: "))}</span><span class="brange">${range}</span><span class="bbar"><i></i></span>
+    </button>`;
+  }).join("");
 }
 function build(){
   const t = todayIdx();
-  $("daylist").innerHTML = WEEKS.map((w, i) => `<div class="wk"><div class="wkh">Week ${i + 1}</div>${w.map(d => navHTML(d, t)).join("")}</div>`).join("");
+  const weeks = [];
+  DAYS.forEach(d => { (weeks[d.week - 1] = weeks[d.week - 1] || []).push(d); });
+  $("daylist").innerHTML = weeks.map((w, i) => `<div class="wk"><div class="wkh">Week ${i + 1}${i === 8 ? " · mock interviews" : ""}</div>${w.map(d => navHTML(d, t)).join("")}</div>`).join("");
   $("dayview").innerHTML = DAYS.map(d => dayHTML(d, t)).join("");
+  $("chain-dsa").innerHTML = chainHTML("lc", DSA_CH);
+  $("chain-sql").innerHTML = chainHTML("sql", SQL_CH);
 }
 
-// ---------- selection & clock ----------
-function defaultDay(){
-  const t = Math.max(0, Math.min(todayIdx(), DAYS.length - 1));
-  return me ? Math.min(t, unlockedCount(me.player) - 1) : t;
-}
+// ---------- selection ----------
 function selectDay(idx){
-  if (isLocked(idx)) { toast(`Day ${idx + 1} is locked. Finish Day ${idx} first.`, true); return; }
   selected = idx;
   DAYS.forEach(d => {
     $("day" + (d.idx + 1)).hidden = d.idx !== idx;
@@ -155,87 +193,68 @@ function selectDay(idx){
     nav.classList.toggle("sel", d.idx === idx);
     nav.setAttribute("aria-current", d.idx === idx ? "true" : "false");
   });
-  tickClock();
-}
-const pad = n => String(n).padStart(2, "0");
-function fmtDur(ms){
-  const s = Math.max(0, Math.floor(ms / 1000));
-  const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
-  return (d ? `${d}d ` : "") + `${pad(h)}:${pad(m)}:${pad(sec)}`;
-}
-function tickClock(){
-  if (selected === null) return;
-  const d = DAYS[selected], el = $("day" + (selected + 1));
-  const now = new Date(), start = d.date;
-  const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 1);
-  el.querySelector(".ctime").textContent = now.toLocaleTimeString("en-GB");
-  let label, value;
-  if (now < start) { label = "Starts in"; value = fmtDur(start - now); }
-  else if (now < end) { label = "Left today"; value = fmtDur(end - now); }
-  else { label = "Past day"; value = "catch up"; }
-  el.querySelector(".cleft-l").textContent = label;
-  el.querySelector(".cleft").textContent = value;
-  const clock = el.querySelector(".clock");
-  clock.classList.toggle("urgent", now >= start && now < end && end - now < 3 * 3600e3);
-  clock.classList.toggle("past", now >= end);
+  update();
 }
 
 // ---------- render live state ----------
 function renderWho(){
-  $("who").innerHTML = me
-    ? `<span>Playing as <strong style="color:var(--${me.player})">${esc(byId[me.player].name)}</strong></span><button class="btn ghost" type="button" id="switch">Switch</button>`
-    : `<span>Watching</span><button class="btn" type="button" id="switch">Log in to tick</button>`;
-  $("switch").addEventListener("click", openLogin);
-  document.body.style.setProperty("--me", me ? `var(--${me.player})` : "var(--done)");
+  $("who").innerHTML = pin
+    ? `<span class="who-on">Saving as Rao</span><button class="btn light" type="button" id="switch">Lock</button>`
+    : `<span>View only</span><button class="btn light" type="button" id="switch">Enter PIN</button>`;
+  $("switch").addEventListener("click", () => {
+    if (pin) { pin = null; savePin(); renderWho(); update(); }
+    else openLogin();
+  });
 }
 function update(){
+  const P = progress();
+  // stats
+  const status = P.t < 0 ? `<b>Starts ${fmtD(DAYS[0].date)}</b>` : P.behind ? `<b class="bad">Behind by ${P.behind} day${P.behind > 1 ? "s" : ""}</b>` : `<b class="good">On track</b>${P.ahead ? ` · ${P.ahead} ahead` : ""}`;
+  $("stats").innerHTML = `
+    <div class="stat"><span>Status</span>${status}</div>
+    <div class="stat"><span>Streak</span><b>${P.streak} day${P.streak === 1 ? "" : "s"}</b></div>
+    <div class="stat"><span>DSA solved</span><b>${P.dsa} / ${DSA_TOTAL}</b></div>
+    <div class="stat"><span>SQL solved</span><b>${P.sql} / ${SQL_TOTAL}</b></div>
+    <div class="stat"><span>Days complete</span><b>${P.daysDone} / ${DAYS.length}</b></div>`;
+  // quote
+  const q = pickQuote(P);
+  $("quote").className = "quote " + q.tone;
+  $("q-label").textContent = q.label;
+  $("q-text").textContent = q.text;
+  // items
   document.querySelectorAll("li.item").forEach(li => {
-    const key = li.dataset.key;
-    const mine = !!(me && state[me.player][key]);
-    const locked = isLocked(ITEM_DAY[key]);
+    const v = !!done[li.dataset.key];
     const inp = li.querySelector("input");
-    inp.checked = mine;
-    inp.disabled = !me || locked;
-    inp.title = !me ? "Log in to tick" : locked ? "Finish the previous day to unlock" : "";
-    li.classList.toggle("mine", mine);
-    const chips = li.querySelectorAll(".chip");
-    PLAYERS.forEach((p, i) => chips[i].classList.toggle("on", !!state[p.id][key]));
+    inp.checked = v; inp.disabled = !pin; inp.title = pin ? "" : "Enter your PIN to tick";
+    li.classList.toggle("mine", v);
   });
-  const u = me ? unlockedCount(me.player) : null;
+  // days
   DAYS.forEach(d => {
+    const items = itemsOf(d), n = items.filter(isDone).length, full = n === items.length;
     const el = $("day" + (d.idx + 1)), nav = $("nav" + (d.idx + 1));
-    const items = itemsOf(d);
-    const n = { rao: 0, aneeq: 0 };
-    items.forEach(it => PLAYERS.forEach(p => { if (state[p.id][it.key]) n[p.id]++; }));
-    [el, nav].forEach(box => {
-      box.querySelector(".bar.r i").style.width = n.rao / items.length * 100 + "%";
-      box.querySelector(".bar.a i").style.width = n.aneeq / items.length * 100 + "%";
-      box.querySelector(".nr").textContent = `R ${n.rao}/${items.length}`;
-      box.querySelector(".na").textContent = `A ${n.aneeq}/${items.length}`;
+    el.querySelector(".bar i").style.width = n / items.length * 100 + "%";
+    el.querySelector(".dcount").textContent = `${n} / ${items.length} done`;
+    ["lc", "sql"].forEach(k => {
+      const its = d[k].items;
+      el.querySelector(`.box[data-k="${k}"] .cnt`).textContent = `${its.filter(isDone).length}/${its.length}`;
     });
-    CONTAINERS.forEach(c => {
-      const done = me ? d.c[c.id].filter(it => state[me.player][it.key]).length : null;
-      el.querySelector(`.box[data-c="${c.id}"] .cnt`).textContent = done === null ? "5 items" : `${done}/5`;
-    });
-    const ipCnt = el.querySelector('.box[data-c="ip"] .cnt');
-    if (ipCnt) ipCnt.textContent = me ? `${d.ip.filter(it => state[me.player][it.key]).length}/${d.ip.length}` : `${d.ip.length} questions`;
-    const locked = isLocked(d.idx);
-    const mineDone = !!me && dayComplete(me.player, d);
-    nav.classList.toggle("locked", locked);
-    nav.classList.toggle("complete", mineDone);
-    nav.querySelector(".lk").textContent = locked ? "Locked" : mineDone ? "✓ Done" : "";
-    nav.title = locked ? `Finish Day ${d.idx} to unlock` : "";
-    const left = locked && d.idx === u ? itemsOf(DAYS[d.idx - 1]).filter(it => !state[me.player][it.key]).length : 0;
-    el.querySelector(".lockmsg").textContent = locked ? (d.idx === u ? `Finish Day ${d.idx} to unlock (${left} left)` : `Locked · finish Day ${d.idx} first`) : "";
+    nav.querySelector(".bar i").style.width = n / items.length * 100 + "%";
+    const late = d.idx < P.t && !full;
+    nav.classList.toggle("complete", full);
+    nav.classList.toggle("late", late);
+    nav.querySelector(".lk").textContent = full ? "✓ Done" : late ? "Behind" : "";
   });
-  if (me) {
-    if (lastUnlocked !== null && u > lastUnlocked && u <= DAYS.length) {
-      toast(`Day ${u} unlocked.`);
-      selectDay(u - 1);
-    }
-    lastUnlocked = u;
-  } else lastUnlocked = null;
-  if (selected === null || isLocked(selected)) selectDay(defaultDay());
+  // story map
+  document.querySelectorAll(".blk").forEach(b => {
+    const ds = chapterDays(b.dataset.kind, Number(b.dataset.ch));
+    const its = ds.flatMap(d => d[b.dataset.kind].items);
+    const n = its.filter(isDone).length;
+    const cur = selected !== null && DAYS[selected].type === "study" && DAYS[selected][b.dataset.kind].ch === Number(b.dataset.ch);
+    b.classList.toggle("done", n === its.length && its.length > 0);
+    b.classList.toggle("current", cur);
+    b.querySelector(".bbar i").style.width = (its.length ? n / its.length * 100 : 0) + "%";
+    b.title = `Chapter ${Number(b.dataset.ch) + 1}: ${b.dataset.name} · ${n} of ${its.length} solved`;
+  });
 }
 
 // ---------- toasts ----------
@@ -260,9 +279,9 @@ async function api(path, body){
 async function poll(){
   try {
     const data = await api("/api/state");
-    if (pending > 0) return; // don't overwrite a tick that's in flight
-    state = { rao: data.players.rao || {}, aneeq: data.players.aneeq || {} };
-    $("status").textContent = "Live · saved for both players";
+    if (pending > 0) return;
+    done = (data.players && data.players[PID]) || {};
+    $("status").textContent = "Saved online · syncs every 15 s";
     $("status").classList.remove("err");
     update();
   } catch (e) {
@@ -274,20 +293,21 @@ async function poll(){
 }
 document.addEventListener("change", async e => {
   const inp = e.target.closest("input[data-key]");
-  if (!inp || !me) return;
-  const key = inp.dataset.key, on = inp.checked, pid = me.player;
-  if (isLocked(ITEM_DAY[key])) { inp.checked = !on; toast("That day is still locked.", true); return; }
-  const prev = state[pid][key];
-  if (on) state[pid][key] = Date.now(); else delete state[pid][key];
+  if (!inp || !pin) return;
+  const key = inp.dataset.key, on = inp.checked;
+  const before = DAYS.filter(dayComplete).length;
+  const prev = done[key];
+  if (on) done[key] = Date.now(); else delete done[key];
   update();
   pending++;
   try {
-    const r = await api("/api/tick", { player: pid, pin: me.pin, key, done: on });
-    if (on && r.ts) state[pid][key] = r.ts;
+    const r = await api("/api/tick", { player: PID, pin, key, done: on });
+    if (on && r.ts) done[key] = r.ts;
+    if (DAYS.filter(dayComplete).length > before) toast("Day complete. Next block unlocked in the story.");
   } catch (err) {
-    if (prev) state[pid][key] = prev; else delete state[pid][key];
-    toast(err.status === 401 ? "Your PIN was rejected. Log in again." : `Not saved: ${err.message}`, true);
-    if (err.status === 401) { me = null; saveMe(); renderWho(); openLogin(); }
+    if (prev) done[key] = prev; else delete done[key];
+    toast(err.status === 401 ? "Your PIN was rejected. Enter it again." : `Not saved: ${err.message}`, true);
+    if (err.status === 401) { pin = null; savePin(); renderWho(); openLogin(); }
   } finally {
     pending--;
     update();
@@ -295,59 +315,47 @@ document.addEventListener("change", async e => {
 });
 
 // ---------- login ----------
-function saveMe(){ try { me ? localStorage.setItem("arena-me", JSON.stringify(me)) : localStorage.removeItem("arena-me"); } catch (e) {} }
-let picked = null;
+function savePin(){ try { pin ? localStorage.setItem("solo-pin", pin) : localStorage.removeItem("solo-pin"); } catch (e) {} }
 function openLogin(){
-  picked = me ? me.player : null;
-  document.querySelectorAll("#pick button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.p === picked)));
-  $("pin").value = "";
-  $("login-err").textContent = "";
-  $("login").hidden = false;
-  $("pin").focus();
+  $("pin").value = ""; $("login-err").textContent = "";
+  $("login").hidden = false; $("pin").focus();
 }
-document.querySelectorAll("#pick button").forEach(b => b.addEventListener("click", () => {
-  picked = b.dataset.p;
-  document.querySelectorAll("#pick button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-  $("pin").focus();
-}));
 $("login-form").addEventListener("submit", async e => {
   e.preventDefault();
-  if (!picked) { $("login-err").textContent = "Pick your name first."; return; }
-  const pin = $("pin").value.trim();
+  const p = $("pin").value.trim();
   $("enter").disabled = true;
   try {
-    await api("/api/tick", { player: picked, pin, check: true });
-    me = { player: picked, pin };
-    saveMe();
-    try { localStorage.removeItem("arena-watch"); } catch (e2) {}
+    await api("/api/tick", { player: PID, pin: p, check: true });
+    pin = p; savePin();
+    try { localStorage.removeItem("solo-watch"); } catch (e2) {}
     $("login").hidden = true;
-    renderWho(); lastUnlocked = null; selected = null; update();
+    renderWho(); update();
   } catch (err) {
-    $("login-err").textContent = err.status === 401 ? "Wrong PIN. Try again."
-      : err.status === 429 ? err.message
-      : `Couldn't check your PIN: ${err.message}`;
+    $("login-err").textContent = err.status === 401 ? "Wrong PIN. Try again." : err.status === 429 ? err.message : `Couldn't check your PIN: ${err.message}`;
   } finally { $("enter").disabled = false; }
 });
-$("watch").addEventListener("click", () => {
-  $("login").hidden = true;
-  try { localStorage.setItem("arena-watch", "1"); } catch (e) {}
-});
+$("watch").addEventListener("click", () => { $("login").hidden = true; try { localStorage.setItem("solo-watch", "1"); } catch (e) {} });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("login").hidden) $("login").hidden = true; });
 $("daylist").addEventListener("click", e => {
   const b = e.target.closest(".dnav"); if (!b) return;
   selectDay(Number(b.dataset.idx));
   if (matchMedia("(max-width: 860px)").matches) $("dayview").scrollIntoView({ behavior: "smooth", block: "start" });
 });
+document.querySelectorAll(".chain").forEach(c => c.addEventListener("click", e => {
+  const b = e.target.closest(".blk"); if (!b) return;
+  selectDay(Number(b.dataset.first));
+  $("dayview").scrollIntoView({ behavior: "smooth", block: "start" });
+}));
 
 // ---------- boot ----------
 build();
 renderWho();
-update();
+selectDay(Math.max(0, Math.min(todayIdx(), DAYS.length - 1)));
 let watching = false;
-try { watching = localStorage.getItem("arena-watch") === "1"; } catch (e) {}
-if (!me && !watching && location.protocol !== "file:") openLogin();
+try { watching = localStorage.getItem("solo-watch") === "1"; } catch (e) {}
+if (!pin && !watching && location.protocol !== "file:") openLogin();
 poll();
 setInterval(poll, POLL_MS);
-setInterval(tickClock, 1000);
+setInterval(update, 20000); // rotate quotes, refresh "today"
 document.addEventListener("visibilitychange", () => { if (!document.hidden) poll(); });
 })();

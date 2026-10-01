@@ -11,8 +11,8 @@ Upstash Redis. No build step and no npm dependencies.
    (Or run `npx vercel` in this folder.)
 2. In the project, open **Storage → Create Database → Upstash for Redis** (free plan)
    and connect it to the project. This adds `KV_REST_API_URL` and `KV_REST_API_TOKEN`.
-3. In **Settings → Environment Variables**, add `RAO_PIN` and `ANEEQ_PIN`
-   (6+ characters each). Each of you keeps your own PIN private.
+3. In **Settings → Environment Variables**, add `RAO_PIN`
+   (6+ characters). Keep it private: it is what lets you tick problems.
 4. **Redeploy** so the functions pick up the variables.
 5. Open the URL, pick your name and enter your PIN. Anyone without a PIN can only watch.
 
@@ -29,24 +29,23 @@ Opening `index.html` directly from disk shows the plan, but not the live scorebo
 
 ## The plan
 
-30 days, Mon 28 Sep → Tue 27 Oct 2026. Every day has 4 containers with 5 items each:
+62 days, Mon 5 Oct → Sat 5 Dec 2026, DSA + SQL only, for one person (PIN in `RAO_PIN`).
+It's told as a story: chapters build on each other, and every study day stays inside one chapter.
 
-| Container | Source (followed in its own order) |
-|---|---|
-| 🧠 LeetCode DSA | NeetCode 150 roadmap: 130 free problems, each with its NeetCode video |
-| 🧩 OOP & LLD | AlgoMaster LLD course (free chapters) → AlgoMaster concurrency → LLD interview problems (AlgoMaster + github.com/ashishps1/awesome-low-level-design) |
-| 🗄️ Database / SQL | LeetCode SQL 50 (study-plan order) + 9 classic LeetCode DB problems → all 71 PGExercises |
-| 🏗️ System Design | AlgoMaster system design course (free chapters) → AlgoMaster interview course → problem videos from github.com/ashishps1/awesome-system-design-resources |
+- **DSA (18 chapters):** the NeetCode 150 roadmap, all 143 free problems, each with its NeetCode video.
+- **SQL (12 chapters):** LeetCode SQL 50 → 9 classic LeetCode database problems → PGExercises (joins, aggregation, timestamps, recursive). 96 problems.
+- **Mon–Sat, weeks 1–8:** about 3 DSA + 2 SQL a day. Each chapter opens with a note: what it builds on and what to know.
+- **Sundays:** checkpoint. Re-solve that week's 5 hardest DSA and 3 hardest SQL problems.
+- **Week 9 (30 Nov – 5 Dec):** mock interviews. Timed re-solves picked from across the plan.
+- No day locks. The header shows your streak, problems solved, and whether you're on track or behind; the quote reacts to it.
 
-Sundays (days 7, 14, 21, 28) revisit 5 of that week's hardest items per container.
-The next day unlocks only when all 20 items of the current day are ticked (per player).
-To change the content, edit `plan.js`.
+Content lives in `plan.js` (problems), `story.js` (DSA chapter notes, SQL "builds on"), `primers.js` (SQL notes).
 
 ## Data
 
-Redis keys: `sprint2:done:rao` and `sprint2:done:aneeq` (hash: item key → tick time).
-The old plan's `sprint:*` keys are left untouched and unused. To reset progress, delete the `sprint2:*` keys
+Redis key: `sprint3:done:rao` (hash: item key → tick time).
+Older `sprint:*` and `sprint2:*` keys are left untouched and unused. To reset progress, delete the `sprint3:*` keys
 in the Upstash console.
 
-To change the plan, edit `plan.js`. Item keys are `d<day>-<track>-<index>`, so
+To change the plan, edit `plan.js`. Item keys are `d<day>-<lc|sql>-<index>`, so
 don't reorder items inside a day once you've started ticking.

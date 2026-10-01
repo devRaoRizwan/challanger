@@ -1,5 +1,4 @@
-// GET /api/state: both players' ticks plus the recent activity feed.
-// Public (read-only), so anyone with the link can watch the scoreboard.
+// GET /api/state: your ticks (item key → tick time). Public read-only, so the page loads without a PIN.
 import { redis, PLAYERS, NS, hashToObject } from "./_redis.js";
 
 export default async function handler(req, res) {
