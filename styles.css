@@ -1,10 +1,10 @@
-/* Bright but restrained: one vivid indigo, teal for SQL, amber for "today"/highlights.
+/* Base layout. Colours are set by the glass theme and the warm colour pass at the end of this file (no blue). */
    Flat colours only (no gradients), light page, white cards. */
 :root{
   color-scheme:light;
   --bg:#f4f5fb; --card:#ffffff; --tint:#f8f9fd; --sunk:#eceef7; --line:#e3e6f0;
   --ink:#111827; --ink2:#374151; --muted:#6b7280;
-  --brand:#4f46e5; --brand-ink:#3730a3; --brand-soft:#eef0ff; --brand-line:#c7cbfb;
+  --brand:#f9572b; --brand-ink:#a8340f; --brand-soft:#fff1ec; --brand-line:#ffc9b6;
   --sqlc:#0d9488; --sql-soft:#e6f7f5; --sql-line:#a7e3dc;
   --hot:#f59e0b; --hot-soft:#fff6e0; --hot-ink:#92400e;
   --good:#16a34a; --good-soft:#eaf8ef; --bad:#e11d48; --bad-soft:#fdeef2; --warn:#d97706; --warn-soft:#fff6e0;
@@ -346,3 +346,98 @@ h1,h2,h3{font-family:var(--display);color:var(--ink);letter-spacing:-.02em}
 .lockmsg:empty{display:none}
 /* the canvas colour lives on <html>; <body> stays transparent so the mesh shows behind the glass */
 body{background:transparent}
+
+/* ============================================================
+   Colour pass (no blue anywhere): coral = DSA / selection, emerald = SQL,
+   amber = warm-ups, pink = raw SQL. Warm pastel mesh behind the glass.
+   ============================================================ */
+:root{
+  --coral:#f9572b; --coral-soft:rgba(249,87,43,.10); --coral-line:rgba(249,87,43,.35);
+  --emerald:#10a36f; --emerald-soft:rgba(16,163,111,.10);
+  --amber:#f2a516; --amber-soft:rgba(242,165,22,.14);
+  --pink:#e8457c; --pink-soft:rgba(232,69,124,.10);
+  --sqlc:var(--emerald); --sql-soft:var(--emerald-soft);
+  --good:#10a36f; --bad:#e23c4f; --warn:#e28a00;
+}
+.mesh{background:#fbf6f1}
+html,.mesh{background:#fbf6f1}
+.mesh i:nth-child(1){background:#ffc9a8;opacity:.9}
+.mesh i:nth-child(2){background:#ffc2d6;opacity:.85}
+.mesh i:nth-child(3){background:#bff0d6;opacity:.85}
+.mesh i:nth-child(4){background:#ffe7a3;opacity:.9}
+::selection{background:rgba(249,87,43,.25)}
+a{color:var(--coral)}
+.item label a{color:var(--ink)}
+.item label a:hover{color:var(--coral)}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline-color:var(--coral)}
+
+/* hero */
+.hero h1{color:var(--ink)}
+.hero h1::after{content:"";display:block;width:64px;height:5px;border-radius:5px;margin-top:10px;background:var(--coral)}
+.hero-sub{color:#9a5b3f}
+.stat:nth-child(1) b{color:var(--ink)}
+.stat:nth-child(2) b{color:var(--amber)}
+.stat:nth-child(3) b{color:var(--coral)}
+.stat:nth-child(4) b{color:var(--emerald)}
+.stat:nth-child(5) b{color:var(--pink)}
+.stat b.bad{color:var(--bad)} .stat b.good{color:var(--good)}
+.btn{background:var(--coral);border-color:var(--coral)}
+.btn.light,.btn.ghost{color:var(--ink)}
+
+/* quote */
+.quote{--qc:var(--coral)}
+.quote.bad{--qc:var(--bad)} .quote.warn{--qc:var(--amber)} .quote.good{--qc:var(--good)}
+.quote::before{width:5px}
+.q-label{color:var(--qc)}
+
+/* story map */
+.sm-row h2{color:#9a5b3f}
+.blk .bbar i{background:var(--coral)}
+#chain-sql .blk .bbar i{background:var(--emerald)}
+.blk.done .bnum{background:var(--coral);border-color:var(--coral)}
+#chain-sql .blk.done .bnum{background:var(--emerald);border-color:var(--emerald)}
+.blk.current{border-color:var(--coral);box-shadow:0 0 0 3px var(--coral-soft)}
+.blk.current .bnum{background:var(--coral);border-color:var(--coral)}
+#chain-sql .blk.current{border-color:var(--emerald);box-shadow:0 0 0 3px var(--emerald-soft)}
+#chain-sql .blk.current .bnum{background:var(--emerald);border-color:var(--emerald)}
+
+/* day column */
+.daylist::before{color:var(--coral)}
+.wkh{color:#9a5b3f}
+.dnav.is-today{border-color:var(--amber);background:#fff8e6}
+.dnav.is-today .dd b{color:#b46c00}
+.dnav.complete{background:#ecfaf3;border-color:#b6ead1}
+.dnav.complete .lk{color:var(--emerald)}
+.dnav.late .lk{color:var(--bad)}
+.dnav.t-checkpoint .dt{color:var(--pink)}
+.dnav.t-mock .dt{color:var(--bad)}
+.dnav.sel{background:var(--coral);border-color:var(--coral);box-shadow:0 8px 20px -8px rgba(249,87,43,.6)}
+.dnav.sel .lk,.dnav.sel .dd b{color:#fff}
+.bar i{background:var(--coral)}
+.dnav.sel .bar i{background:#fff}
+
+/* day panel + boxes */
+.dh-eyebrow b{color:#b46c00}
+.dayhead h2{color:var(--ink)}
+.dayprog .bar i{background:var(--coral)}
+.box{--c:var(--coral);--cs:var(--coral-soft);border-top:4px solid var(--c)}
+.box.sql{--c:var(--emerald);--cs:var(--emerald-soft)}
+.box h3 .tag{background:var(--c)}
+.box h3 .cnt{background:var(--cs);color:var(--c)}
+.note summary{color:var(--c)}
+.note{background:linear-gradient(157deg,#ffffffeb,#ffffff9a 40%,#ffffff55),var(--cs);border-color:color-mix(in srgb,var(--c) 25%,#fff)}
+.note .new{background:var(--amber)}
+.grp{margin:4px 0 -4px;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--c);display:flex;align-items:center;gap:8px}
+.grp::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--c) 25%,transparent)}
+.grp.warm{color:#b46c00} .grp.warm::after{background:rgba(242,165,22,.35)}
+.grp.raw{color:var(--pink)} .grp.raw::after{background:rgba(232,69,124,.3)}
+.again{background:var(--coral)}
+.again.warm{background:var(--amber)}
+.again.raw{background:var(--pink)}
+.item input{accent-color:var(--coral)}
+.box.sql .item input{accent-color:var(--emerald)}
+.diff-easy{color:#0c7f55;background:#e3f7ee} .diff-medium{color:#a85d00;background:#fff1d6} .diff-hard{color:#c42840;background:#fde6ea}
+.vid{color:#d1361a}
+.plinks a{color:var(--c)}
+.lockmsg{color:var(--bad)}
+.status{color:#9a5b3f}

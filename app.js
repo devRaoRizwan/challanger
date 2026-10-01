@@ -123,7 +123,7 @@ function itemHTML(it){
   const num = it.n ? `<span class="num">#${esc(it.n)}</span>` : "";
   const diff = it.d ? `<span class="diff diff-${it.d.toLowerCase()}">${esc(it.d)}</span>` : "";
   const vid = it.v ? `<a class="vid" href="https://www.youtube.com/watch?v=${it.v.id}" target="_blank" rel="noopener" title="${esc(it.v.title)}">${PLAY}${esc(it.v.len)} · NeetCode</a>` : "";
-  const tag = it.mock ? '<span class="again">Timed</span>' : it.rev ? '<span class="again">Re-solve</span>' : "";
+  const tag = it.mock ? '<span class="again">Timed</span>' : it.rev ? '<span class="again">Re-solve</span>' : it.warm ? '<span class="again warm">Warm-up</span>' : it.raw ? '<span class="again raw">Raw SQL</span>' : "";
   return `<li class="item" data-key="${it.key}">
     <input type="checkbox" id="${it.key}" data-key="${it.key}">
     <div class="body">
@@ -157,7 +157,12 @@ function boxHTML(d, kind){
   } else {
     head = `<h3><span class="tag">${isDsa ? "DSA" : "SQL"}</span><span class="bn">${d.type === "mock" ? (isDsa ? "Timed problems" : "Timed queries") : (isDsa ? "Re-solve this week's hardest" : "Re-solve this week's hardest queries")}<small>${d.type === "mock" ? (isDsa ? "25 min per medium · 40 min for the hard one · talk out loud" : "15 min each, no hints") : "No notes, no video. If you can't, rewatch and redo it tomorrow."}</small></span><span class="cnt"></span></h3>`;
   }
-  return `<div class="box ${isDsa ? "dsa" : "sql"}" data-k="${kind}">${head}${note}<ul class="items">${part.items.map(itemHTML).join("")}</ul></div>`;
+  const groups = d.type !== "study" ? [["", part.items]]
+    : isDsa ? [["Warm-up · easy, same pattern", part.items.filter(x => x.warm)], ["Main problems", part.items.filter(x => !x.warm)]]
+            : [["LeetCode", part.items.filter(x => !x.raw)], ["Raw SQL · write it from scratch", part.items.filter(x => x.raw)]];
+  const lists = groups.filter(([, its]) => its.length).map(([label, its]) =>
+    `${label ? `<p class="grp${label.startsWith("Warm") ? " warm" : label.startsWith("Raw") ? " raw" : ""}">${label}</p>` : ""}<ul class="items">${its.map(itemHTML).join("")}</ul>`).join("");
+  return `<div class="box ${isDsa ? "dsa" : "sql"}" data-k="${kind}">${head}${note}${lists}</div>`;
 }
 function dayHTML(d, t){
   const today = d.idx === t;

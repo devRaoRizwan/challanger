@@ -32,12 +32,14 @@ Opening `index.html` directly from disk shows the plan, but not the live scorebo
 62 days, Mon 5 Oct → Sat 5 Dec 2026, DSA + SQL only, for one person (PIN in `RAO_PIN`).
 It's told as a story: chapters build on each other, and every study day stays inside one chapter.
 
-- **DSA (18 chapters):** the NeetCode 150 roadmap, all 143 free problems, each with its NeetCode video.
-- **SQL (12 chapters):** LeetCode SQL 50 → 9 classic LeetCode database problems → PGExercises (joins, aggregation, timestamps, recursive). 96 problems.
-- **Mon–Sat, weeks 1–8:** about 3 DSA + 2 SQL a day. Each chapter opens with a note: what it builds on and what to know.
+- **DSA (18 chapters):** the NeetCode 150 roadmap, all 143 free problems, each with its NeetCode video, plus 96 warm-ups.
+- **SQL (12 chapters):** LeetCode SQL 50 → 9 classic LeetCode database problems → PGExercises (joins, aggregation, timestamps, recursive). 96 problems, plus 48 raw-query exercises.
+- **Mon–Sat, weeks 1–8:** 2 DSA warm-ups (easy, same pattern) + about 3 main DSA, and about 2 LeetCode SQL + 1 raw-query
+  exercise from [sql-practice.online](https://www.sql-practice.online/scenario) on the same topic. All are needed to unlock the next day.
+  Each chapter opens with a note: what it builds on and what to know.
 - **Sundays:** checkpoint. Re-solve that week's 5 hardest DSA and 3 hardest SQL problems.
 - **Week 9 (30 Nov – 5 Dec):** mock interviews. Timed re-solves picked from across the plan.
-- No day locks. The header shows your streak, problems solved, and whether you're on track or behind; the quote reacts to it.
+- Days lock: the next day opens only when the current one is fully done. The header shows your streak, problems solved, and whether you're on track or behind; the quote reacts to it.
 
 Content lives in `plan.js` (problems), `story.js` (DSA chapter notes, SQL "builds on"), `primers.js` (SQL notes).
 
