@@ -1,5 +1,4 @@
-/* Base layout. Colours are set by the glass theme and the warm colour pass at the end of this file (no blue). */
-   Flat colours only (no gradients), light page, white cards. */
+/* Base layout. The final look (flat white, red / green / yellow accents) is set at the end of this file. */
 :root{
   color-scheme:light;
   --bg:#f4f5fb; --card:#ffffff; --tint:#f8f9fd; --sunk:#eceef7; --line:#e3e6f0;
@@ -193,7 +192,7 @@ ul.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 /* ============================================================
    Glass theme, matching devraorizwan.online:
    monochrome ink on a soft grey canvas, drifting grey mesh behind,
-   white frosted-glass panels (blur 40px, saturate 190%), glass chips,
+   white flat white panels (gradients removed),
    Inter + JetBrains Mono. Colour only for SQL (emerald) and status.
    ============================================================ */
 :root{
@@ -206,12 +205,12 @@ ul.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
   --display:"Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --body:"Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --glass-bg:linear-gradient(157deg,#fffffff7,#ffffffa3 24%,#ffffff4d 46%,#ffffff24 74%,#ffffff38),#ffffff66;
+  --glass-bg:#ffffff;
   --glass-bd:1px solid #ffffffd9;
   --glass-sh:inset 0 1px #fff,inset 0 0 0 1px #ffffff66,inset 0 -18px 28px -22px #0a0a0a33,0 1px 1px #0a0a0a08,0 8px 20px -8px #0a0a0a1a,0 30px 60px -28px #0a0a0a42;
-  --inset-bg:linear-gradient(157deg,#ffffffeb,#ffffff73 30%,#ffffff1a 64%,#ffffff2e),#ffffff3d;
+  --inset-bg:#ffffff;
   --inset-sh:inset 0 1px #fffffff2,inset 0 -12px 20px -18px #0a0a0a29,0 1px 2px #0a0a0a08;
-  --chip-bg:linear-gradient(155deg,#fffffffa,#ffffff8c 42%,#ffffff29),#ffffff57;
+  --chip-bg:#ffffff;
   --chip-sh:inset 0 1px #fff,0 1px 2px #0a0a0a0d;
   --blur:blur(40px) saturate(190%) brightness(1.05);
 }
@@ -425,7 +424,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{o
 .box h3 .tag{background:var(--c)}
 .box h3 .cnt{background:var(--cs);color:var(--c)}
 .note summary{color:var(--c)}
-.note{background:linear-gradient(157deg,#ffffffeb,#ffffff9a 40%,#ffffff55),var(--cs);border-color:color-mix(in srgb,var(--c) 25%,#fff)}
+.note{background:#fafafa;border-color:var(--line)}
 .note .new{background:var(--amber)}
 .grp{margin:4px 0 -4px;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--c);display:flex;align-items:center;gap:8px}
 .grp::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--c) 25%,transparent)}
@@ -441,3 +440,87 @@ a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{o
 .plinks a{color:var(--c)}
 .lockmsg{color:var(--bad)}
 .status{color:#9a5b3f}
+
+/* ============================================================
+   Final look: plain white, flat (no gradients, no blur, no mesh).
+   Colour only on icons and small markers: red = DSA, green = SQL,
+   yellow = warm-ups / today. Everything else is black on white.
+   ============================================================ */
+:root{
+  --red:#e5383b; --red-soft:#fdecec; --green:#16a34a; --green-soft:#e9f7ee; --yellow:#eab308; --yellow-soft:#fef8e1;
+  --ink:#0a0a0a; --ink2:#3a3a3a; --muted:#5f5f5f; --faint:#7a7a7a; --line:#e6e6e6; --sunk:#efefef;
+  --glass-bg:#ffffff; --inset-bg:#ffffff; --chip-bg:#ffffff;
+  --glass-bd:1px solid #e6e6e6; --glass-sh:0 1px 2px rgba(0,0,0,.04); --inset-sh:none; --chip-sh:none;
+  --coral:var(--red); --coral-soft:var(--red-soft); --emerald:var(--green); --emerald-soft:var(--green-soft);
+  --amber:var(--yellow); --amber-soft:var(--yellow-soft); --pink:var(--green); --pink-soft:var(--green-soft);
+  --good:var(--green); --bad:var(--red); --warn:var(--yellow);
+}
+html,body,.mesh{background:#fff}
+.mesh{display:none}
+.hero,.quote,.storymap,.daypanel,.daylist,.modal,.toast,.box,.note,.stat,.dnav,.blk,.btn.ghost,.btn.light,.src,.plinks a,.field input,.blk .bnum,.vid{
+  background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;border:1px solid var(--line)}
+.hero,.storymap,.daypanel{box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.note{background:#fafafa}
+.daylist{border:0;border-right:1px solid var(--line)}
+.overlay{background:rgba(0,0,0,.35);-webkit-backdrop-filter:none;backdrop-filter:none}
+
+/* neutral text everywhere */
+a,.item label a,.plinks a{color:var(--ink)}
+.item label a:hover,a:hover{color:var(--red)}
+.hero-sub,.sm-row h2,.wkh,.status,.dh-eyebrow,.stat span{color:var(--faint)}
+.daylist::before{color:var(--ink)}
+.dayhead h2,.hero h1,.q-text{color:var(--ink)}
+.hero h1::after{background:var(--red)}
+.btn{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.light,.btn.ghost{color:var(--ink)}
+
+/* stats: black numbers, a small coloured dot as the icon */
+.stat b{color:var(--ink)!important}
+.stat span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:0;background:var(--line)}
+.stat:nth-child(1) span::before{background:var(--green)}
+.stat:nth-child(2) span::before{background:var(--yellow)}
+.stat:nth-child(3) span::before{background:var(--red)}
+.stat:nth-child(4) span::before{background:var(--green)}
+.stat:nth-child(5) span::before{background:var(--ink)}
+.stat b.bad{color:var(--red)!important} .stat b.good{color:var(--green)!important}
+
+/* quote: white card, coloured marker only */
+.quote{--qc:var(--ink);background:#fff}
+.quote.bad{--qc:var(--red)} .quote.warn{--qc:var(--yellow)} .quote.good{--qc:var(--green)}
+.q-label{color:var(--qc)}
+
+/* story map: coloured number badges only */
+.blk.done,.blk.current,#chain-sql .blk.done{background:#fff}
+.blk .bbar i,.bar i,.dayprog .bar i{background:var(--ink)}
+.blk.done .bnum{background:var(--red);border-color:var(--red);color:#fff}
+#chain-sql .blk .bbar i{background:var(--ink)}
+#chain-sql .blk.done .bnum{background:var(--green);border-color:var(--green);color:#fff}
+.blk.current,#chain-sql .blk.current{border:1.5px solid var(--ink);box-shadow:none}
+.blk.current .bnum,#chain-sql .blk.current .bnum{background:var(--yellow);border-color:var(--yellow);color:var(--ink)}
+
+/* day column */
+.dnav{background:#fff}
+.dnav.is-today{background:#fff;border-color:var(--yellow);box-shadow:inset 3px 0 0 var(--yellow)}
+.dnav.is-today .dd b{color:var(--ink)}
+.dnav.complete{background:#fff;border-color:var(--line)}
+.dnav.complete .lk{color:var(--green)}
+.dnav.late .lk,.dnav.t-mock .dt{color:var(--red)}
+.dnav.t-checkpoint .dt{color:var(--ink)}
+.dnav.sel{background:var(--ink);border-color:var(--ink);box-shadow:none}
+.dnav.sel .bar i{background:#fff}
+
+/* boxes: white, coloured tag + top edge */
+.box{--c:var(--red);--cs:var(--red-soft);border-top:3px solid var(--c)}
+.box.sql{--c:var(--green);--cs:var(--green-soft)}
+.box h3 .tag{background:var(--c);color:#fff}
+.box h3 .cnt{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.note summary{color:var(--ink)}
+.note .new{background:var(--yellow);color:var(--ink)}
+.grp,.grp.raw{color:var(--faint)} .grp::after,.grp.raw::after{background:var(--line)}
+.grp.warm{color:var(--faint)} .grp.warm::after{background:var(--line)}
+.again{background:var(--ink);color:#fff}
+.again.warm{background:var(--yellow);color:var(--ink)}
+.again.raw{background:var(--green);color:#fff}
+.item input,.box.sql .item input{accent-color:var(--ink)}
+.vid{color:var(--red);border-color:#f5c2c3}
+.diff-easy{color:#15803d;background:var(--green-soft)} .diff-medium{color:#8a6500;background:var(--yellow-soft)} .diff-hard{color:#c42b2e;background:var(--red-soft)}

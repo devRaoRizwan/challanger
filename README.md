@@ -51,3 +51,27 @@ in the Upstash console.
 
 To change the plan, edit `plan.js`. Item keys are `d<day>-<lc|sql>-<index>`, so
 don't reorder items inside a day once you've started ticking.
+
+## WhatsApp reminders (CallMeBot)
+
+`api/remind.js` checks today's progress and sends you a WhatsApp message through
+[CallMeBot](https://www.callmebot.com/blog/free-api-whatsapp-messages/) (free, personal use only).
+
+1. **Get your CallMeBot API key:** save **+34 684 770 005** in your phone contacts, then send it this WhatsApp
+   message: `I allow callmebot to send me messages`. The bot replies with your apikey. (If nothing comes in 2 minutes,
+   try again after 24 hours. Check the CallMeBot page above in case the bot number changes.)
+2. **Add these in Vercel → Settings → Environment Variables:**
+   - `CALLMEBOT_PHONE`: your WhatsApp number with country code, e.g. `+923001234567`
+   - `CALLMEBOT_APIKEY`: the key from step 1
+   - `CRON_SECRET`: any long random string
+   - `REMIND_TZ`: your timezone, e.g. `Asia/Karachi`
+   - `SITE_URL`: your Vercel URL (added as a link in each message)
+3. **Redeploy**, then send yourself a test:
+   `https://<your-site>/api/remind?slot=test&key=<CRON_SECRET>`
+4. **Schedule it.** `vercel.json` already runs the **night** reminder once a day at 16:00 UTC (21:00 in Pakistan).
+   Vercel's free plan allows only one run a day, so add the other two on [cron-job.org](https://cron-job.org) (free):
+   - `https://<your-site>/api/remind?slot=morning&key=<CRON_SECRET>` at 09:00
+   - `https://<your-site>/api/remind?slot=evening&key=<CRON_SECRET>` at 18:00
+
+What each slot does: **morning** sends today's chapter and problem count, **evening** sends progress so far,
+**night** sends the brutal one. All three stay quiet once the day is finished.
