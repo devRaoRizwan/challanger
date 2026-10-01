@@ -32,6 +32,14 @@ try { pin = localStorage.getItem("solo-pin"); } catch (e) { pin = null; }
 
 const isDone = it => !!done[it.key];
 const dayComplete = d => itemsOf(d).every(isDone);
+// Locks: day N+1 opens only when every problem of day N is ticked.
+function unlockedCount(){
+  let n = 1;
+  while (n < DAYS.length && dayComplete(DAYS[n - 1])) n++;
+  return n; // days 1..n are open
+}
+const isLocked = idx => idx >= unlockedCount();
+let firstLoad = true;
 function progress(){
   const t = todayIdx();
   let behind = 0, ahead = 0;
@@ -62,16 +70,34 @@ function dayLabel(d){
 
 // ---------- quotes (brutal, based on how you're doing) ----------
 const QUOTES = {
-  before:  ["Starts Monday. Decide now that you won't miss a single day.", "The plan is ready. The only missing part is you showing up on Monday."],
-  finished:["All 62 days done. Now go and take the offer.", "Plan complete. You did what most people only talk about."],
-  behindBig:["{n} days behind. The plan didn't get harder. You got comfortable.", "{n} days of problems are waiting for you. Interviews won't wait with them.", "{n} days behind. Every day you skip, someone else is preparing for your job."],
-  behindSmall:["{n} day(s) behind. That's how every 'I'll catch up on Sunday' starts.", "Behind by {n}. Fix it today, not 'this weekend'.", "{n} day(s) behind already. Small slips become a lost month."],
-  idle:    ["Zero problems today. The interviewer won't ask how busy you were.", "Nothing ticked today. Comfort is the most expensive thing you own right now.", "Your LeetCode tab is only open in your head."],
-  partial: ["{d} of {tt} done. Half a day is a full excuse.", "{left} left today. Finish what you started.", "{d}/{tt}. Stopping here is exactly what you'd tell yourself not to do."],
-  streak:  ["{s}-day streak. Break it tonight and you start from zero.", "{s} days in a row. Don't be the one who ends it."],
-  doneToday:["Today's done. Don't let tomorrow turn it into a fluke.", "Done for today. Do it again tomorrow. That's the whole secret."],
-  ahead:   ["{a} day(s) ahead. Don't celebrate, protect the lead.", "Ahead of schedule by {a}. Good. Now make it boring and repeat it."],
-  general: ["Nobody is coming to save your career. Open LeetCode.", "Motivation is for amateurs. Show up anyway.", "The job market doesn't care that you're tired."],
+  before:  ["You planned this for weeks. Monday shows whether you're someone who starts or someone who only plans.",
+            "Monday. Either you show up, or you admit you were never serious.",
+            "Big talk so far. Monday is where your excuses run out."],
+  finished:["62 days. Most people who say 'I'll prepare' never get here. Now prove it in a real interview.",
+            "You finished. Don't get proud. Go get the offer you kept talking about."],
+  behindBig:["{n} days behind. You're not busy. You're avoiding it.",
+             "{n} days missed. This is exactly why you're still looking for a job.",
+             "{n} days behind. You said you wanted this. Your record says otherwise.",
+             "{n} days gone. The version of you that gets hired would be embarrassed by this one."],
+  behindSmall:["{n} day(s) behind and already writing excuses in your head. Stop.",
+               "Missed {n}. That's how quitting starts. Quietly.",
+               "Behind by {n}. You don't get to call yourself serious yet."],
+  idle:    ["Zero today. You're not tired. You're scared of problems you can't solve.",
+            "Nothing done. Somewhere, someone less talented than you is taking your offer today.",
+            "Zero problems. Scrolling doesn't count as preparation.",
+            "You opened the tracker and did nothing. Proud of that?"],
+  partial: ["{d} of {tt}. Quitting halfway: is that your specialty?",
+            "{left} left. Finish it, or admit you're not built for this.",
+            "{d}/{tt}. Average people stop here. Are you average?"],
+  streak:  ["{s}-day streak. Break it and you prove you were never different from the rest.",
+            "{s} days straight. Don't you dare be the one who quits now."],
+  doneToday:["Done today. Don't get proud. One day proves nothing.",
+             "Today's done. Tomorrow you'll want to skip. That's the real test."],
+  ahead:   ["{a} day(s) ahead. Good. Don't get cocky.",
+            "Ahead by {a}. Still not hired, though. Keep going."],
+  general: ["Nobody owes you a job. Earn it.",
+            "Talent you don't use is just a story you tell yourself.",
+            "You're not stuck. You're comfortable, with good excuses."],
 };
 function pickQuote(P){
   const slot = Math.floor(Date.now() / 20000);
@@ -151,6 +177,7 @@ function dayHTML(d, t){
       <p class="dh-eyebrow">Week ${d.week} · Day ${d.idx + 1} of ${DAYS.length} · ${fmtD(d.date)}${today ? ' · <b>Today</b>' : ""}</p>
       <h2>${title}</h2>
       <p class="dsub">${sub}</p>
+      <p class="lockmsg"></p>
       <div class="dayprog"><div class="bar"><i></i></div><span class="dcount"></span></div>
     </header>
     <div class="containers">${boxHTML(d, "lc")}${boxHTML(d, "sql")}</div>
@@ -185,7 +212,11 @@ function build(){
 }
 
 // ---------- selection ----------
+function defaultDay(){
+  return Math.min(Math.max(0, Math.min(todayIdx(), DAYS.length - 1)), unlockedCount() - 1);
+}
 function selectDay(idx){
+  if (isLocked(idx)) { toast(`Day ${idx + 1} is locked. Finish Day ${idx} first.`, true); return false; }
   selected = idx;
   DAYS.forEach(d => {
     $("day" + (d.idx + 1)).hidden = d.idx !== idx;
@@ -194,6 +225,7 @@ function selectDay(idx){
     nav.setAttribute("aria-current", d.idx === idx ? "true" : "false");
   });
   update();
+  return true;
 }
 
 // ---------- render live state ----------
@@ -225,7 +257,9 @@ function update(){
   document.querySelectorAll("li.item").forEach(li => {
     const v = !!done[li.dataset.key];
     const inp = li.querySelector("input");
-    inp.checked = v; inp.disabled = !pin; inp.title = pin ? "" : "Enter your PIN to tick";
+    const locked = isLocked(Number(li.dataset.key.slice(1).split("-")[0]) - 1);
+    inp.checked = v; inp.disabled = !pin || locked;
+    inp.title = !pin ? "Enter your PIN to tick" : locked ? "Finish the previous day to unlock" : "";
     li.classList.toggle("mine", v);
   });
   // days
@@ -240,9 +274,14 @@ function update(){
     });
     nav.querySelector(".bar i").style.width = n / items.length * 100 + "%";
     const late = d.idx < P.t && !full;
+    const locked = isLocked(d.idx);
     nav.classList.toggle("complete", full);
-    nav.classList.toggle("late", late);
-    nav.querySelector(".lk").textContent = full ? "✓ Done" : late ? "Behind" : "";
+    nav.classList.toggle("late", late && !locked);
+    nav.classList.toggle("locked", locked);
+    nav.querySelector(".lk").textContent = locked ? "Locked" : full ? "✓ Done" : late ? "Behind" : "";
+    nav.title = locked ? `Finish Day ${d.idx} to unlock` : "";
+    const lm = el.querySelector(".lockmsg");
+    if (lm) lm.textContent = locked ? `Locked. Finish Day ${d.idx} to open this day.` : "";
   });
   // story map
   document.querySelectorAll(".blk").forEach(b => {
@@ -251,6 +290,7 @@ function update(){
     const n = its.filter(isDone).length;
     const cur = selected !== null && DAYS[selected].type === "study" && DAYS[selected][b.dataset.kind].ch === Number(b.dataset.ch);
     b.classList.toggle("done", n === its.length && its.length > 0);
+    b.classList.toggle("locked", ds.length > 0 && isLocked(ds[0].idx));
     b.classList.toggle("current", cur);
     b.querySelector(".bbar i").style.width = (its.length ? n / its.length * 100 : 0) + "%";
     b.title = `Chapter ${Number(b.dataset.ch) + 1}: ${b.dataset.name} · ${n} of ${its.length} solved`;
@@ -283,6 +323,8 @@ async function poll(){
     done = (data.players && data.players[PID]) || {};
     $("status").textContent = "Saved online · syncs every 15 s";
     $("status").classList.remove("err");
+    if (firstLoad) { firstLoad = false; selectDay(defaultDay()); }
+    if (selected !== null && isLocked(selected)) selectDay(defaultDay());
     update();
   } catch (e) {
     $("status").textContent = location.protocol === "file:"
@@ -295,7 +337,8 @@ document.addEventListener("change", async e => {
   const inp = e.target.closest("input[data-key]");
   if (!inp || !pin) return;
   const key = inp.dataset.key, on = inp.checked;
-  const before = DAYS.filter(dayComplete).length;
+  if (isLocked(Number(key.slice(1).split("-")[0]) - 1)) { inp.checked = !on; toast("That day is still locked.", true); return; }
+  const before = unlockedCount();
   const prev = done[key];
   if (on) done[key] = Date.now(); else delete done[key];
   update();
@@ -303,13 +346,15 @@ document.addEventListener("change", async e => {
   try {
     const r = await api("/api/tick", { player: PID, pin, key, done: on });
     if (on && r.ts) done[key] = r.ts;
-    if (DAYS.filter(dayComplete).length > before) toast("Day complete. Next block unlocked in the story.");
+    const after = unlockedCount();
+    if (after > before && after <= DAYS.length) { toast(`Day ${after - 1} complete. Day ${after} is unlocked.`); selectDay(after - 1); }
   } catch (err) {
     if (prev) done[key] = prev; else delete done[key];
     toast(err.status === 401 ? "Your PIN was rejected. Enter it again." : `Not saved: ${err.message}`, true);
     if (err.status === 401) { pin = null; savePin(); renderWho(); openLogin(); }
   } finally {
     pending--;
+    if (selected !== null && isLocked(selected)) selectDay(defaultDay());
     update();
   }
 });
@@ -343,14 +388,13 @@ $("daylist").addEventListener("click", e => {
 });
 document.querySelectorAll(".chain").forEach(c => c.addEventListener("click", e => {
   const b = e.target.closest(".blk"); if (!b) return;
-  selectDay(Number(b.dataset.first));
-  $("dayview").scrollIntoView({ behavior: "smooth", block: "start" });
+  if (selectDay(Number(b.dataset.first))) $("dayview").scrollIntoView({ behavior: "smooth", block: "start" });
 }));
 
 // ---------- boot ----------
 build();
 renderWho();
-selectDay(Math.max(0, Math.min(todayIdx(), DAYS.length - 1)));
+selectDay(defaultDay());
 let watching = false;
 try { watching = localStorage.getItem("solo-watch") === "1"; } catch (e) {}
 if (!pin && !watching && location.protocol !== "file:") openLogin();

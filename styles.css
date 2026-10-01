@@ -189,3 +189,160 @@ ul.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
   .containers,.dayhead{padding-inline:12px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ============================================================
+   Glass theme, matching devraorizwan.online:
+   monochrome ink on a soft grey canvas, drifting grey mesh behind,
+   white frosted-glass panels (blur 40px, saturate 190%), glass chips,
+   Inter + JetBrains Mono. Colour only for SQL (emerald) and status.
+   ============================================================ */
+:root{
+  --bg:#f4f4f7; --card:transparent; --tint:rgba(255,255,255,.45); --sunk:rgba(10,10,10,.07); --line:#e4e4e6;
+  --ink:#0a0a0a; --ink2:#3a3a3a; --muted:#565656; --faint:#707070;
+  --brand:#0a0a0a; --brand-ink:#0a0a0a; --brand-soft:rgba(10,10,10,.05); --brand-line:rgba(10,10,10,.18);
+  --sqlc:#059669; --sql-soft:rgba(16,185,129,.08); --sql-line:rgba(16,185,129,.35);
+  --hot:#0a0a0a; --hot-soft:rgba(255,255,255,.7); --hot-ink:#0a0a0a;
+  --good:#059669; --good-soft:rgba(16,185,129,.10); --bad:#e11d48; --bad-soft:rgba(225,29,72,.07); --warn:#b45309; --warn-soft:rgba(245,158,11,.10);
+  --display:"Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --body:"Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --glass-bg:linear-gradient(157deg,#fffffff7,#ffffffa3 24%,#ffffff4d 46%,#ffffff24 74%,#ffffff38),#ffffff66;
+  --glass-bd:1px solid #ffffffd9;
+  --glass-sh:inset 0 1px #fff,inset 0 0 0 1px #ffffff66,inset 0 -18px 28px -22px #0a0a0a33,0 1px 1px #0a0a0a08,0 8px 20px -8px #0a0a0a1a,0 30px 60px -28px #0a0a0a42;
+  --inset-bg:linear-gradient(157deg,#ffffffeb,#ffffff73 30%,#ffffff1a 64%,#ffffff2e),#ffffff3d;
+  --inset-sh:inset 0 1px #fffffff2,inset 0 -12px 20px -18px #0a0a0a29,0 1px 2px #0a0a0a08;
+  --chip-bg:linear-gradient(155deg,#fffffffa,#ffffff8c 42%,#ffffff29),#ffffff57;
+  --chip-sh:inset 0 1px #fff,0 1px 2px #0a0a0a0d;
+  --blur:blur(40px) saturate(190%) brightness(1.05);
+}
+html,body{background:#f4f4f7}
+body{color:var(--ink2);font-family:var(--body);font-size:15px;line-height:1.6}
+h1,h2,h3{font-family:var(--display);color:var(--ink);letter-spacing:-.02em}
+
+/* drifting grey mesh behind the glass */
+.mesh{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:#f4f4f7}
+.mesh i{position:absolute;display:block;border-radius:9999px;filter:blur(90px)}
+.mesh i:nth-child(1){opacity:.95;background:#c9c9d1;width:58vw;height:58vw;top:-18vw;left:-12vw;animation:drift-a 28s ease-in-out infinite alternate}
+.mesh i:nth-child(2){opacity:.85;background:#bcbcc6;width:50vw;height:50vw;top:6vw;right:-14vw;animation:drift-b 34s ease-in-out infinite alternate}
+.mesh i:nth-child(3){opacity:.95;background:#d6d6de;width:48vw;height:48vw;bottom:-16vw;left:22vw;animation:drift-c 40s ease-in-out infinite alternate}
+.mesh i:nth-child(4){opacity:.8;background:#c3c3cd;width:40vw;height:40vw;top:44vh;left:54vw;animation:drift-d 32s ease-in-out infinite alternate}
+@keyframes drift-a{to{transform:translate(8vw,6vw) scale(1.15)}}
+@keyframes drift-b{to{transform:translate(-6vw,8vw) scale(1.1)}}
+@keyframes drift-c{to{transform:translate(6vw,-6vw) scale(1.12)}}
+@keyframes drift-d{to{transform:translate(-8vw,-4vw) scale(1.08)}}
+@media (prefers-reduced-motion:reduce){.mesh i{animation:none!important}}
+
+/* glass surfaces */
+.hero,.quote,.storymap,.daypanel,.daylist,.modal,.toast{
+  background:var(--glass-bg);border:var(--glass-bd);box-shadow:var(--glass-sh);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.box,.note{background:var(--inset-bg);border:1px solid #ffffffb3;box-shadow:var(--inset-sh)}
+.stat,.dnav,.blk,.btn.ghost,.btn.light,.src,.plinks a,.field input,.blk .bnum{background:var(--chip-bg);border:1px solid #ffffffcc;box-shadow:var(--chip-sh)}
+
+/* hero */
+.hero{border-radius:26px;color:var(--ink);box-shadow:var(--glass-sh)}
+.hero h1{color:var(--ink);font-weight:800;letter-spacing:-.035em}
+.hero-sub{color:var(--faint);font-family:var(--mono);font-size:12px}
+.who{color:var(--muted)}
+.who-on{color:var(--ink)}
+.stat{border-radius:14px}
+.stat span{color:var(--faint);font-family:var(--mono);font-size:11px}
+.stat b{color:var(--ink);font-family:var(--display);font-weight:700;letter-spacing:-.02em}
+.stat b.bad{color:var(--bad)} .stat b.good{color:var(--good)}
+.btn{background:#0a0a0a;border-color:#0a0a0a;color:#fff;border-radius:12px}
+.btn.light,.btn.ghost{color:var(--ink)}
+
+/* quote */
+.quote{border-radius:22px;border-left:var(--glass-bd);position:relative;padding-left:26px}
+.quote::before{content:"";position:absolute;left:12px;top:16px;bottom:16px;width:4px;border-radius:4px;background:var(--qc)}
+.quote{--qc:#0a0a0a}
+.quote.bad{--qc:var(--bad)} .quote.warn{--qc:var(--warn)} .quote.good{--qc:var(--good)}
+.q-label{font-family:var(--mono);font-size:11px;letter-spacing:.08em}
+.q-text{color:var(--ink);font-weight:700;letter-spacing:-.02em}
+
+/* story map */
+.storymap{border-radius:26px}
+.sm-row h2{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--faint);letter-spacing:.06em;text-transform:uppercase}
+.blk{border-radius:12px}
+.blk .bnum{color:var(--muted);border-radius:8px}
+.blk .bname{color:var(--ink)}
+.blk .brange{color:var(--faint)}
+.blk .bbar{background:rgba(10,10,10,.08)}
+.blk .bbar i{background:#0a0a0a}
+#chain-sql .blk .bbar i{background:var(--sqlc)}
+.blk:hover{border-color:rgba(10,10,10,.15);box-shadow:inset 0 1px #fff,0 2px 4px #0a0a0a0d,0 12px 28px -10px #0a0a0a29}
+.blk.done{background:var(--chip-bg)} .blk.done .bnum{background:#0a0a0a;border-color:#0a0a0a;color:#fff}
+#chain-sql .blk.done{background:var(--chip-bg)} #chain-sql .blk.done .bnum{background:var(--sqlc);border-color:var(--sqlc)}
+.blk.current{background:#fff;border:1.5px solid #0a0a0a;padding:7.5px 9.5px 9.5px}
+.blk.current .bnum{background:#0a0a0a;border-color:#0a0a0a;color:#fff}
+
+/* day column */
+.daylist{border-radius:0;border-left:0;border-top:0;border-bottom:0}
+.daylist::before{color:var(--ink);font-weight:800;letter-spacing:-.03em}
+.wkh{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+.dnav{border-radius:12px}
+.dnav:hover{border-color:rgba(10,10,10,.15)}
+.dnav .dn{color:var(--ink)}
+.dnav .dd{color:var(--faint)}
+.dnav .dd b{color:var(--ink)}
+.dnav .dt{color:var(--muted)}
+.dnav.t-checkpoint .dt{color:var(--ink)}
+.dnav.t-mock .dt{color:var(--bad)}
+.dnav.is-today{background:#fff;border-color:#0a0a0a}
+.dnav.complete{background:var(--chip-bg)}
+.dnav.complete .lk{color:var(--good)}
+.dnav.sel{background:#0a0a0a;border-color:#0a0a0a;box-shadow:0 8px 20px -8px #0a0a0a66}
+.bar{background:rgba(10,10,10,.08)}
+.bar i{background:#0a0a0a}
+
+/* day panel */
+.daypanel{border-radius:26px}
+.daypanel.is-today{border-color:#ffffffd9}
+.dayhead{background:transparent;border-bottom:1px solid rgba(10,10,10,.06)}
+.daypanel.t-checkpoint .dayhead,.daypanel.t-mock .dayhead{background:transparent}
+.dh-eyebrow{font-family:var(--mono);font-size:12px;color:var(--faint)}
+.dh-eyebrow b{color:var(--ink)}
+.dayhead h2{color:var(--ink);font-weight:800;letter-spacing:-.035em}
+.dsub{color:var(--muted)}
+.dcount{color:var(--faint)}
+.box{--c:#0a0a0a;--cs:rgba(10,10,10,.05);border-radius:20px;border-top:1px solid #ffffffb3}
+.box.sql{--c:var(--sqlc);--cs:var(--sql-soft)}
+.box h3{color:var(--ink)}
+.box h3 .tag{border-radius:8px}
+.box h3 .cnt{background:var(--cs);color:var(--c)}
+.note{border-radius:14px}
+.note summary{color:var(--ink)}
+.box.sql .note summary{color:var(--sqlc)}
+.note p,.note .builds{color:var(--ink2)}
+.note code{background:rgba(255,255,255,.8);border-color:var(--line)}
+.item{border-top-color:rgba(10,10,10,.06)}
+.item label{color:var(--ink)}
+.item label a{color:var(--ink)}
+.item label a:hover{color:#000}
+.item.mine label a{color:var(--faint);text-decoration-color:rgba(10,10,10,.3)}
+.item input{accent-color:#0a0a0a}
+.num,.sec{color:var(--faint)}
+.src{border-radius:6px;color:var(--ink2)}
+.again{background:#0a0a0a}
+.diff{border:1px solid transparent}
+.vid{background:var(--chip-bg);border:1px solid #ffffffcc;box-shadow:var(--chip-sh);color:#b91c1c}
+.plinks a{color:var(--ink)}
+.status{color:var(--faint)}
+
+/* login + toast */
+.overlay{background:rgba(244,244,247,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.modal{border-radius:26px}
+.toast{border-radius:16px;border-left:var(--glass-bd)}
+
+@media (max-width:860px){
+  .daylist{border-radius:0}
+}
+
+/* locks */
+.dnav.locked{cursor:not-allowed;opacity:.5;background:transparent;box-shadow:none;border-color:rgba(10,10,10,.08)}
+.dnav.locked .lk{color:var(--faint)}
+.blk.locked{opacity:.55;cursor:not-allowed}
+.lockmsg{margin:2px 0 0;font-family:var(--mono);font-size:12px;color:var(--bad)}
+.lockmsg:empty{display:none}
+/* the canvas colour lives on <html>; <body> stays transparent so the mesh shows behind the glass */
+body{background:transparent}
