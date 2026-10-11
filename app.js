@@ -354,7 +354,55 @@ function renderTasks(day) {
   });
 }
 
+function renderDashboard() {
+  const completed = Object.keys(state.completed).filter(k => k.includes(":csv-") || k.includes(":interview")).length;
+  const totalTasks = days.reduce((sum, d) => sum + d.tasks.length + 1, 0);
+  const completionPercent = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0;
+
+  // This week stats
+  const currentDayObj = currentDay();
+  const currentWeekNum = currentDayObj.week;
+  const weekDays = days.filter(d => d.week === currentWeekNum);
+  const weekCompleted = weekDays.reduce((sum, d) => {
+    const dayTasks = d.tasks.filter(t => state.completed[keyFor(d, t)]).length + (state.completed[challengeKey(d)] ? 1 : 0);
+    return sum + dayTasks;
+  }, 0);
+  const weekTotal = weekDays.reduce((sum, d) => sum + d.tasks.length + 1, 0);
+  const weekPercent = weekTotal > 0 ? Math.round((weekCompleted / weekTotal) * 100) : 0;
+
+  // Interview practice count
+  const interviewCompleted = Object.keys(state.completed).filter(k => k.includes(":interview")).length;
+
+  // Calculate streak (consecutive days with at least one completion)
+  let streak = 0;
+  let checkDate = new Date();
+  while (true) {
+    const dateKey = checkDate.toISOString().split('T')[0];
+    const hasCompletionOnDay = Object.keys(state.completed).some(k => k.startsWith(dateKey));
+    if (hasCompletionOnDay) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  // Update dashboard DOM
+  const totalPercent = Math.min(completionPercent, 100);
+  $("#stat-total").textContent = `${totalPercent}%`;
+  $("#progress-fill").style.width = `${totalPercent}%`;
+  $("#stat-days").textContent = `${completed} of ${totalTasks} tasks`;
+
+  $("#stat-week").textContent = `${weekPercent}%`;
+  $("#progress-week").style.width = `${weekPercent}%`;
+  $("#stat-week-days").textContent = `${weekCompleted} of ${weekTotal} tasks`;
+
+  $("#stat-streak").textContent = streak;
+  $("#stat-interview").textContent = interviewCompleted;
+}
+
 function render() {
+  renderDashboard();
   const day = currentDay();
   renderWeeks();
   renderDayPicker();

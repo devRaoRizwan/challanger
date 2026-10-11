@@ -54,6 +54,35 @@
 
         <div id="day-picker" class="day-picker" aria-label="Days in selected week"></div>
 
+        <!-- Dashboard Stats Section -->
+        <section id="dashboard" class="dashboard">
+          <div class="stat-card">
+            <p class="stat-label">Total Progress</p>
+            <div class="stat-value" id="stat-total">0%</div>
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <small id="stat-days" class="stat-detail">0 of 81 days</small>
+          </div>
+          
+          <div class="stat-card">
+            <p class="stat-label">This Week</p>
+            <div class="stat-value" id="stat-week">0%</div>
+            <div class="progress-bar"><div class="progress-fill" id="progress-week"></div></div>
+            <small id="stat-week-days" class="stat-detail">0 of 7 days</small>
+          </div>
+
+          <div class="stat-card">
+            <p class="stat-label">Streak Days</p>
+            <div class="stat-value" id="stat-streak">0</div>
+            <small class="stat-detail">Keep going! 🔥</small>
+          </div>
+
+          <div class="stat-card">
+            <p class="stat-label">Interview Prep</p>
+            <div class="stat-value" id="stat-interview">0</div>
+            <small class="stat-detail">questions attempted</small>
+          </div>
+        </section>
+
         <section id="session-card" class="session-card"></section>
         <section id="lesson-card" class="lesson-card"></section>
         <section class="section-heading">
