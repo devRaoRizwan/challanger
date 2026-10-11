@@ -46,9 +46,9 @@
             <p id="day-subheading" class="day-subheading"></p>
           </div>
           <div class="day-controls">
-            <button id="prev-day" class="icon-button" type="button" aria-label="Previous day">←</button>
-            <button id="today-button" class="today-button" type="button">Today</button>
-            <button id="next-day" class="icon-button" type="button" aria-label="Next day">→</button>
+            <button id="prev-day" class="icon-button" type="button" aria-label="Previous day"><svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 18-6-6 6-6"/></svg></button>
+            <button id="today-button" class="today-button" type="button"><svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Today</span></button>
+            <button id="next-day" class="icon-button" type="button" aria-label="Next day"><svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 18 6-6-6-6"/></svg></button>
           </div>
         </header>
 
@@ -96,10 +96,12 @@
         <section id="interview-card" class="interview-card"></section>
         <footer class="page-footer">
           <span id="save-status">Progress is stored in this browser only.</span>
-          <button id="reset-day" class="text-button" type="button">Reset this day</button>
+          <button id="reset-day" class="text-button" type="button"><svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/></svg><span>Reset this day</span></button>
         </footer>
       </main>
     </div>
+
+    <div id="celebration-layer" aria-live="polite" aria-atomic="true"></div>
 
     <script src="plan.js"></script>
     <script src="app.js"></script>

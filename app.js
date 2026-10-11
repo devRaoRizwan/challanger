@@ -2,12 +2,12 @@ const STORAGE_KEY = "dsa-interview-journey-2026";
 const plan = window.PLAN;
 const days = plan.days;
 const phases = [
-  ["arrive", "Arrive + recall", "15 min", "Recall yesterday's idea from memory. No notes yet."],
-  ["learn", "Understand the idea", "45 min", "Read today's explanation. Watch a concept video only when it teaches the topic."],
-  ["guided", "Work through examples", "55 min", "Trace examples by hand, then attempt today's course questions."],
-  ["break", "Take a real break", "15 min", "Step away from the screen. This is part of the plan."],
-  ["interview", "Interview practice", "70 min", "Attempt the daily mini-question and explain your approach aloud."],
-  ["reflect", "Write it in your own words", "30 min", "Record the pattern, complexity, edge cases, and one thing to revisit."],
+  ["arrive", "Recall", "15 min"],
+  ["learn", "Learn", "45 min"],
+  ["guided", "Practice", "55 min"],
+  ["break", "Break", "15 min"],
+  ["interview", "Interview", "70 min"],
+  ["reflect", "Review", "30 min"],
 ];
 function localISODate() {
   const date = new Date();
@@ -108,6 +108,18 @@ const $ = (selector) => document.querySelector(selector);
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
 })[char]);
+const iconPaths = {
+  left: '<path d="m14 18-6-6 6-6"/>',
+  right: '<path d="m10 18 6-6-6-6"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
+  check: '<path d="m5 12 4 4L19 6"/>',
+  circle: '<circle cx="12" cy="12" r="8"/>',
+  eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+  eyeOff: '<path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a14 14 0 0 1-3 3.8M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7a10 10 0 0 0 3-.5"/>',
+  external: '<path d="M14 3h7v7M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+  reset: '<path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/>',
+};
+const icon = (name) => `<svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconPaths[name]}</svg>`;
 const keyFor = (day, item) => `${day.iso}:${item.id}`;
 const safeUrl = (url) => {
   try {
@@ -119,13 +131,28 @@ const safeUrl = (url) => {
 };
 const link = (url, label, className = "resource-link") => {
   const href = safeUrl(url);
-  return href ? `<a class="${className}" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>` : "";
+  return href ? `<a class="${className}" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${icon("external")}<span>${escapeHtml(label)}</span></a>` : "";
 };
 const displayDate = (iso, options = { weekday: "long", day: "numeric", month: "long" }) =>
   new Date(`${iso}T12:00:00`).toLocaleDateString("en-GB", options);
 const currentDay = () => days[state.selected];
 const challengeFor = (day) => interviewQuestions[day.index % interviewQuestions.length];
 const challengeKey = (day) => `${day.iso}:interview`;
+let celebrationTimer;
+function celebrateCompletion() {
+  const layer = $("#celebration-layer");
+  const colors = ["#36738a", "#4b91a1", "#398457", "#e3ad55", "#e47d63"];
+  const confetti = Array.from({ length: 34 }, () => {
+    const left = Math.random() * 100;
+    const drift = Math.round(Math.random() * 180 - 90);
+    const delay = (Math.random() * 0.35).toFixed(2);
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    return `<i class="confetti-piece" style="left:${left}vw;--drift:${drift}px;--delay:${delay}s;background:${color}"></i>`;
+  }).join("");
+  layer.innerHTML = `${confetti}<div class="celebration-toast" role="status"><span class="celebration-emoji" aria-hidden="true">🎉</span><span><strong>Well done!</strong><small>Step complete. Keep it going.</small></span></div>`;
+  clearTimeout(celebrationTimer);
+  celebrationTimer = setTimeout(() => { layer.innerHTML = ""; }, 2600);
+}
 const dayComplete = (day) =>
   day.tasks.every((task) => state.completed[keyFor(day, task)]) &&
   !!state.completed[challengeKey(day)];
@@ -166,7 +193,7 @@ function renderWeeks() {
           <strong>${escapeHtml(first.parent)}</strong>
           <small>${displayDate(first.iso, { day: "numeric", month: "short" })}–${displayDate(last.iso, { day: "numeric", month: "short" })} · ${complete}/${weekDays.length} days</small>
         </span>
-        <span class="week-chevron" aria-hidden="true">›</span>
+        <span class="week-chevron" aria-hidden="true">${icon("right")}</span>
       </button>
     `;
   }).join("");
@@ -202,7 +229,7 @@ function renderSession(day) {
   $("#day-subheading").textContent = `${displayDate(day.iso)} · Week ${day.week} of 12`;
   $("#prev-day").disabled = day.index === 0;
   $("#next-day").disabled = day.index === days.length - 1;
-  $("#task-count").textContent = `${day.tasks.length + 1} practice steps`;
+  $("#task-count").textContent = `${day.tasks.length + 1} steps · follow in order`;
 
   const completed = day.tasks.filter((task) => state.completed[keyFor(day, task)]).length +
     (state.completed[challengeKey(day)] ? 1 : 0);
@@ -226,7 +253,7 @@ function renderSession(day) {
       ${phases.map(([id, title, duration, detail], index) => `
         <div class="phase">
           <span class="phase-number">${String(index + 1).padStart(2, "0")}</span>
-          <span class="phase-copy"><strong>${title}</strong><small>${detail}</small></span>
+          <span class="phase-copy"><strong>${title}</strong></span>
           <span class="phase-duration">${duration}</span>
         </div>
       `).join("")}
@@ -256,7 +283,7 @@ function renderLesson(day) {
   `;
 }
 
-function renderTask(day, task) {
+function renderTask(day, task, order) {
   const key = keyFor(day, task);
   const completed = !!state.completed[key];
   const attempted = !!state.attempted[key];
@@ -272,7 +299,7 @@ function renderTask(day, task) {
 
   return `
     <article class="course-task ${completed ? "completed" : ""}">
-      <div class="task-marker">${completed ? "✓" : ""}</div>
+      <div class="task-marker" aria-label="Step ${order}${completed ? ", completed" : ""}">${String(order).padStart(2, "0")}</div>
       <div class="course-task-content">
         <div class="task-heading">
           <div>
@@ -280,7 +307,7 @@ function renderTask(day, task) {
             <h3>${escapeHtml(task.title)}</h3>
           </div>
           <button class="complete-button ${completed ? "marked" : ""}" type="button" data-complete="${escapeHtml(key)}">
-            ${completed ? "Done" : "Mark done"}
+            ${icon(completed ? "check" : "circle")}<span>${completed ? "Done" : "Mark done"}</span>
           </button>
         </div>
         <p class="task-source">${escapeHtml(task.platform || "Course exercise")}</p>
@@ -291,7 +318,7 @@ function renderTask(day, task) {
         </div>
         ${!task.isTheory && (task.video || task.article || task.articleTitle) ? `
           <button class="attempt-button ${attempted ? "attempted" : ""}" type="button" data-attempt="${escapeHtml(key)}">
-            ${attempted ? "Attempt recorded · hide support" : "I tried it first · reveal support"}
+            ${icon(attempted ? "eyeOff" : "eye")}<span>${attempted ? "Hide support" : "Reveal support"}</span>
           </button>
         ` : ""}
       </div>
@@ -306,19 +333,20 @@ function renderChallenge(day) {
   const completed = !!state.completed[key];
   return `
     <article class="interview-question ${completed ? "completed" : ""}">
+      <span class="interview-step">${String(day.tasks.length + 1).padStart(2, "0")} · Final step</span>
       <div class="interview-heading">
         <div>
           <p class="eyebrow">Daily interview warm-up · 20–30 min</p>
           <h2>${escapeHtml(challenge.title)}</h2>
         </div>
         <button class="complete-button ${completed ? "marked" : ""}" type="button" data-complete="${escapeHtml(key)}">
-          ${completed ? "Done" : "Mark done"}
+          ${icon(completed ? "check" : "circle")}<span>${completed ? "Done" : "Mark done"}</span>
         </button>
       </div>
       <p class="question-prompt">${escapeHtml(challenge.prompt)}</p>
       ${link(challenge.link, "Open related practice problem")}
       <button class="attempt-button ${attempted ? "attempted" : ""}" type="button" data-attempt="${escapeHtml(key)}">
-        ${attempted ? "Attempt recorded · hide answer" : "I attempted it · reveal answer"}
+        ${icon(attempted ? "eyeOff" : "eye")}<span>${attempted ? "Hide answer" : "Reveal answer"}</span>
       </button>
       ${attempted ? `
         <div class="answer-panel">
@@ -333,12 +361,17 @@ function renderChallenge(day) {
 }
 
 function renderTasks(day) {
-  $("#task-list").innerHTML = day.tasks.map((task) => renderTask(day, task)).join("");
+  $("#task-list").innerHTML = day.tasks.map((task, index) => renderTask(day, task, index + 1)).join("");
   $("#task-list").querySelectorAll("[data-complete]").forEach((button) => {
     button.addEventListener("click", () => {
       const key = button.dataset.complete;
-      state.completed[key] = !state.completed[key];
-      if (!state.completed[key]) delete state.completed[key];
+      const completing = !state.completed[key];
+      if (completing) {
+        state.completed[key] = true;
+        celebrateCompletion();
+      } else {
+        delete state.completed[key];
+      }
       persist();
       render();
     });
@@ -413,8 +446,13 @@ function render() {
   $("#interview-card").querySelectorAll("[data-complete]").forEach((button) => {
     button.addEventListener("click", () => {
       const key = button.dataset.complete;
-      state.completed[key] = !state.completed[key];
-      if (!state.completed[key]) delete state.completed[key];
+      const completing = !state.completed[key];
+      if (completing) {
+        state.completed[key] = true;
+        celebrateCompletion();
+      } else {
+        delete state.completed[key];
+      }
       persist();
       render();
     });
