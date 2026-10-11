@@ -1,7 +1,6 @@
 {
-  "name": "rao-vs-aneeq-sprint",
+  "name": "dsa-interview-journey",
   "private": true,
   "type": "module",
-  "description": "30-day backend interview sprint with a two-player scoreboard",
-  "engines": { "node": ">=18" }
+  "description": "Local-first DSA interview preparation plan for October–December 2026"
 }

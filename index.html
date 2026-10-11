@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DSA Momentum</title>
     <meta
       name="description"
-      content="A simple DSA tracker built around baby steps, pattern learning, and sustainable momentum."
+      content="A guided, day-by-day DSA and interview preparation plan from October 12 to December 31, 2026."
     />
+    <title>DSA Interview Journey</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
@@ -19,24 +19,56 @@
   <body>
     <div class="app-shell">
       <aside class="sidebar">
-        <div class="brand-block">
-          <p class="eyebrow">Study plan</p>
-          <h1>DSA Momentum</h1>
-        </div>
-        <div id="chapter-list" class="chapter-list" aria-label="DSA chapters"></div>
+        <a class="brand" href="#" aria-label="DSA Interview Journey home">
+          <span class="brand-mark" aria-hidden="true">D</span>
+          <span>
+            <strong>DSA Journey</strong>
+            <small>Learn it. Explain it. Own it.</small>
+          </span>
+        </a>
+
+        <section class="journey-card" aria-label="Plan overview">
+          <p class="eyebrow">Your roadmap</p>
+          <strong>12 Oct — 31 Dec</strong>
+          <div class="overall-progress"><i id="overall-bar"></i></div>
+          <small id="overall-label">Loading plan…</small>
+        </section>
+
+        <nav id="week-list" class="week-list" aria-label="Choose a week"></nav>
+        <p class="sidebar-note">No streaks. No locked days. Pick up wherever you are.</p>
       </aside>
 
-      <main class="content">
+      <main class="main">
         <header class="topbar">
           <div>
-            <p class="eyebrow muted">Pattern-based learning</p>
-            <h2 id="chapter-title">Loading…</h2>
+            <p class="eyebrow">A focused 3–4 hour study session</p>
+            <h1 id="day-heading">Loading your plan…</h1>
+            <p id="day-subheading" class="day-subheading"></p>
           </div>
-          <div id="progress-pill" class="progress-pill">0 / 0</div>
+          <div class="day-controls">
+            <button id="prev-day" class="icon-button" type="button" aria-label="Previous day">←</button>
+            <button id="today-button" class="today-button" type="button">Today</button>
+            <button id="next-day" class="icon-button" type="button" aria-label="Next day">→</button>
+          </div>
         </header>
 
-        <section id="focus-card" class="focus-card"></section>
+        <div id="day-picker" class="day-picker" aria-label="Days in selected week"></div>
+
+        <section id="session-card" class="session-card"></section>
+        <section id="lesson-card" class="lesson-card"></section>
+        <section class="section-heading">
+          <div>
+            <p class="eyebrow">Today's learning path</p>
+            <h2>Small steps, one idea at a time</h2>
+          </div>
+          <span id="task-count" class="task-count"></span>
+        </section>
         <section id="task-list" class="task-list" aria-live="polite"></section>
+        <section id="interview-card" class="interview-card"></section>
+        <footer class="page-footer">
+          <span id="save-status">Progress is stored in this browser only.</span>
+          <button id="reset-day" class="text-button" type="button">Reset this day</button>
+        </footer>
       </main>
     </div>
 

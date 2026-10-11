@@ -1,0 +1,412 @@
+,,Click here to track your progress : Course Link,,,
+,,,,Youtube Link,Articles
+,,1. Basics of programming,,,
+,,Problem Statement,Leetcode / GFG Link,,
+,,1.1 Time and Space Complexity,,,
+,Completed,Learn about Time and Space Complexity,Theory [Watch the Video],https://youtu.be/bLm0wgPU-6A,Time Complexity and Space Complexity in DSA | Explained with Examples - Code and Debug - Blog
+,Completed,What is TLE Error?,Theory [Watch the Video],https://youtu.be/YvvAnuOzOSY,-
+,Completed,Time Complexity of Common Python Operations,Theory [Watch the Video],https://youtu.be/PLV0f4RAMvI,-
+,,,,,
+,,1.2 Basic Maths Logic Buildup,,,
+TUE 21 07 2026,Completed,Extraction of Digits,Theory [Watch the Video],https://youtu.be/yCMCdSZdIbY,Extraction of Digits in Python | Explained Step-by-Step
+,Completed,Count Digits,Number of Digits - Naukri Code 360,https://youtu.be/ww-mxKUIltM,Python Program to Count Number of Digits | Explained
+,Completed,Reverse a number,Reverse Integer - LeetCode,,Leetcode #7 : Reverse Integer Python Program Explained
+WED 22 07 2026,Completed,Check palindrome,Palindrome Number - LeetCode,https://youtu.be/ecZVpAZ37UI,Palindrome Number Program in Python | Leetcode #9
+,Completed,Armstrong Number,Armstrong Number - LeetCode,https://youtu.be/rzRwIe8UwQQ,Python Program to Check Armstrong Number | Explained
+,Completed,Print all Divisors of a number,Number of factors | Practice | GeeksforGeeks,https://youtu.be/YoVlGYyWgyw,Python Program to Print Divisors/Factors of an Integer
+,Completed,Check Prime,Prime Number | Practice | GeeksforGeeks,(Do on your own),Check if a Number is Prime or Not | GFG
+,,,,,
+,,,,,
+,,1.3 Recursion Basics,,,
+THU 23 07 2026,Completed,Introduction to Recursion,Theory [Watch the Video],https://youtu.be/-VwidRe3Ob8,-
+,Completed,Recursion using Parameters,Theory [Watch the Video],https://youtu.be/fgurDxhawRw,-
+,Completed,Functional Recursion,Theory [Watch the Video],https://youtu.be/UgksZgjPrD4,-
+,Completed,Print 1 to N without Loop,Print 1 To N Without Loop | Practice | GeeksforGeeks,,Python Program to Print from 1 to N Without Loops
+,Completed,Print N times with Recursion,Print GFG n times | Practice | GeeksforGeeks,,Print N times with Recursion | GFG
+,Completed,Print N to 1 without Loop,Print N to 1 without loop | Practice | GeeksforGeeks,,Print N to 1 without loop | Normal Recursion and Backtracking
+FRI 24 07 2026,Completed,Sum of first N natural numbers without Loop,Sum of first n terms | Practice | GeeksforGeeks,,Sum of first n terms | Using Recursion | Explained
+,Completed,Factorial of N numbers,Factorial | Practice | GeeksforGeeks,https://youtu.be/HKltpsIOOro,Python Program to Find Factorial of Number Using Recursion
+,Completed,Reverse an Array without Loop,Reverse sub array | Practice | GeeksforGeeks,https://youtu.be/RynoW0e9I7U,Python Program to Reverse Array Using Recursion and While Loop
+,Completed,Check if String is palindrome,Palindrome String | Practice | GeeksforGeeks,https://youtu.be/uWYF8nL5E1A,Palindrome String | Recursive & Iterative Python Solutions
+,Completed,Fibonacci Series,Fibonacci Number - LeetCode,https://youtu.be/33UUd-rkN9M,Fibonacci Number | Recursive Python Solution
+,,,,,
+,,1.4 Hashing,,,
+SAT 25 07 2026,Completed,[Pre Requirement] How to store frequency,Theory [Watch the Video],https://youtu.be/Ocd_uHpsQyg,
+,Completed,Learn basics of hashing,Theory [Watch the Video],https://youtu.be/0IE5T63qEHg,
+,Completed,Find the Frequency,Find the Frequency | Practice | GeeksforGeeks,(Do on your own),-
+,Completed,Count Frequency in a range,Frequencies of Limited Range Array Elements | Practice | GeeksforGeeks,(Do on your own),-
+,,,,,
+,,,,,
+,,2. Different types of Sorting,,,
+,Completed,Selection Sort,Selection Sort | Practice | GeeksforGeeks,https://youtu.be/X8pZMsEIvJk,Python Program for Selection Sort Algorithm
+,Completed,Bubble Sort,Bubble Sort | Practice | GeeksforGeeks,https://youtu.be/M6Vg8SmGMA8,Bubble Sort Algorithm in Python | Explained in Depth
+Pause,Review Afterwards,Insertion Sort,Insertion Sort | Practice | GeeksforGeeks,https://youtu.be/-CI6Lhv1fOw,Insertion Sort Algorithm | Explained in Python
+,Review Afterwards,Merge Sort,Merge Sort | Practice | GeeksforGeeks,https://youtu.be/ZDCoxXeksWM,Merge Sort Algorithm in Python | Explained
+,Review Afterwards,Quick Sort,Quick Sort | Practice | GeeksforGeeks,https://youtu.be/77tOJ3kVeS0,Quick Sort Algorithm in Python | Explained
+,Review Afterwards,Recursive Bubble Sort,Bubble Sort | Practice | GeeksforGeeks,(Do on your own),Recursive Bubble Sort in Python
+,Review Afterwards,Recursive Insertion Sort,Insertion Sort | Practice | GeeksforGeeks,(Do on your own),Recursive Insertion Sort in Python
+,,,,,
+,,,,,
+,,,,,
+,,3. Problems on Arrays,,,
+,,3.1 EASY,,,
+SUN 26 07 2026,Completed,Largest Element in an Array,Largest Element in Array | Practice | GeeksforGeeks,https://youtu.be/H52p90uVUGA,Find the Largest Element in an Array (Brute Force & Optimal Solutions) | Step-by-Step with Images
+,Completed,Second Largest Element in an Array without sorting,Second Largest Number - Naukri Code 360,https://youtu.be/Z6TwNJJ9OoQ,Find the second largest and second smallest element in an Array | Explained
+,Completed,Check if the array is sorted,Check if array is sorted | Practice | GeeksforGeeks,https://youtu.be/_T4Tr2Y6yd4,Check if array is sorted | Explained using Python Code
+MON 27 07 2026,Completed,Remove duplicates from Sorted array,Remove Duplicates from Sorted Array - LeetCode,https://youtu.be/a2gP9uYrpQo,Remove duplicates from Sorted array – Leetcode 26
+,Completed,Right Rotate an array by one place,Theory [Watch the Video],https://youtu.be/_EHlC6xhhE0,-
+,Completed,Right rotate an array by K places,Rotate Array - LeetCode,https://youtu.be/HRzQK5TkrZM,Right Rotate an Array by K places | Explained with Examples
+,Completed,Move Zeros to end,Move Zeroes - LeetCode,https://youtu.be/GtssSuFh_Ek,Move Zeroes | Leetcode 283 | Explained
+,Completed,Linear Search,Array Search | Practice | GeeksforGeeks,https://youtu.be/mjjj1UK0Z1E,Linear Search | Explained in Python
+,Pending,Merge 2 sorted Arrays,Union of Two Sorted Arrays | Practice | GeeksforGeeks,https://youtu.be/d9Rpk0j9ofs,Union of 2 Sorted with Duplicates | Explained with Images
+,Pending,Find missing number in an array,Missing Number - LeetCode,https://youtu.be/Zo1d2EqX45U,Missing Number | Leetcode 268 | Explained
+,Pending,Maximum Consecutive Ones,Max Consecutive Ones - LeetCode,https://youtu.be/1QLnjtdEl9Y,Maximum Consecutive Ones | Leetcode 485 | Explained with Images
+,,,,,
+,,,,,
+,,3.2 MEDIUM,,,
+,Pending,2Sum Problem,Two Sum - LeetCode,https://youtu.be/EX2tR_cgCz4,https://codeanddebug.in/blog/two-sum-leetcode-1/
+,Pending,"Kadane's Algorithm, maximum subarray sum",Maximum Subarray - LeetCode,https://youtu.be/o3luQXt08W8,https://codeanddebug.in/blog/maximum-subarray-kadanes-algorithm/
+,Pending,Stock Buy and Sell,Best Time to Buy and Sell Stock - LeetCode,https://youtu.be/tGrDqGxWsmc,Best Time to Buy and Sell Stock | Leetcode 121 | Explained with Images
+,Pending,Rearrange the array in alternating positive and negative items,Rearrange Array Elements by Sign - LeetCode,https://youtu.be/xFm1Tgc-HTI,Rearrange Array Elements by Sign | Leetcode 2149
+,Pending,Longest Consecutive Sequence in an Array,Longest Consecutive Sequence - LeetCode,https://youtu.be/OO2FsBeFcEs,Longest Consecutive Sequence | Leetcode 128
+,Pending,Learn 2D Matrix [Check video],Theory [Watch the Video],https://youtu.be/sfVzamPfIrw,
+,Pending,Set Matrix Zeros,Set Matrix Zeroes - LeetCode,https://youtu.be/_RMrP1NBftA,Set Matrix Zeroes | Leetcode 73 | Explained
+,Pending,Rotate Matrix by 90 degrees,Rotate Image - LeetCode,https://youtu.be/w9ofZwey57M,Rotate Image | Leetcode 48 | Explained with Images
+,Pending,Print the matrix in spiral manner,Spiral Matrix - LeetCode,https://youtu.be/FHnZAvZN-Co,Spiral Matrix | Leetcode 54 | Explained in Python
+,,,,,
+,,,,,
+,,3.3 HARD,,,
+,Pending,3-Sum Problem,3Sum - LeetCode,https://youtu.be/Euky4JTEK0I,3Sum | Leetcode 15 | Explained in Python
+,Pending,4-Sum Problem,4Sum - LeetCode,https://youtu.be/8DwLOo5AOR8,4Sum | Leetcode 18 | Explained in Python
+,,,,,
+,,,,,
+,,4. Binary Search,,,
+,,4.1 Binary Search on simple 1D Arrays,,,
+,Pending,Binary Search to find X in sorted array,Binary Search - LeetCode,https://youtu.be/fM4Yat0dERo,Binary Search | Leetcode 704 | Explained in Python
+,Pending,Implement Lower Bound,Floor in a Sorted Array | Practice | GeeksforGeeks,https://youtu.be/FfTbMO4o9OI,Implement Lower Bound | Floor in a Sorted Array (GFG)
+,Pending,Implement Upper Bound,Implement Upper Bound - Naukri Code 360,https://youtu.be/FfTbMO4o9OI,Implement Upper Bound
+,Pending,Search Insert Position,Search Insert Position - LeetCode,https://youtu.be/MhsEFYyImPs,Search Insert Position | Leetcode 35 | Explained in Python
+,Pending,Floor/Ceil in Sorted Array,Ceil The Floor - Naukri Code 360,https://youtu.be/W1ombWDEPJg,Ceil The Floor | Binary Search Implementation
+,Pending,Find the first or last occurrence of a given number in a sorted array,Find First and Last Position of Element in Sorted Array - LeetCode,https://youtu.be/ViotQxoHip4,Find First and Last Position of Element in Sorted Array | Leetcode 34 | Optimal Binary Search
+,Pending,Count occurrences of a number in a sorted array with duplicates,Number of occurrence | Practice | GeeksforGeeks,https://youtu.be/Hs49-Lws_XM,Count occurrences of a number in a sorted array with duplicates | Optimal Binary Search
+,Pending,Search in Rotated Sorted Array I,Search in Rotated Sorted Array - LeetCode,https://youtu.be/46kRvrls5xM,Search in Rotated Sorted Array | Leetcode 33 | Optimal Binary Search
+,Pending,Search in Rotated Sorted Array II,Search in Rotated Sorted Array II - LeetCode,https://youtu.be/oVcBXszcpYs,Search in Rotated Sorted Array II | Leetcode 81 | Optimal Binary Search
+,Pending,Find minimum in Rotated Sorted Array,Find Minimum in Rotated Sorted Array - LeetCode,https://youtu.be/_B2JakopXLc,Find Minimum in Rotated Sorted Array | Leetcode 153 | Optimal Binary Search
+,,,,,
+,,,,,
+,,,,,
+,,5. Strings (please do at last) (it might contain other patterns thats why),,,
+,,5.1 EASY,,,
+,Pending,Remove outermost Paranthesis,Remove Outermost Parentheses - LeetCode,https://youtu.be/yjso9jkYPbs,Remove Outermost Parentheses | Leetcode 1021 | Stack Depth Counting Solution
+,Pending,Reverse words in a given string,Reverse Words in a String - LeetCode,https://youtu.be/EBd-u0ehi98,Reverse Words in a String | Leetcode 151 | Split and Reverse Approach
+,Pending,Largest odd number in a string,Largest Odd Number in String - LeetCode,https://youtu.be/kOiapvrtjo0,Largest Odd Number in String | Leetcode 1903 | Step-by-Step Solution Explained
+,Pending,Longest Common Prefix,Longest Common Prefix - LeetCode,https://youtu.be/2iY7YYLNLAA,Longest Common Prefix | Leetcode 14 | Optimal Solution Explained
+,Pending,Isomorphic String,Isomorphic Strings - LeetCode,https://youtu.be/cX9vCdjWyBo,Isomorphic Strings | Leetcode 205 | Optimal Hash Map Solution
+,Pending,Check whether one string is a rotation of another,Rotate String - LeetCode,https://youtu.be/PrSGLUfmLh0,Rotate String | Leetcode 796 | Optimal Substring Search Solution
+,Pending,Check if two strings are anagram of each other,Valid Anagram - LeetCode,https://youtu.be/EnrE4tnmYZo,Valid Anagram | Leetcode 242 | Optimal Hash Map Solution
+,,,,,
+,,,,,
+,,5.2 MEDIUM,,,
+,Pending,Sort Characters by frequency,Sort Characters By Frequency - LeetCode,https://youtu.be/pyOb7lwnA7M,Sort Characters By Frequency | Leetcode 451 | Hash Map + Sorting Solution
+,Pending,Maximum Nesting Depth of Paranthesis,Maximum Nesting Depth of the Parentheses - LeetCode,https://youtu.be/5XgWK4Dj9UY,Maximum Nesting Depth of the Parentheses | Leetcode 1614 | Depth Counting Solution
+,Pending,Roman Number to Integer and vice versa,Roman to Integer - LeetCode,https://youtu.be/1a7aYSZtCaY,Roman to Integer | Leetcode 13 | Mapping and Subtraction Rule Solution
+,,,,,
+,,,,,
+,,"6. Linked List (Single LL, Double LL)",,,
+,,6.1 Learn Singly Linked List,,,
+,Pending,Introduction to LinkedList,Introduction to Linked List | Practice | GeeksforGeeks,https://youtu.be/-tlWxkCuEM0,Understanding Singly Linked List in Python | Complete Explanation and Implementation Guide
+,Pending,Inserting a node in LinkedList,Linked List Insertion | Practice | GeeksforGeeks,https://youtu.be/n7w9U7w8jJE,
+,Pending,Deleting a node in LinkedList,Delete Node in a Linked List - LeetCode,,
+,Pending,Find the length of the linkedlist,Count nodes of linked list | Practice | GeeksforGeeks,,
+,Pending,Search an element in the LL,Search in Linked List | Practice | GeeksforGeeks,,
+,Pending,Design Linked List,Design Linked List - LeetCode,,Design Linked List | Leetcode 707 | Explained in Python
+,,,,,
+,,,,,
+,,6.2 Learn Doubly Linked List,,,
+,Pending,Introduction to DLL,Introduction to Doubly Linked List | Practice | GeeksforGeeks,https://youtu.be/wiMmDsFHna8,
+,Pending,Insert a node in DLL,Doubly linked list Insertion at given position | Practice | GeeksforGeeks,https://youtu.be/41q73CppGnc,Understanding Doubly Linked Lists: Complete Guide with Real-Life Examples
+,Pending,Delete a node in DLL,Delete node in Doubly Linked List | Practice | GeeksforGeeks,,
+,Pending,Reverse a DLL,Reverse a Doubly Linked List | Practice | GeeksforGeeks,https://youtu.be/G1Q1YQ6YbDA,Reverse a Doubly Linked List | GFG Practice | Iterative Solution
+,,,,,
+,,,,,
+,,6.3 Medium problems of SLL,,,
+,Pending,Middle of a LinkedList [TortoiseHare Method],Middle of the Linked List - LeetCode,https://youtu.be/7YEZjO03JwA,Middle of the Linked List | Leetcode 876 | Tortoise Hare Approach
+,Pending,Reverse a LinkedList [Iterative],Reverse Linked List - LeetCode,https://youtu.be/8DJwQV3fjuI,Reverse Linked List | Leetcode 206 | Iterative vs Recursive Solution
+,Pending,Detect a loop in LL,Linked List Cycle - LeetCode,https://youtu.be/2MlUoKhIjA0,Linked List Cycle | Leetcode 141 | Floyd's Cycle Detection
+,Pending,Find the starting point in LL,Linked List Cycle II - LeetCode,https://youtu.be/8qlar5RrRic,Linked List Cycle II | Leetcode 142 | Complete Guide with 2 Different Solutions
+,Pending,Length of Loop in LL,Find length of Loop | Practice | GeeksforGeeks,https://youtu.be/cCaLT3un9VE,Find length of Loop | Complete Guide with 2 Different Solutions
+,Pending,Segrregate odd and even nodes in LL,Odd Even Linked List - LeetCode,https://youtu.be/DFNPTtevXso,Odd Even Linked List | Leetcode 328 | Brute to Optimal Solution
+,Pending,Remove Nth node from the back of the LL,Remove Nth Node From End of List - LeetCode,https://youtu.be/L7_0FCrajUA,Remove Nth Node From End of List | Leetcode 19
+,,,,,
+,,6.4 Medium problems of DLL,,,
+,Pending,Delete all occurrences of a key in DLL,Delete all occurrences of a given key in a doubly linked list | Practice | GeeksforGeeks,https://youtu.be/apupPCFcwi4,Delete all occurrences of a given key in a doubly linked list | GFG Practice
+,Pending,Find pairs with given sum in DLL,Find pairs with given sum in doubly linked list | Practice | GeeksforGeeks,https://youtu.be/nnjpFriAgao,Find pairs with given sum in doubly linked list | GFG Practice | Optimal Solution
+,Pending,Remove duplicates from sorted DLL,Remove duplicates from a sorted doubly linked list | Practice | GeeksforGeeks,https://youtu.be/6_4eJ-X8FEU,Remove duplicates from a sorted doubly linked list | GFG Practice | Optimal Solution
+,,,,,
+,,,,,
+,,7. Bit Manipulation,,,
+,,7.1 Learning Bit Manipulation,,,
+,Pending,Introduction to Bit Manipulation,Bit Manipulation | Practice | GeeksforGeeks,https://youtu.be/ZwWRAmdGoHo,Mastering Bit Manipulation: Swap Two Numbers Without Temporary Variable and Check if Kth Bit is Set
+,Pending,Check if the i-th bit is set or not,Check whether K-th bit is set or not | Practice | GeeksforGeeks,https://youtu.be/RPXY-k9DSnE,
+,Pending,Check if a number is odd or not,Odd or Even | Practice | GeeksforGeeks,,
+,Pending,Check if a number is power of 2 or not,Power of Two - LeetCode,,
+,Pending,Count the number of set bits,Count total set bits | Practice | GeeksforGeeks,,
+,Pending,Set/Unset the rightmost unset bit,Set the rightmost unset bit | Practice | GeeksforGeeks,,
+,Pending,Swap two numbers,Swap two numbers | Practice | GeeksforGeeks,,
+,Pending,"Divide two integers without using multiplication, division and mod operator",Divide Two Integers - LeetCode,,
+,,,,,
+,,,,,
+,,7.2 Problems on Bit Manipulation,,,
+,Pending,Count number of bits to be flipped to convert A to B,Minimum Bit Flips to Convert Number - LeetCode,https://youtu.be/F7eooluRQrU,Minimum Bit Flips to Convert Number | Leetcode 2220 | Optimal Solution in Python
+,Pending,Find the number that appears odd number of times,Single Number - LeetCode,https://youtu.be/K0YpJf2UqN4,Single Number | Leetcode 136 | Brute Force and Optimal solution in Python
+,Pending,Power Set,Subsets - LeetCode,https://youtu.be/Cytbo-kPJ3A,Generate all Subsets using Bit Manipulation | Leetcode 78 | Python Code
+,,,,,
+,,,,,
+,,8. Recursion,,,
+,,8.1 Learn Basic Recursion,,,
+,Pending,Print all subsequences/Power Set,Subsets - LeetCode,https://youtu.be/wNp_FS1Sa_c,Print all subsequences/Power Set: Complete Guide with Backtracking
+,Pending,Print all subsequences with Sum = K,Find all subsequences with sum equals to K - GeeksforGeeks,https://youtu.be/Vy_6A0ZSunU,Print all subsequences with Sum = K: Complete Guide with Backtracking
+,Pending,Check if there exists a subsequence with sum K,Check if there exists a subsequence with sum K | Practice | GeeksforGeeks,https://youtu.be/CwUPDkzpG4A,Check if there exists a subsequence with sum = K | Backtracking Solution in Python
+,Pending,Count all subsequences with sum K,Perfect Sum Problem | Practice | GeeksforGeeks,https://youtu.be/d4LA8I9kxWk,Count All Subsequences with Sum = K: Complete Guide with Backtracking
+,,,,,
+,,,,,
+,,8.2 Generate Subsequences,,,
+,Pending,Generate all binary strings,Generate all binary strings | Practice | GeeksforGeeks,https://youtu.be/PEso38E8hKU,Generate All Binary Strings | Backtracking Approach
+,Pending,Generate Paranthesis,Generate Parentheses - LeetCode,https://youtu.be/8BqjZR-1jdg,Generate Parentheses | Leetcode 22 | Backtracking Approach
+,Pending,Learn All Patterns of Subsequences,Better String | Practice | GeeksforGeeks,-,-
+,Pending,Combination Sum,Combination Sum - LeetCode,https://youtu.be/98-CzNc1O6M,Combination Sum | Leetcode 39 | Backtracking Approach
+,Pending,Combination Sum-II,Combination Sum II - LeetCode,https://youtu.be/xkO6xL-kfCA,Combination Sum II | Leetcode 40 | Brute and Optimal Solution
+,Pending,Subset Sum-I,Subset Sums | Practice | GeeksforGeeks,https://youtu.be/reJOd6ZjDn8,Subset Sums | GFG Practice | Brute and Optimal Solution
+,Pending,Combination Sum - III,Combination Sum III - LeetCode,https://youtu.be/hpB5_bKPbw0,Combination Sum III | Leetcode 216 | Optimal Solution in Python
+,Pending,Letter Combinations of a Phone number,Letter Combinations of a Phone Number - LeetCode,https://youtu.be/vINkGJQI9i0,Letter Combinations of a Phone Number | Leetcode 17 | Optimal Solution in Python
+,,,,,
+,,,,,
+,,8.3 Hard problems on recursion,,,
+,Pending,N Queen,N-Queens - LeetCode,https://youtu.be/BxSXlYzXWAk,N-Queens | Leetcode 51 | Brute and Optimal Solution
+,Pending,Rat in a Maze,Rat in a Maze Problem - I | Practice | GeeksforGeeks,https://youtu.be/kjAtKzMJ-GM,Rat in a Maze Problem - I | GFG Practice | 2 different solutions
+,,,,,
+,,,,,
+,,9. Stacks and Queues,,,
+,,9.1 Learn the basics,,,
+,Pending,Implement Stack using Arrays,Implement stack using array | Practice | GeeksforGeeks,https://youtu.be/qP0L6LZ3i2Q,Implement Stack Using Array | GFG Practice | Complete Guide in Python
+,Pending,Implement Queue using Arrays,Implement Queue using array | Practice | GeeksforGeeks,https://youtu.be/FeoV_qD453A,Implement Queue Using Array: Complete Guide with Normal and Optimal Solutions
+,Pending,Understand Deque in Python,Theory [Watch the Video],https://youtu.be/IqCe1e6l6Jo,-
+,Pending,Implement Stack using Queue,Implement Stack using Queues - LeetCode,https://youtu.be/CTzX4vS5HB8,Implement Stack using Queues | Leetcode 225 | Complete Python Code
+,Pending,Implement Queue using Stack,Implement Queue using Stacks - LeetCode,https://youtu.be/1U-FKK4p6VE,Implement Queue using Stacks | Leetcode 232 | Using 2 stacks
+,Pending,Implement stack using Linkedlist,Implement Stack using Linked List | Practice | GeeksforGeeks,https://youtu.be/N3T6wlfoEaM,Stack using Linked List | Optimal Solution
+,Pending,Implement queue using Linkedlist,Implement Queue using Linked List | Practice | GeeksforGeeks,,Queue using Linked List | Complete Guide in Python
+,Pending,Check for balanced paranthesis,Valid Parentheses - LeetCode,https://youtu.be/mnNsoWg2IO0,Valid Parentheses | Leetcode 20 | Stack implementation
+,Pending,Implement Min Stack,Min Stack - LeetCode,https://youtu.be/8BZDEeY-yUc,Min Stack | Leetcode 155 | Optimal Solution in Python
+,,,,,
+,,"9.2 Prefix, Infix, Postfix conversions",,,
+,Pending,Infix to Postfix Conversion using Stack,Infix to Postfix | Practice | GeeksforGeeks,https://youtu.be/cWdtik-TGd0,"Infix, Postfix, Prefix Conversions explained in Python"
+,Pending,Prefix to Infix Conversion,Prefix to Infix Conversion | Practice | GeeksforGeeks,,
+,Pending,Prefix to Postfix Conversion,Prefix to Postfix Conversion | Practice | GeeksforGeeks,,
+,Pending,Postfix to Prefix Conversion,Postfix to Prefix Conversion | Practice | GeeksforGeeks,,
+,Pending,Postfix to Infix,Postfix to Infix Conversion | Practice | GeeksforGeeks,,
+,Pending,Convert Infix To Prefix Notation,Infix to Postfix | Practice | GeeksforGeeks,,
+,,,,,
+,,,,,
+,,9.3 Monotonic Stack/Queue Problems,,,
+,Pending,Next Greater Element,Next Greater Element | Practice | GeeksforGeeks,https://youtu.be/i7N07gXrqh0,Next Greater Element | Optimal Solution using Stack
+,Pending,Next Greater Element 2,Next Greater Element II - LeetCode,https://youtu.be/WKg2D9HY52Q,Next Greater Element II | Leetcode 503 | Imaginary List Optimal Solution
+,Pending,Asteroid Collision,Asteroid Collision - LeetCode,https://youtu.be/VLw3GaRz_aQ,Asteroid Collision | Leetcode 735 | Optimal Stack Solution
+,,,,,
+,,10. Sliding Window and Two Pointers,,,
+,,10.1 Medium level Problems,,,
+,Pending,Longest Substring Without Repeating Characters,Longest Substring Without Repeating Characters - LeetCode,https://youtu.be/_zpYpeIREPE,https://codeanddebug.in/blog/longest-substring-without-repeating-characters/
+,Pending,Max Consecutive Ones III,Max Consecutive Ones III - LeetCode,https://youtu.be/VgmNapc5ycQ,Max Consecutive Ones III | Leetcode 1004 | Fixed Window Solution
+,Pending,Fruit Into Baskets,Fruit Into Baskets - LeetCode,https://youtu.be/bXM1YNPmrwo,Fruit Into Baskets | Leetcode 904 | Optimal Solution using Sliding Window
+,Pending,Maximum point you can obtain from cards,Maximum Points You Can Obtain from Cards - LeetCode,https://youtu.be/SuwXaaXeOa0,Maximum Points You Can Obtain from Cards | Leetcode 1423
+,,,,,
+,,,,,
+,,11. Greedy Algorithms,,,
+,,11.1 Easy Level Problems,,,
+,Pending,Assign Cookies,Assign Cookies - LeetCode,https://youtu.be/zbOVRO7xV-0,Assign Cookies | Leetcode 455 | Optimal Greedy Solution
+,Pending,Fractional Knapsack Problem,Fractional Knapsack | Practice | GeeksforGeeks,https://youtu.be/K_qtZbLSYm0,https://codeanddebug.in/blog/fractional-knapsack/
+,Pending,Greedy algorithm to find minimum number of coins,Minimum number of Coins | Practice | GeeksforGeeks,https://youtu.be/hMcQXvJpT2o,Minimum number of Coins | Greedy Algorithm Solution
+,Pending,Lemonade Change,Lemonade Change - LeetCode,https://youtu.be/OtxKdaDnEOE,Lemonade Change | Leetcode 860 | Greedy Solution
+,,,,,
+,,,,,
+,,11.2 Medium/Hard Level Problems,,,
+,Pending,N meetings in one room,N meetings in one room | Practice | GeeksforGeeks,https://youtu.be/OnQlEihg1sA,N meetings in one room | Greedy Solution
+,Pending,Jump Game,Jump Game - LeetCode,https://youtu.be/kw8mIiTkLK4,Jump Game | Leetcode 55 | Greedy Solution
+,Pending,Jump Game 2,Jump Game II - LeetCode,https://youtu.be/H4Tv4-yi9m8,Jump Game II | Leetcode 45 | Recursive and Greedy Solution
+,Pending,Minimum number of platforms required for a railway,Minimum Platforms | Practice | GeeksforGeeks,https://youtu.be/z5yb0JGi4OE,Minimum Platforms | Optimal Greedy Solution
+,,,,,
+,,,,,
+,,12. Binary Trees,,,
+,,12.1 Learn Traversal,,,
+,Pending,Introduction to Trees,Introduction to Trees | Practice | GeeksforGeeks,https://youtu.be/zquPPfnD87U,
+,Pending,Create Binary Tree,Binary Tree Representation | Practice | GeeksforGeeks,https://youtu.be/qp2ct1cOgdM,
+,Pending,Binary Tree Traversals in Binary Tree,Tree Traversals - Naukri Code 360,https://youtu.be/ev0JrFgPO4E,"A Beginner’s Guide to Preorder, Inorder & Postorder Traversals"
+,Pending,Preorder Traversal of Binary Tree,Binary Tree Preorder Traversal - LeetCode,,
+,Pending,Inorder Traversal of Binary Tree,Binary Tree Inorder Traversal - LeetCode,,
+,Pending,Post-order Traversal of Binary Tree,Binary Tree Postorder Traversal - LeetCode,,
+,Pending,Level order Traversal / Level order traversal in spiral form,Binary Tree Level Order Traversal - LeetCode,https://youtu.be/tRhWzxU-oH0,Breadth-First Search in Binary Trees: Level-Order Traversal with Python
+,,,,,
+,,,,,
+,,12.2 Medium Level Problems,,,
+,Pending,Height of a Binary Tree,Maximum Depth of Binary Tree - LeetCode,https://youtu.be/qYMxdq2abD8,Maximum Depth of Binary Tree | Explained with Examples
+,Pending,Check if the Binary tree is height-balanced or not,Balanced Binary Tree - LeetCode,https://youtu.be/zvJZ8A7mBOY,Balanced Binary Tree | Leetcode 110 | Optimal and Slightly Optimal Solutions
+,Pending,Diameter of Binary Tree,Diameter of Binary Tree - LeetCode,https://youtu.be/KsADe9oiK1A,Diameter of Binary Tree
+,Pending,Maximum path sum,Binary Tree Maximum Path Sum - LeetCode,https://youtu.be/kpEWBjT3gbI,Binary Tree Maximum Path Sum | Leetcode 124 | Detailed Recursive Solution
+,Pending,Top View of Binary Tree,Top View of Binary Tree | Practice | GeeksforGeeks,https://youtu.be/g8cmtH2pCj8,Top View of Binary Tree | BFS with Horizontal Distance Mapping
+,Pending,Bottom View of Binary Tree,Bottom View of Binary Tree | Practice | GeeksforGeeks,https://youtu.be/KRMSZ8-vQcE,Bottom View of Binary Tree | BFS with Horizontal Distance Mapping
+,Pending,Right/Left View of Binary Tree,Binary Tree Right Side View - LeetCode,https://youtu.be/91dm6RRruhM,Binary Tree Right Side View | Leetcode 199 | BFS and DFS Approaches
+,,,,,
+,,,,,
+,,13. Binary Search Trees,,,
+,,13.1 Introduction,,,
+,Pending,Introduction to Binary Search Tree,Binary Search Trees | Practice | GeeksforGeeks,https://youtu.be/31g6lkNiEik,
+,Pending,Search in a Binary Search Tree,Search in a Binary Search Tree - LeetCode,https://youtu.be/nF3EcB3grg8,
+,Pending,Find Min/Max in BST,Minimum element in BST | Practice | GeeksforGeeks,https://youtu.be/GIHS4wevMFU,
+,,,,,
+,,,,,
+,,13.2 Practice Problems,,,
+,Pending,Ceil in a Binary Search Tree,Ceil in BST | Practice | GeeksforGeeks,https://youtu.be/GIHwR_vsmt4,
+,Pending,Floor in a Binary Search Tree,Floor in BST | Practice | GeeksforGeeks,https://youtu.be/wEaEmxyYDNs,
+,Pending,Insert a given Node in Binary Search Tree,Insert into a Binary Search Tree - LeetCode,https://youtu.be/CLdBM8j_J3c,
+,Pending,Delete a Node in Binary Search Tree,Delete Node in a BST - LeetCode,https://youtu.be/GKvN-M15NkE,
+,Pending,Morris Preorder/Inorder Traversal of a Binary Tree,Binary Tree Inorder Traversal - LeetCode,https://youtu.be/JwVhYBDVUQ0,
+,Pending,Find K-th smallest/largest element in BST,Kth Smallest Element in a BST - LeetCode,https://youtu.be/q4SXMP-BUkk,
+,Pending,Check if a tree is a BST or BT,Validate Binary Search Tree - LeetCode,https://youtu.be/ah604p9o5rA,
+,Pending,LCA in Binary Search Tree,Lowest Common Ancestor of a Binary Search Tree - LeetCode,https://youtu.be/huVyorR9rxE,
+,Pending,Inorder Successor/Predecessor in BST,Inorder Successor in BST - LeetCode,https://youtu.be/-PHBkE0u9GA,
+,,,,,
+,,,,,
+,,14. Heaps (do after binary trees),,,
+,,14.1 Introduction to Heaps,,,
+,Pending,Introduction to Priority Queues using Binary Heaps,Implementation of Priority Queue using Binary Heap | Practice | GeeksforGeeks,https://youtu.be/rUNcm2PgzPU,
+,Pending,Heapify Algorithm,-,https://youtu.be/uLv4UGQi-1U,
+,Pending,Build Heap from a Given Array,-,https://youtu.be/dTviye190jU,
+,Pending,Implement Min Heap,-,https://youtu.be/Eq0TFkdsL0c,
+,Pending,Implement Max Heap,-,https://youtu.be/xdy3XyiJeyE,
+,Pending,Check if an Array Represents a Min Heap,-,https://youtu.be/AxcEJLQBELU,
+,Pending,Convert Min Heap to Max Heap,-,https://youtu.be/VHdKsoRft8U,
+,,,,,
+,,,,,
+,,14.2 Medium level problems,,,
+,Pending,Kth largest element in an array [use priority queue],Kth Largest Element in an Array - LeetCode,,
+,Pending,Kth smallest element in an array [use priority queue],Kth smallest element | Practice | GeeksforGeeks,,
+,Pending,Merge M sorted Lists,Merge k Sorted Lists - LeetCode,,
+,Pending,Replace each array element by its corresponding rank,Replace elements by its rank in the array | Practice | GeeksforGeeks,,
+,Pending,Task Scheduler,Task Scheduler - LeetCode,,
+,Pending,Hands of Straights,Hand of Straights - LeetCode,,
+,,,,,
+,,,,,
+,,15. Graphs,,,
+,,15.1 Introduction to Graphs,,,
+,Pending,Graph and Types,Graph and Vertices | Practice | GeeksforGeeks,https://youtu.be/JIVnSenyoRU,[Watch Video]
+,Pending,Graph Representation,Print adjacency list | Practice | GeeksforGeeks,https://youtu.be/YS4FmJBHHDI,[Watch Video]
+,Pending,Connected Components,Number of Connected Components in an Undirected Graph - LeetCode,https://youtu.be/YSROdEqf3ow,[Watch Video]
+,Pending,BFS,BFS of graph | Practice | GeeksforGeeks,https://youtu.be/lxOw5e7ZuVg,BFS Traversal in Graph | Explained using Code
+,Pending,DFS,DFS of Graph | Practice | GeeksforGeeks,https://youtu.be/eqch9gKiWEQ,DFS Traversal in Graph | Explained using Code
+,,,,,
+,,15.2 Problems based on BFS & DFS,,,
+,Pending,Rotten Oranges,Rotting Oranges - LeetCode,https://youtu.be/sBspSzNU7Oc,Rotting Oranges | Leetcode 994 | Explained
+,Pending,Flood fill,Flood Fill - LeetCode,https://youtu.be/nisRNyt4ww4,Flood Fill | Leetcode 733 | DFS and BFS Approach
+,Pending,Cycle Detection in undirected Graph (bfs),Detect cycle in an undirected graph | Practice | GeeksforGeeks,https://youtu.be/k7Hd32SiRGo,Detect cycle in an undirected graph using BFS
+,Pending,Cycle Detection in undirected Graph (dfs),Detect cycle in an undirected graph | Practice | GeeksforGeeks,https://youtu.be/XUKV0_AFh44,Detect cycle in an undirected graph using DFS
+,Pending,0/1 Matrix (Bfs Problem),01 Matrix - LeetCode,https://youtu.be/p-omSwqOjaI,01 Matrix | Leetcode 542 | Explained using BFS
+,Pending,Surrounded Regions (dfs),Surrounded Regions - LeetCode,https://youtu.be/n05WmMKTcGo,Surrounded Regions | Leetcode 130 | Explained using DFS
+,Pending,Number of Enclaves [flood fill implementation - multisource],Number of Enclaves - LeetCode,https://youtu.be/ScDd1Z2zToI,Number of Enclaves | Leetcode 1020 | Explained using BFS
+,Pending,Word ladder - 1,Word Ladder - LeetCode,https://youtu.be/hxZQY5U__NM,Word Ladder | Leetcode 127 | Explained using BFS
+,Pending,Word ladder - 2,Word Ladder II - LeetCode,https://youtu.be/JkPYpeLl4_Q,Word Ladder II | Leetcode 126 | Shortest Transformation Sequences with BFS
+,Pending,Number of Islands,Number of Islands - LeetCode,https://youtu.be/_vh_eWEiEl8,Number of Islands | Leetcode 200 | Explained using BFS and DFS
+,Pending,Number of Distinct Islands [dfs multisource],Number of Distinct Islands | Practice | GeeksforGeeks,https://youtu.be/-mMmf3BAfLc,Number of Distinct Islands | Simple DFS solution in Python
+,Pending,Bipartite Graph (DFS),Is Graph Bipartite? - LeetCode,https://youtu.be/tJXPMjy5eEM,Is Graph Bipartite? | Leetcode 785 | Easy 2-Color DFS Solution in Python
+,Pending,Cycle Detection in Directed Graph (DFS),Directed Graph Cycle | Practice | GeeksforGeeks,https://youtu.be/BrxY15Gz2DY,Detect Cycle in a Directed Graph
+,,,,,
+,,,,,
+,,15.3 Topo Sort based problems,,,
+,Pending,Topo Sort,Topological sort | Practice | GeeksforGeeks,https://youtu.be/hy7lViJNkzg,Topological Sort in Graph | Simple DFS + Stack Solution in Python
+,Pending,Kahn's Algorithm,Topological sort | Practice | GeeksforGeeks,https://youtu.be/I5E89BRSQ-o,Topological Sort (Kahn’s Algorithm) – Simple BFS Solution in Python
+,Pending,Cycle Detection in Directed Graph (BFS),Detect cycle in a directed graph | Practice | GeeksforGeeks,https://youtu.be/ZrwQaFY_4rE,Detect Cycle in a Directed Graph – Kahn's Algorithm (BFS Topological Check) in Python
+,Pending,Course Schedule - I,Course Schedule - LeetCode,https://youtu.be/q2mquGGPmwI,Course Schedule | Leetcode 207 | Kahn’s Algorithm Walk-through in Python
+,Pending,Course Schedule - II,Course Schedule II - LeetCode,https://youtu.be/q2mquGGPmwI,
+,Pending,Find eventual safe states (BFS),Find Eventual Safe States - LeetCode,https://youtu.be/bJLIEOPH4Nc,Find Eventual Safe States | Leetcode 802 | Kahn’s Algorithm (BFS) Solution
+,Pending,Find eventual safe states (DFS),Find Eventual Safe States - LeetCode,https://youtu.be/-MlOLKzruRY,Find Eventual Safe States | Leetcode 802 | DFS Solution
+,Pending,Alien dictionary,Alien Dictionary | Practice | GeeksforGeeks,https://youtu.be/YjRRRTI3Bmo,[Do on your own)
+,,,,,
+,,,,,
+,,15.4 Shortest Path related Problems,,,
+,Pending,Shortest Path in UG with unit weights,Shortest path in Undirected Graph | Practice | GeeksforGeeks,https://youtu.be/dRSEdDT7do0,Shortest Path in an Undirected Graph with Unit Distance – Clear BFS Solution in Python
+,Pending,Shortest Path in DAG,Shortest path in Directed Acyclic Graph | Practice | GeeksforGeeks,https://youtu.be/b8IB5UJ1p4U,Shortest Path in a Weighted Directed Acyclic Graph | Topological-Sort + Relaxation | Python
+,Pending,Djisktra's Algorithm [Using Priority Queue],Implementing Dijkstra Algorithm | Practice | GeeksforGeeks,https://youtu.be/f0Xr7Bfg2Zk,Dijkstra’s Algorithm with a Priority Queue
+,Pending,Djisktra's Algorithm [Using Set],Implementing Dijkstra Algorithm | Practice | GeeksforGeeks,https://youtu.be/2BLYnNwYpMA,Dijkstra’s Algorithm in Python Using a Set
+,Pending,Why priority Queue is used in Djisktra's Algorithm,Implementing Dijkstra Algorithm | Practice | GeeksforGeeks,https://youtu.be/kb4O-6cbWZg,[Watch Video]
+,Pending,Print the Shortest Path,Shortest Path in Weighted undirected graph | Practice | GeeksforGeeks,https://youtu.be/laRgnK9uwCE,Printing the Actual Shortest Path with Dijkstra Algorithm
+,Pending,Shortest path in a binary maze,Shortest Path in Binary Matrix - LeetCode,https://youtu.be/u6iPL2SQ0Fo,Shortest Path in a Binary Matrix | Leetcode 1091 | Dijkstra's Algorithm with Normal Queue (BFS)
+,Pending,Path with minimum effort,Path With Minimum Effort - LeetCode,https://youtu.be/scW82V_e1FY,Path With Minimum Effort | Leetcode 1631 | Explained
+,Pending,Cheapest flights within k stops,Cheapest Flights Within K Stops - LeetCode,https://youtu.be/8UJ4iq3LBUw,Cheapest Flights Within K Stops | Leetcode 787 | Easy BFS Approach in Python - Code and Debug - Blog
+,Pending,Minimum steps to reach end from start by performing multiplication and mod operations with array elements,Minimum Multiplications to reach End | Practice | GeeksforGeeks,https://youtu.be/HSp2KcyvQ6I,https://codeanddebug.in/blog/minimum-multiplications-to-reach-end-python-bfs/
+,Pending,Number of ways to arrive at destination,Number of Ways to Arrive at Destination - LeetCode,https://youtu.be/7vFSTfY4uGM,https://codeanddebug.in/blog/number-of-ways-to-arrive-at-destination-python/
+,Pending,Bellman Ford Algorithm,Distance from the Source (Bellman-Ford Algorithm) | Practice | GeeksforGeeks,https://youtu.be/7C_w5RIEyoU,https://codeanddebug.in/blog/bellman-ford-algorithm/
+,Pending,Floyd Warshal Algorithm,Floyd Warshall | Practice | GeeksforGeeks,https://youtu.be/LULHxlvOhGc,https://codeanddebug.in/blog/floyd-warshall-vs-dijkstra-all-pairs-shortest-paths/
+,Pending,Find the city with the smallest number of neighbors in a threshold distance,Find the City With the Smallest Number of Neighbors at a Threshold Distance - LeetCode,https://youtu.be/KludkoXzOXY,https://codeanddebug.in/blog/find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/
+,,,,,
+,,,,,
+,,15.5 Minimum Spanning Tree and Disjoint Set,,,
+,Pending,Minimum Spanning Tree,Minimum Spanning Tree | Practice | GeeksforGeeks,https://youtu.be/Q-FY2yCRhvk,
+,Pending,Prim's Algorithm,Minimum Spanning Tree | Practice | GeeksforGeeks,https://youtu.be/T2CNZcsYR7o,
+,Pending,Disjoint Set [Union by Rank],Disjoint set (Union-Find) | Practice | GeeksforGeeks,https://youtu.be/E__JlsiBTik,
+,Pending,Disjoint Set [Union by Size],Disjoint set (Union-Find) | Practice | GeeksforGeeks,https://youtu.be/E__JlsiBTik,
+,Pending,Kruskal's Algorithm,Minimum Spanning Tree | Practice | GeeksforGeeks,https://youtu.be/LdknY_dfTyo,
+,Pending,Number of Provinces,Number of Provinces | Practice | GeeksforGeeks,https://youtu.be/SOmFfGoaW1w,
+,Pending,Number of operations to make network connected,Number of Operations to Make Network Connected - LeetCode,https://youtu.be/RiW-WVWxO3k,
+,,,,,
+,,,,,
+,,16. Dynamic Programming,,,
+,,16.1 Introduction to Dynamic Programming,,,
+,Pending,Dynamic Programming Introduction,Nth Fibonacci Number | Practice | GeeksforGeeks,https://youtu.be/-CK7HfwqhLs,Nth Fibonacci Number using Dynamic Programming
+,,,,,
+,,,,,
+,,16.2 DP on 1D,,,
+,Pending,Climbing Stars,Climbing Stairs - LeetCode,https://youtu.be/VB_Qj4VWYRg,Climbing Stairs | Leetcode 70 | Solved using Dynamic Programming
+,Pending,Frog Jump,Geek Jump | Practice | GeeksforGeeks,https://youtu.be/oz15y1jeJRg,https://codeanddebug.in/blog/frog-jump/
+,Pending,Maximum sum of non-adjacent elements,House Robber - LeetCode,https://youtu.be/eyRPBmmUAc4,https://codeanddebug.in/blog/house-robber/
+,Pending,House Robber 2,House Robber II - LeetCode,https://youtu.be/9DXrm35Cvds,House Robber II | Leetcode 213 | All 4 Solutions
+,,,,,
+,,,,,
+,,16.3 DP on 2D/3D or Grids,,,
+,Pending,Ninja's Training,Geek's Training | Practice | GeeksforGeeks,https://youtu.be/pbIWcpuzvYs,Geek's Training | 2D Dynamic Programming | GFG Practice
+,Pending,Grid Unique Paths : DP on Grids,Unique Paths - LeetCode,https://youtu.be/dZNV9dDvo4g,Unique Paths | Leetcode 62 | All 4 DP Solutions
+,Pending,Grid Unique Paths 2,Unique Paths II - LeetCode,https://youtu.be/DBqyiEdYTLI,Unique Paths II | Leetcode 63 | All 4 DP Solutions
+,Pending,Minimum path sum in Grid,Minimum Path Sum - LeetCode,https://youtu.be/oLGfWUt2gFY,Minimum Path Sum | Leetcode 64 | All 4 DP Solutions
+,Pending,Minimum path sum in Triangular Grid,Triangle - LeetCode,https://youtu.be/tmEbfHnj5QA,Triangle | Leetcode 120 | All 4 DP Solutions
+,Pending,Minimum/Maximum Falling Path Sum,Minimum Falling Path Sum - LeetCode,https://youtu.be/cB8jXLNCN9Y,Minimum Falling Path Sum | Leetcode 931 | Variable Starting and Ending Points
+,Pending,3-d DP : Ninja and his friends,Cherry Pickup II - LeetCode,https://youtu.be/R2wbmFgbQMY,Cherry Pickup II | Leetcode 1463 | Solved using Dynamic Programming
+,,,,,
+,,,,,
+,,16.4 DP on subsequences,,,
+,Pending,Subset sum equal to target,Subset Sum Problem | Practice | GeeksforGeeks,https://youtu.be/GDG84KrUfUQ,Subset Sum Problem | Solved using Dynamic Programming
+,Pending,Partition Equal Subset Sum,Partition Equal Subset Sum - LeetCode,https://youtu.be/s57L65SYkHc,Partition Equal Subset Sum | Leetcode 416
+,Pending,Partition Set Into 2 Subsets With Min Absolute Sum Diff,Minimum sum partition | Practice | GeeksforGeeks,https://youtu.be/hc_PlkbISfM,Minimum sum partition | Solved using Tabulation in Python
+,Pending,Count Subsets with Sum K,Perfect Sum Problem | Practice | GeeksforGeeks,https://youtu.be/-OdBMAZS4hY,Perfect Sum Problem | All 4 DP Solutions in Python
+,Pending,Count Partitions with Given Difference,Partitions with Given Difference | Practice | GeeksforGeeks,https://youtu.be/4EaT73nr62w,Partitions with Given Difference | Optimal Solution
+,Pending,0/1 Knapsack,0 - 1 Knapsack Problem | Practice | GeeksforGeeks,https://youtu.be/pqL1iTVUyes,0 - 1 Knapsack Problem | 5 DP Solutions in Python
+,,,,,
+,,,,,
+,,16.5 DP on Strings,,,
+,Pending,Longest Common Subsequence,Longest Common Subsequence - LeetCode,https://youtu.be/GLlFa1Lo73c,Longest Common Subsequence | Leetcode 1143 | All DP Approach
+,Pending,Print Longest Common Subsequence,Print all LCS sequences | Practice | GeeksforGeeks,https://youtu.be/Qv0ZXe2L90I,"Print the Longest Common Subsequence | Build Table, Then Reconstruct"
+,Pending,Longest Common Substring,Longest Common Substring | Practice | GeeksforGeeks,https://youtu.be/dsARpzWOtxs,Longest Common Substring | Solved using Tabulation
+,Pending,Longest Palindromic Subsequence,Longest Palindromic Subsequence - LeetCode,https://youtu.be/RXsA5vYlPX8,Longest Palindromic Subsequence | Leetcode 516
+,Pending,Minimum insertions to make string palindrome,Minimum Insertion Steps to Make a String Palindrome - LeetCode,https://youtu.be/790o950eDMI,Minimum Insertion Steps to Make a String Palindrome | Leetcode 1312
+,Pending,Minimum Insertions/Deletions to Convert String,Delete Operation for Two Strings - LeetCode,https://youtu.be/ZHUE1OR2ek8,Delete Operation for Two Strings | Leetcode 583
+,,,,,
+,,,,,
+,,16.6 DP on Stocks,,,
+,Pending,Best Time to Buy and Sell Stock,Best Time to Buy and Sell Stock - LeetCode,Already Done in Arrays Section,-
+,Pending,Buy and Sell Stock - II,Best Time to Buy and Sell Stock II - LeetCode,https://youtu.be/QE6tM6NXMRw,Best Time to Buy and Sell Stock II | Leetcode 122 | Recursion to Tabulation
+,Pending,Buy and Sell Stocks III,Best Time to Buy and Sell Stock III - LeetCode,https://youtu.be/nKhfbZOz1aQ,Best Time to Buy and Sell Stock III | Leetcode 123 | Dynamic Programming Solution
+,Pending,Buy and Stock Sell IV,Best Time to Buy and Sell Stock IV - LeetCode,https://youtu.be/JBShufRNGzw,Best Time to Buy and Sell Stock IV | Leetcode 188 | Recursion to Tabulation Approach
+,,,,,
+,,,,,
+,,17. Tries,,,
+,,17.1 Introduction and Problems,,,
+,Pending,Implement TRIE | INSERT | SEARCH | STARTSWITH,Implement Trie (Prefix Tree) - LeetCode,https://youtu.be/qKFGIJLE3mA,Implement Trie (Prefix Tree) | Leetcode 208 | Efficient String Data Structure
+,Pending,Implement Trie - 2 (Prefix Tree),Implement Trie ll - Naukri Code 360,https://youtu.be/9gDAwZzJnZ4,"Implement Trie ll | Full Trie with Insert, Count, and Erase"
+,Pending,Longest String with All Prefixes,Complete String - Naukri Code 360,https://youtu.be/nTzyGe6s0SU,Complete String – Trie Based Solution
+,Pending,Number of Distinct Substrings in a String,Count Distinct Substrings - Naukri Code 360,https://youtu.be/f9PKrK0pqOo,Count Distinct Substrings – Brute Force and Trie Approaches
