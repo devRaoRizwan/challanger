@@ -141,17 +141,19 @@ const challengeKey = (day) => `${day.iso}:interview`;
 let celebrationTimer;
 function celebrateCompletion() {
   const layer = $("#celebration-layer");
-  const colors = ["#36738a", "#4b91a1", "#398457", "#e3ad55", "#e47d63"];
-  const confetti = Array.from({ length: 34 }, () => {
+  const colors = ["#36738a", "#4b91a1", "#398457", "#e3ad55", "#e47d63", "#f2c14e", "#6fbf9a", "#ef8c79"];
+  const confetti = Array.from({ length: 180 }, (_, index) => {
     const left = Math.random() * 100;
-    const drift = Math.round(Math.random() * 180 - 90);
-    const delay = (Math.random() * 0.35).toFixed(2);
+    const drift = Math.round(Math.random() * 320 - 160);
+    const delay = (Math.random() * 0.9).toFixed(2);
+    const size = Math.round(6 + Math.random() * 8);
     const color = colors[Math.floor(Math.random() * colors.length)];
-    return `<i class="confetti-piece" style="left:${left}vw;--drift:${drift}px;--delay:${delay}s;background:${color}"></i>`;
+    const shape = index % 4 === 0 ? "round" : index % 4 === 1 ? "long" : "square";
+    return `<i class="confetti-piece ${shape}" style="left:${left}vw;--drift:${drift}px;--delay:${delay}s;--size:${size}px;background:${color}"></i>`;
   }).join("");
-  layer.innerHTML = `${confetti}<div class="celebration-toast" role="status"><span class="celebration-emoji" aria-hidden="true">🎉</span><span><strong>Well done!</strong><small>Step complete. Keep it going.</small></span></div>`;
+  layer.innerHTML = `${confetti}<div class="celebration-toast" role="status"><span class="celebration-emoji" aria-hidden="true">🎉</span><span><strong>Well done!</strong><small>Step complete. Keep it going.</small></span><span class="celebration-poppers" aria-hidden="true">🎊 🎉</span></div>`;
   clearTimeout(celebrationTimer);
-  celebrationTimer = setTimeout(() => { layer.innerHTML = ""; }, 2600);
+  celebrationTimer = setTimeout(() => { layer.innerHTML = ""; }, 3200);
 }
 const dayComplete = (day) =>
   day.tasks.every((task) => state.completed[keyFor(day, task)]) &&

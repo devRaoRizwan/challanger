@@ -997,17 +997,21 @@ button:focus-visible, a:focus-visible { outline: 3px solid #4b91a1; outline-offs
   animation: toast-arrive 220ms ease-out both;
 }
 .celebration-emoji { font-size: 23px; }
+.celebration-poppers { margin-left: 6px; font-size: 18px; white-space: nowrap; }
 .celebration-toast strong, .celebration-toast small { display: block; }
 .celebration-toast strong { font: 800 14px "Manrope", sans-serif; }
 .celebration-toast small { margin-top: 2px; color: #68736c; font-size: 11px; }
 .confetti-piece {
   position: absolute;
   top: -14px;
-  width: 8px;
-  height: 12px;
+  width: var(--size, 10px);
+  height: calc(var(--size, 10px) * 1.4);
   border-radius: 2px;
-  animation: confetti-fall 1.8s cubic-bezier(.2,.65,.3,1) var(--delay) both;
+  animation: confetti-fall 2.5s cubic-bezier(.2,.65,.3,1) var(--delay) both;
 }
+.confetti-piece.round { border-radius: 50%; }
+.confetti-piece.long { width: calc(var(--size, 10px) * .55); height: calc(var(--size, 10px) * 1.9); }
+.confetti-piece.square { border-radius: 1px; }
 @keyframes confetti-fall {
   0% { opacity: 0; transform: translateY(-10px) rotate(0); }
   10% { opacity: 1; }
